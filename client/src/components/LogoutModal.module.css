@@ -1,0 +1,57 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.sheet {
+  background: var(--surface);
+  border-radius: var(--radius-m);
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--modal-shadow);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.message {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+.cancelBtn:hover {
+  background: var(--active-overlay);
+}
+
+.logoutBtn {
+  background: #dc2626;
+  color: #fff;
+}
+
+.logoutBtn:hover {
+  background: #b91c1c;
+}

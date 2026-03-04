@@ -1,0 +1,42 @@
+export const POSTS = [
+  {
+    id: 1,
+    title: 'Getting started with Post365',
+    excerpt: 'Learn how to create and organize your content effectively across all channels.',
+    date: 'Mar 1, 2026',
+    category: 'Guide',
+    readTime: '3 min',
+  },
+  {
+    id: 2,
+    title: 'Tips for growing your audience',
+    excerpt: 'Proven strategies to increase reach and engagement without burning out.',
+    date: 'Feb 28, 2026',
+    category: 'Growth',
+    readTime: '5 min',
+  },
+  {
+    id: 3,
+    title: 'Crafting the perfect headline',
+    excerpt: 'Your headline is the first impression. Make every word count.',
+    date: 'Feb 25, 2026',
+    category: 'Writing',
+    readTime: '4 min',
+  },
+  {
+    id: 4,
+    title: 'Content calendar best practices',
+    excerpt: 'Stay consistent with a well-planned schedule that fits your lifestyle.',
+    date: 'Feb 22, 2026',
+    category: 'Planning',
+    readTime: '6 min',
+  },
+  {
+    id: 5,
+    title: 'SEO basics for content creators',
+    excerpt: 'How to make your posts discoverable without the technical jargon.',
+    date: 'Feb 19, 2026',
+    category: 'SEO',
+    readTime: '7 min',
+  },
+];

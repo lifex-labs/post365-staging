@@ -1,0 +1,45 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-h);
+  padding: 0 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--separator);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.menuBtn {
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: var(--radius-s);
+}
+
+.menuBtn:hover {
+  background: var(--hover-overlay);
+}
+
+@media (min-width: 769px) {
+  .topbar {
+    display: none;
+  }
+}

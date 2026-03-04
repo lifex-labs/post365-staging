@@ -1,0 +1,122 @@
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: calc((100vw - min(100vw, var(--max-w))) / 2);
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    box-shadow: var(--sidebar-shadow);
+    z-index: 50;
+    padding: 0;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--separator);
+  flex-shrink: 0;
+}
+
+.logoImg {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px 0;
+  flex: 1;
+  gap: 0;
+  overflow-y: auto;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 10px;
+  margin-top: 24px;
+  margin-bottom: 2px;
+}
+
+.sectionLabelFirst {
+  margin-top: 8px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-s);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+}
+
+.navItem:hover {
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+.navItem.active {
+  background: var(--blue-bg);
+  color: var(--blue);
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 2px;
+  border-top: 1px solid var(--separator);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-s);
+  font-size: 14px;
+  color: var(--text-2);
+  background: transparent;
+  border: none;
+  width: 100%;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.logoutBtn:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+}

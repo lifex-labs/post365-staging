@@ -1,0 +1,15 @@
+.layout {
+  min-height: 100%;
+}
+
+.main {
+  padding-top: var(--topbar-h);
+  min-height: 100vh;
+}
+
+@media (min-width: 769px) {
+  .main {
+    padding-top: 0;
+    padding-left: var(--sidebar-w);
+  }
+}
