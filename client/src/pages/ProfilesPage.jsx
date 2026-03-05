@@ -92,7 +92,7 @@ export default function ProfilesPage() {
 
             <div className={styles.fields}>
               <span className={styles.fieldLabel}>Industry:</span>
-              <span className={styles.industryTag}>{profile.industry}</span>
+              <span className={styles.fieldValue}>{profile.industry}</span>
               <span className={styles.fieldLabel}>Brand tone:</span>
               <span className={styles.fieldValue}>{profile.brandTone}</span>
               <span className={styles.fieldLabel}>Target audience:</span>

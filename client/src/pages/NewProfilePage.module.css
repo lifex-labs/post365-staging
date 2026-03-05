@@ -47,7 +47,6 @@
   box-shadow: var(--card-shadow);
   padding: 40px;
   transition: box-shadow 0.15s;
-  margin: auto 0;
 }
 
 .card:hover {
@@ -65,6 +64,22 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.cardWrapper {
+  width: 100%;
+  max-width: 440px;
+  margin: auto 0;
+}
+
+.screenLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
   margin-bottom: 16px;
 }
 
@@ -163,7 +178,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 36px;
+  height: 32px;
   padding: 0 16px;
   font-size: 13px;
   font-weight: 500;
@@ -186,18 +201,396 @@
 
 /* ===== Manual button ===== */
 .manualBtn {
-  height: 36px;
+  height: 32px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text);
-  background: var(--hover-overlay);
-  border: 1px solid var(--separator);
+  color: var(--blue);
+  background: #eff6ff;
+  border: none;
   border-radius: var(--radius-s);
   cursor: pointer;
-  transition: background 0.1s, color 0.1s;
+  transition: background 0.1s;
 }
 
 .manualBtn:hover {
   background: #dbeafe;
+}
+
+/* ===== Scan card ===== */
+.scanCard {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+}
+
+.scanHeader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.scanHeaderIcon {
   color: var(--blue);
+  flex-shrink: 0;
+}
+
+.scanHeaderTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  background: #dbeafe;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-s);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ===== Scan body (scrollable log) ===== */
+.scanBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+}
+
+.scanBody::-webkit-scrollbar {
+  display: none;
+}
+
+.scanLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scanText {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+/* ===== Dots ===== */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+.dotActive {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  animation: blink 0.9s ease-in-out infinite;
+}
+
+.dotDone {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9ca3af;
+  flex-shrink: 0;
+}
+
+/* ===== Scan footer ===== */
+.scanFooter {
+  flex-shrink: 0;
+  padding-top: 20px;
+}
+
+.cancelScanBtn {
+  width: 100%;
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: #f3f4f6;
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.cancelScanBtn:hover {
+  background: #e5e7eb;
+}
+
+/* ===== Step 1 full-page layout ===== */
+.s1Header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px 16px;
+  flex-shrink: 0;
+}
+
+.s1HeaderText {
+  flex: 1;
+  min-width: 0;
+}
+
+.s1Title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.s1Desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s1Card {
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--separator);
+  overflow: hidden;
+}
+
+.s1Cols {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow: hidden;
+}
+
+.s1Col {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.s1Col:not(:last-child) {
+  border-right: 1px solid var(--separator);
+}
+
+.s1Footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--separator);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: #ffffff;
+}
+
+/* ===== (legacy - unused) ===== */
+.step1Wrapper { width: 100%; max-width: 980px; margin: auto 0; }
+.step1Desc { font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 20px; }
+.step1Grid { display: grid; grid-template-columns: 200px 1fr 1fr; gap: 12px; align-items: stretch; margin-bottom: 16px; }
+
+/* ===== Step nav (col 1) ===== */
+.stepNav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stepNavCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-s);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--text);
+  transition: background 0.1s;
+  overflow: hidden;
+}
+
+.stepNavCard:hover {
+  background: #f9fafb;
+}
+
+.stepNavCardActive {
+  background: #dbeafe;
+  color: var(--blue);
+}
+
+.stepNavCardActive:hover {
+  background: #bfdbfe;
+}
+
+.stepNavNum {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.stepNavLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Form cards (cols 2 & 3) ===== */
+.formCard {
+  background: #ffffff;
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldGroupFlex {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.fieldInput {
+  height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-s);
+  padding: 0 10px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  transition: border-color 0.15s;
+}
+
+.fieldInput:focus {
+  border-color: var(--blue);
+}
+
+.fieldInput::placeholder {
+  color: var(--text-3);
+}
+
+.fieldTextarea {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-s);
+  padding: 8px 10px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  resize: none;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+
+.fieldTextarea:focus {
+  border-color: var(--blue);
+}
+
+.fieldTextarea::placeholder {
+  color: var(--text-3);
+}
+
+/* ===== Step 1 CTA row ===== */
+.step1Cta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ctaCancelBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.ctaCancelBtn:hover {
+  background: var(--surface);
+}
+
+.ctaBackBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--text);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.1s;
+}
+
+.ctaBackBtn:hover {
+  opacity: 0.85;
+}
+
+.ctaNextBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.ctaNextBtn:hover {
+  background: var(--blue-dark);
 }
