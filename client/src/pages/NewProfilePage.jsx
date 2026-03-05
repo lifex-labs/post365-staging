@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Sparkles } from 'lucide-react';
 import styles from './NewProfilePage.module.css';
 
 const STEPS = [
@@ -9,6 +9,14 @@ const STEPS = [
   'Related & long tail keywords',
   'Important LLM prompt questions',
   'Specific instructions and notes',
+];
+
+const STEP_DESCS = [
+  'Company name, website, industry and tone',
+  'Core keywords defining your brand and business',
+  'Extended keywords and long-tail search terms',
+  'Questions to guide AI content generation',
+  'Custom rules, tone guidelines and notes',
 ];
 
 const SCAN_LINES = [
@@ -115,37 +123,38 @@ export default function NewProfilePage() {
     return (
       <div className={styles.page}>
         <header className={styles.s1Header}>
-          <div className={styles.s1HeaderText}>
-            <h1 className={styles.s1Title}>New brand profile</h1>
-            <p className={styles.s1Desc}>Enter your company's core details across five steps to build a complete brand profile.</p>
-          </div>
-          <button className={styles.backBtn} onClick={() => navigate('/brand-profiles')}>
+          <button className={styles.backBtn} style={{ marginBottom: '16px' }} onClick={() => navigate('/brand-profiles')}>
             <ChevronLeft size={14} />
             Brand profiles
           </button>
+          <h1 className={styles.s1Title}>Company details</h1>
+          <p className={styles.s1Desc}>Fill in your company's foundational details. This information powers all content generation across your brand profile.</p>
         </header>
 
         <div className={styles.s1Card}>
           <div className={styles.s1Cols}>
             {/* Col 1: Step nav */}
-            <div className={styles.s1Col}>
-              <div className={styles.stepNav}>
+            <div className={styles.s1ColNav}>
+              <div className={styles.navGroup}>
                 {STEPS.map((step, i) => (
                   <button
                     key={i}
-                    className={`${styles.stepNavCard} ${i === activeStep ? styles.stepNavCardActive : ''}`}
+                    className={`${styles.navItem} ${i === activeStep ? styles.navItemActive : ''}`}
                     onClick={() => setActiveStep(i)}
-                    title={step}
                   >
-                    <span className={styles.stepNavNum}>{i + 1}</span>
-                    <span className={styles.stepNavLabel}>{step}</span>
+                    <div className={styles.navItemIcon}>{i + 1}</div>
+                    <div className={styles.navItemText}>
+                      <span className={styles.navItemLabel}>{step}</span>
+                      <span className={styles.navItemDesc}>{STEP_DESCS[i]}</span>
+                    </div>
+                    <ChevronRight size={15} className={styles.navChevron} />
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Col 2: Basic details */}
-            <div className={styles.s1Col}>
+            <div className={`${styles.s1Col} ${styles.s1ColPadded}`}>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Company name</label>
                 <input
@@ -207,7 +216,7 @@ export default function NewProfilePage() {
             </div>
 
             {/* Col 3: Positioning */}
-            <div className={styles.s1Col}>
+            <div className={`${styles.s1Col} ${styles.s1ColPadded}`}>
               <div className={`${styles.fieldGroup} ${styles.fieldGroupFlex}`}>
                 <label className={styles.fieldLabel}>Problem</label>
                 <textarea

@@ -335,16 +335,10 @@
 /* ===== Step 1 full-page layout ===== */
 .s1Header {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
   padding: 20px 24px 16px;
   flex-shrink: 0;
-}
-
-.s1HeaderText {
-  flex: 1;
-  min-width: 0;
 }
 
 .s1Title {
@@ -367,11 +361,9 @@
 .s1Card {
   flex: 1;
   min-height: 0;
-  background: #ffffff;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--separator);
-  overflow: hidden;
 }
 
 .s1Cols {
@@ -379,19 +371,127 @@
   min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  overflow: hidden;
+  gap: 8px;
+  padding: 0 24px 8px;
 }
 
 .s1Col {
-  padding: 24px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  background: #ffffff;
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+}
+
+.s1ColPadded {
+  padding: 24px;
   gap: 12px;
 }
 
-.s1Col:not(:last-child) {
-  border-right: 1px solid var(--separator);
+.s1ColNav {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Settings-style nav group (col 1) ===== */
+.navGroup {
+  background: var(--surface);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: auto;
+  min-height: 52px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--separator);
+  text-align: left;
+  justify-content: flex-start;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.navItem:last-child {
+  border-bottom: none;
+}
+
+.navItem:hover {
+  background: var(--hover-overlay);
+}
+
+.navItemIcon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--hover-overlay);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.navItemText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.navItemLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.navItemDesc {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navChevron {
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.navItemActive {
+  background: #dbeafe;
+}
+
+.navItemActive:hover {
+  background: #bfdbfe;
+}
+
+.navItemActive .navItemIcon {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.navItemActive .navItemLabel {
+  color: var(--blue);
+}
+
+.navItemActive .navChevron {
+  color: var(--blue);
 }
 
 .s1Footer {
@@ -401,7 +501,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  background: #ffffff;
+  background: var(--bg);
 }
 
 /* ===== (legacy - unused) ===== */
@@ -410,53 +510,86 @@
 .step1Grid { display: grid; grid-template-columns: 200px 1fr 1fr; gap: 12px; align-items: stretch; margin-bottom: 16px; }
 
 /* ===== Step nav (col 1) ===== */
-.stepNav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.stepNavCard {
+.stepItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
-  background: #ffffff;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
   border: none;
-  border-radius: var(--radius-s);
-  box-shadow: var(--card-shadow);
-  cursor: pointer;
+  border-radius: 0;
+  border-bottom: 1px solid var(--separator);
   text-align: left;
-  font-size: 12px;
+  cursor: pointer;
   font-family: var(--font);
-  color: var(--text);
   transition: background 0.1s;
-  overflow: hidden;
 }
 
-.stepNavCard:hover {
-  background: #f9fafb;
+.stepItem:last-child {
+  border-bottom: none;
 }
 
-.stepNavCardActive {
+.stepItem:hover {
+  background: var(--hover-overlay);
+}
+
+.stepItemActive {
   background: #dbeafe;
-  color: var(--blue);
 }
 
-.stepNavCardActive:hover {
+.stepItemActive:hover {
   background: #bfdbfe;
 }
 
-.stepNavNum {
-  font-weight: 600;
+.stepItemNum {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  background: var(--hover-overlay);
+  border-radius: var(--radius-s);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
 }
 
-.stepNavLabel {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.stepItemActive .stepItemNum {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--blue);
+}
+
+.stepItemText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepItemLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.stepItemActive .stepItemLabel {
+  color: var(--blue);
+}
+
+.stepItemDesc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+.stepItemChevron {
+  flex-shrink: 0;
+  color: var(--blue);
 }
 
 /* ===== Form cards (cols 2 & 3) ===== */
