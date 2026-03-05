@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px;
+  padding: 32px 16px 88px;
 }
 
 /* ===== Card ===== */
@@ -125,7 +125,7 @@
 .websiteInput {
   width: 100%;
   height: 36px;
-  border: 1px solid var(--separator);
+  border: 1px solid rgba(0, 0, 0, 0.22);
   border-radius: var(--radius-s);
   padding: 0 12px;
   background: #ffffff;
@@ -148,13 +148,12 @@
 
 /* ===== Button row ===== */
 .btnRow {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
 .scanBtnWrapper {
-  flex: 1;
   display: flex;
 }
 
@@ -187,7 +186,6 @@
 
 /* ===== Manual button ===== */
 .manualBtn {
-  flex: 1;
   height: 36px;
   font-size: 13px;
   font-weight: 500;
