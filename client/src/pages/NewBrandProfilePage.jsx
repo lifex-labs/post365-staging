@@ -32,6 +32,7 @@ export default function NewBrandProfilePage() {
 
   const companyNameRef = useRef(null);
   const [step, setStep] = useState('intro'); // 'intro' | 'details'
+  const [card1Active, setCard1Active] = useState(true);
   const [card2Active, setCard2Active] = useState(false);
 
   useEffect(() => {
@@ -49,13 +50,19 @@ export default function NewBrandProfilePage() {
   }
 
   function handleAdvance() {
-    setStep('details');
-    requestAnimationFrame(() => setCard2Active(true));
+    setCard1Active(false);
+    setTimeout(() => {
+      setStep('details');
+      requestAnimationFrame(() => setCard2Active(true));
+    }, 160);
   }
 
   function handleGoBack() {
     setCard2Active(false);
-    setTimeout(() => setStep('intro'), 200);
+    setTimeout(() => {
+      setStep('intro');
+      requestAnimationFrame(() => setCard1Active(true));
+    }, 160);
   }
 
   return (
@@ -77,7 +84,7 @@ export default function NewBrandProfilePage() {
         <div className={styles.cardsCol}>
 
           {/* Card 1 - Step 1: Website */}
-          {step === 'intro' && <div className={styles.card}>
+          {step === 'intro' && <div className={`${styles.card} ${card1Active ? styles.cardActive : ''}`}>
             <div className={styles.iconCircle}>
               <Plus size={14} strokeWidth={2.5} />
             </div>

@@ -130,7 +130,14 @@
   border-radius: var(--radius-m);
   box-shadow: var(--card-shadow);
   padding: 40px;
-  transition: box-shadow 0.15s;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 160ms ease-out, transform 160ms ease-out, box-shadow 0.15s;
+}
+
+.cardActive {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .card:hover {
@@ -292,11 +299,13 @@
   flex: 1;
   min-height: 400px;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transform: scale(0.98);
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
 }
 
 .card2RowActive {
   opacity: 1;
+  transform: scale(1);
 }
 
 .card2Basic {
@@ -407,7 +416,7 @@
   border-radius: var(--radius-s);
   padding: 0 10px;
   background: #ffffff;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text);
   outline: none;
   font-family: var(--font);
@@ -429,7 +438,7 @@
   border-radius: var(--radius-s);
   padding: 8px 10px;
   background: #ffffff;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text);
   outline: none;
   font-family: var(--font);
