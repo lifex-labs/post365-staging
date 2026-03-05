@@ -24,8 +24,10 @@ export default function SettingsPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Settings</h1>
-        <p className={styles.description}>Manage your account, billing, notifications, privacy, security and app preferences.</p>
+        <div className={styles.headerText}>
+          <h1 className={styles.title}>Settings</h1>
+          <p className={styles.description}>Manage your account, billing, notifications, privacy, security and app preferences.</p>
+        </div>
       </header>
 
       <div className={styles.group}>

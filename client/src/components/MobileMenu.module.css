@@ -100,6 +100,14 @@
   width: 100%;
   text-align: left;
   transition: background 0.1s, color 0.1s;
+  overflow: hidden;
+}
+
+.navItem span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .navItem:hover {

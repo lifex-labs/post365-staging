@@ -15,9 +15,10 @@ const ProfilesPage         = lazy(() => import('./pages/ProfilesPage'));
 const SettingsPage         = lazy(() => import('./pages/SettingsPage'));
 const PersonalPostsPage    = lazy(() => import('./pages/PersonalPostsPage'));
 const PersonalProfilesPage = lazy(() => import('./pages/PersonalProfilesPage'));
-const CompanyCalendarPage  = lazy(() => import('./pages/CompanyCalendarPage'));
-const ArjunCalendarPage    = lazy(() => import('./pages/ArjunCalendarPage'));
-const NaveenCalendarPage   = lazy(() => import('./pages/NaveenCalendarPage'));
+const CalendarCompanyPage  = lazy(() => import('./pages/CalendarCompanyPage'));
+const CalendarArjunPage    = lazy(() => import('./pages/CalendarArjunPage'));
+const CalendarNaveenPage   = lazy(() => import('./pages/CalendarNaveenPage'));
+const NewProfilePage       = lazy(() => import('./pages/NewProfilePage'));
 
 function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -29,7 +30,7 @@ function ProtectedRoute({ children }) {
 function AuthRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
   if (!isLoaded) return <LoadingSpinner />;
-  if (isSignedIn) return <Navigate to="/posts" replace />;
+  if (isSignedIn) return <Navigate to="/brand-posts" replace />;
   return children;
 }
 
@@ -60,16 +61,17 @@ function AppRoutes() {
         path="/"
         element={<ProtectedRoute><Layout /></ProtectedRoute>}
       >
-        <Route index element={<Navigate to="/posts" replace />} />
-        <Route path="posts"             element={<Suspense fallback={<LoadingSpinner />}><PostsPage /></Suspense>} />
+        <Route index element={<Navigate to="/brand-posts" replace />} />
+        <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><PostsPage /></Suspense>} />
         <Route path="xeo-blogs"         element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
-        <Route path="profiles"          element={<Suspense fallback={<LoadingSpinner />}><ProfilesPage /></Suspense>} />
+        <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><ProfilesPage /></Suspense>} />
+        <Route path="brand-profiles/new" element={<Suspense fallback={<LoadingSpinner />}><NewProfilePage /></Suspense>} />
         <Route path="settings"          element={<Suspense fallback={<LoadingSpinner />}><SettingsPage /></Suspense>} />
         <Route path="personal-posts"    element={<Suspense fallback={<LoadingSpinner />}><PersonalPostsPage /></Suspense>} />
         <Route path="personal-profiles" element={<Suspense fallback={<LoadingSpinner />}><PersonalProfilesPage /></Suspense>} />
-        <Route path="company-calendar"  element={<Suspense fallback={<LoadingSpinner />}><CompanyCalendarPage /></Suspense>} />
-        <Route path="arjun-calendar"    element={<Suspense fallback={<LoadingSpinner />}><ArjunCalendarPage /></Suspense>} />
-        <Route path="naveen-calendar"   element={<Suspense fallback={<LoadingSpinner />}><NaveenCalendarPage /></Suspense>} />
+        <Route path="calendar-company"  element={<Suspense fallback={<LoadingSpinner />}><CalendarCompanyPage /></Suspense>} />
+        <Route path="calendar-arjun"    element={<Suspense fallback={<LoadingSpinner />}><CalendarArjunPage /></Suspense>} />
+        <Route path="calendar-naveen"   element={<Suspense fallback={<LoadingSpinner />}><CalendarNaveenPage /></Suspense>} />
       </Route>
       <Route path="*" element={<Navigate to="/sign-in" replace />} />
     </Routes>

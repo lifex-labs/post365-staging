@@ -15,7 +15,7 @@ export default function PostsPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>Posts</h1>
+          <h1 className={styles.title}>Brand posts</h1>
           <p className={styles.description}>Create, manage and schedule all your content posts in one place.</p>
         </div>
         <button className={styles.newBtn}>

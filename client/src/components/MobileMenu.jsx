@@ -18,16 +18,16 @@ const NAV_SECTIONS = [
     label: 'Company',
     items: [
       { path: '/xeo-blogs', label: 'XEO blogs',       icon: Rss        },
-      { path: '/posts',     label: 'Company posts',    icon: LayoutList },
-      { path: '/profiles',  label: 'Company profiles', icon: User       },
+      { path: '/brand-posts',     label: 'Brand posts',    icon: LayoutList },
+      { path: '/brand-profiles',  label: 'Brand profiles', icon: User       },
     ],
   },
   {
     label: 'Calendars',
     items: [
-      { path: '/company-calendar', label: 'Company calendar',  icon: CalendarDays },
-      { path: '/arjun-calendar',   label: "Arjun's calendar",  icon: CalendarDays },
-      { path: '/naveen-calendar',  label: "Naveen's calendar", icon: CalendarDays },
+      { path: '/calendar-company', label: 'Company',         icon: CalendarDays },
+      { path: '/calendar-arjun',   label: 'Arjun V. Shenoy', icon: CalendarDays },
+      { path: '/calendar-naveen',  label: 'Naveen Prabhu',   icon: CalendarDays },
     ],
   },
 ];

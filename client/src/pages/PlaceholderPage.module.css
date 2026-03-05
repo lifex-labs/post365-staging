@@ -4,6 +4,12 @@
 
 .header {
   margin-bottom: 16px;
+  padding-left: 8px;
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
 }
 
 .title {

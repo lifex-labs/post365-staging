@@ -1,0 +1,205 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pageHeader {
+  padding: 12px 24px;
+  flex-shrink: 0;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+
+.backBtn:hover {
+  color: var(--text);
+}
+
+/* ===== Center - dynamic vertical + horizontal centering ===== */
+.center {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+}
+
+/* ===== Card ===== */
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 40px;
+  transition: box-shadow 0.15s;
+  margin: auto 0;
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* ===== Icon circle ===== */
+.iconCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--separator);
+  margin: 16px 0;
+}
+
+/* ===== Steps ===== */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepCircle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepLabel {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ===== Input ===== */
+.websiteInput {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-s);
+  padding: 0 12px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  min-width: 0;
+  transition: border-color 0.15s;
+  margin-bottom: 8px;
+}
+
+.websiteInput:focus {
+  border-color: var(--blue);
+}
+
+.websiteInput::placeholder {
+  color: var(--text-3);
+}
+
+/* ===== Button row ===== */
+.btnRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scanBtnWrapper {
+  flex: 1;
+  display: flex;
+}
+
+.scanBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border-radius: var(--radius-s);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.1s, opacity 0.1s;
+}
+
+.scanBtn:hover:not(:disabled) {
+  background: var(--blue-dark);
+}
+
+.scanBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ===== Manual button ===== */
+.manualBtn {
+  flex: 1;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--hover-overlay);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.manualBtn:hover {
+  background: #dbeafe;
+  color: var(--blue);
+}
