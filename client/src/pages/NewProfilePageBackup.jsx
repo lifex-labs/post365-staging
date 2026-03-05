@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, Sparkles } from 'lucide-react';
-import styles from './NewProfilePage.module.css';
+import styles from './NewProfilePageBackup.module.css';
 
 const STEPS = [
   'Foundational company details',
@@ -45,7 +45,7 @@ const SCAN_LINES = [
 const isValidWebsite = (value) =>
   /^(https?:\/\/)?[\w-]+(\.[\w-]+)+/.test(value.trim());
 
-export default function NewProfilePage() {
+export default function NewProfilePageBackup() {
   const navigate = useNavigate();
   const [screen, setScreen] = useState('intro'); // 'intro' | 'scanning' | 'step1'
   const [website, setWebsite] = useState('');
@@ -123,12 +123,22 @@ export default function NewProfilePage() {
     return (
       <div className={styles.page}>
         <header className={styles.s1Header}>
-          <button className={styles.backBtn} style={{ marginBottom: '16px' }} onClick={() => navigate('/brand-profiles')}>
-            <ChevronLeft size={14} />
-            Brand profiles
-          </button>
-          <h1 className={styles.s1Title}>Company details</h1>
-          <p className={styles.s1Desc}>Fill in your company's foundational details. This information powers all content generation across your brand profile.</p>
+          <div className={styles.s1HeaderRow}>
+            <div className={styles.s1HeaderText}>
+              <h1 className={styles.s1Title}>Company details</h1>
+              <p className={styles.s1Desc}>Fill in your company's foundational details. This information powers all content generation across your brand profile.</p>
+            </div>
+            <div className={styles.s1HeaderBtns}>
+              <button className={styles.s1BackBtn} onClick={() => navigate('/brand-profiles')}>
+                <ChevronLeft size={14} strokeWidth={2.5} />
+                Go back
+              </button>
+              <button className={styles.s1NextBtn}>
+                Next step
+                <ChevronRight size={14} strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
         </header>
 
         <div className={styles.s1Card}>
@@ -256,11 +266,6 @@ export default function NewProfilePage() {
             </div>
           </div>
 
-          <div className={styles.s1Footer}>
-            <button className={styles.ctaCancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
-            <button className={styles.ctaBackBtn} onClick={() => setScreen('intro')}>Back</button>
-            <button className={styles.ctaNextBtn}>Next</button>
-          </div>
         </div>
       </div>
     );
@@ -279,7 +284,6 @@ export default function NewProfilePage() {
       <div className={styles.center}>
         {screen === 'intro' && (
           <div className={styles.cardWrapper}>
-            <span className={styles.screenLabel}>New brand profile</span>
             <div className={styles.card}>
               <div className={styles.iconCircle}>
                 <Plus size={14} strokeWidth={2.5} />
@@ -331,7 +335,6 @@ export default function NewProfilePage() {
 
         {screen === 'scanning' && (
           <div className={styles.cardWrapper}>
-            <span className={styles.screenLabel}>AI website scan</span>
             <div className={styles.scanCard}>
               <div className={styles.scanHeader}>
                 <span className={styles.scanHeaderTitle}>

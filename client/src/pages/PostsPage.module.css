@@ -78,3 +78,15 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .newBtn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}

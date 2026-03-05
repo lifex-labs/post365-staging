@@ -32,7 +32,7 @@ const SAMPLE_PROFILES = [
     industry: 'Marketing & Advertising',
     brandTone: 'Conversational',
     targetAudience: 'Startup founders and growth marketers at early-stage companies',
-    usp: 'Data-driven growth frameworks that triple customer acquisition in 90 days',
+    usp: '',
     date: 'Feb 15, 2026',
   },
   {
@@ -80,7 +80,9 @@ export default function ProfilesPage() {
       </header>
 
       <div className={styles.grid}>
-        {profiles.map(profile => (
+        {profiles.map(profile => {
+          const isComplete = !!(profile.name && profile.website && profile.industry && profile.targetAudience && profile.usp);
+          return (
           <div key={profile.id} className={styles.card}>
             <div className={styles.cardTop}>
               <div className={styles.websiteRow}>
@@ -97,12 +99,16 @@ export default function ProfilesPage() {
               <span className={styles.fieldValue}>{profile.brandTone}</span>
               <span className={styles.fieldLabel}>Target audience:</span>
               <span className={styles.fieldValueMulti}>{profile.targetAudience}</span>
-              <span className={styles.fieldLabel}>USP:</span>
-              <span className={styles.fieldValueMulti}>{profile.usp}</span>
+              {profile.usp && <>
+                <span className={styles.fieldLabel}>USP:</span>
+                <span className={styles.fieldValueMulti}>{profile.usp}</span>
+              </>}
             </div>
 
             <div className={styles.cardFooter}>
-              <span className={styles.cardLabel}>Brand profile</span>
+              <span className={`${styles.statusTag} ${isComplete ? styles.statusComplete : styles.statusDraft}`}>
+                {isComplete ? 'Complete' : 'Draft'}
+              </span>
               <div className={styles.cardActions}>
                 <button className={styles.iconBtn} title="Edit">
                   <Pencil size={13} />
@@ -117,7 +123,8 @@ export default function ProfilesPage() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {deletingId !== null && (

@@ -18,7 +18,7 @@ const PersonalProfilesPage = lazy(() => import('./pages/PersonalProfilesPage'));
 const CalendarCompanyPage  = lazy(() => import('./pages/CalendarCompanyPage'));
 const CalendarArjunPage    = lazy(() => import('./pages/CalendarArjunPage'));
 const CalendarNaveenPage   = lazy(() => import('./pages/CalendarNaveenPage'));
-const NewProfilePage       = lazy(() => import('./pages/NewProfilePage'));
+const NewBrandProfilePage  = lazy(() => import('./pages/NewBrandProfilePage'));
 
 function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -65,7 +65,7 @@ function AppRoutes() {
         <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><PostsPage /></Suspense>} />
         <Route path="xeo-blogs"         element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
         <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><ProfilesPage /></Suspense>} />
-        <Route path="brand-profiles/new" element={<Suspense fallback={<LoadingSpinner />}><NewProfilePage /></Suspense>} />
+        <Route path="brand-profiles/new" element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />
         <Route path="settings"          element={<Suspense fallback={<LoadingSpinner />}><SettingsPage /></Suspense>} />
         <Route path="personal-posts"    element={<Suspense fallback={<LoadingSpinner />}><PersonalPostsPage /></Suspense>} />
         <Route path="personal-profiles" element={<Suspense fallback={<LoadingSpinner />}><PersonalProfilesPage /></Suspense>} />

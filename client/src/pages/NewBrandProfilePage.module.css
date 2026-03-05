@@ -1,0 +1,490 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ===== Header (XeoBlogsPage pattern) ===== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px 24px 32px;
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.headerBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.cancelBtn:hover {
+  background: var(--surface);
+}
+
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.saveBtn:hover {
+  background: var(--blue-dark);
+}
+
+@media (min-width: 769px) {
+  .header {
+    padding: 24px 24px 24px 32px;
+  }
+
+  .description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+  }
+}
+
+/* ===== Center ===== */
+.center {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px 24px;
+}
+
+/* ===== Cards column (slides vertically) ===== */
+.cardsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== Card 1 - Step 1: Website ===== */
+.card {
+  width: 440px;
+  max-width: 100%;
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 40px;
+  transition: box-shadow 0.15s;
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* ===== Icon circle ===== */
+.iconCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--separator);
+  margin: 16px 0;
+}
+
+/* ===== Steps ===== */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepCircle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepLabel {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ===== Website input ===== */
+.websiteInput {
+  width: 100%;
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-s);
+  padding: 0 12px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  min-width: 0;
+  transition: border-color 0.15s;
+  margin-bottom: 8px;
+}
+
+.websiteInput:focus {
+  border-color: var(--blue);
+}
+
+.websiteInput::placeholder {
+  color: var(--text-3);
+}
+
+/* ===== Button row ===== */
+.btnRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.scanBtnWrapper {
+  display: flex;
+}
+
+.scanBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border-radius: var(--radius-s);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.1s, opacity 0.1s;
+}
+
+.scanBtn:hover:not(:disabled) {
+  background: var(--blue-dark);
+}
+
+.scanBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.manualBtn {
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blue);
+  background: #eff6ff;
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.manualBtn:hover {
+  background: #dbeafe;
+}
+
+/* ===== Card 2 row - Basic + Advanced ===== */
+.card2Row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 400px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.card2RowActive {
+  opacity: 1;
+}
+
+.card2Basic {
+  width: 440px;
+  max-width: 100%;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card2Advanced {
+  flex: 1;
+  min-width: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card2Body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card2Title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.card2Desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card2Fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.card2FieldsFlex {
+  flex: 1;
+}
+
+/* ===== Icon squares (card2 headers) ===== */
+.iconSquare {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.iconSquareBasic {
+  background: #0284c7;
+  color: #fff;
+}
+
+.iconSquareAdvanced {
+  background: #4f46e5;
+  color: #fff;
+}
+
+/* ===== Form fields ===== */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldGroupFlex {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.fieldInput {
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-s);
+  padding: 0 10px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  transition: border-color 0.15s;
+}
+
+.fieldInput:focus {
+  border-color: var(--blue);
+}
+
+.fieldInput::placeholder {
+  color: var(--text-3);
+}
+
+.fieldTextarea {
+  flex: 1;
+  min-height: 80px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-s);
+  padding: 8px 10px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  font-family: var(--font);
+  resize: none;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+
+.fieldTextarea:focus {
+  border-color: var(--blue);
+}
+
+.fieldTextarea::placeholder {
+  color: var(--text-3);
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .header {
+    padding: 16px 16px 16px 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerBtns {
+    margin-top: 8px;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    flex: 1;
+  }
+
+  .center {
+    overflow-y: auto;
+    padding: 0 16px 24px;
+  }
+
+  .cardsCol {
+    flex: unset;
+  }
+
+  .card2Row {
+    flex-direction: column;
+    flex: unset;
+    min-height: unset;
+  }
+
+  .card,
+  .card2Basic,
+  .card2Advanced {
+    padding: 24px;
+  }
+
+  .card2Basic {
+    width: 100%;
+  }
+}

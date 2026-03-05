@@ -1,13 +1,12 @@
 import { Menu } from 'lucide-react';
-import Post365Logo from './Post365Logo';
+import mainLogo from '../assets/main-logo-black.svg';
 import styles from './TopBar.module.css';
 
 export default function TopBar({ onMenuOpen }) {
   return (
     <header className={styles.topbar}>
       <div className={styles.left}>
-        <Post365Logo size={18} />
-        <span className={styles.title}>Post365</span>
+        <img src={mainLogo} alt="Post365" height={18} />
       </div>
       <button
         className={styles.menuBtn}
