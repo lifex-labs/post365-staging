@@ -60,6 +60,9 @@ export default function NewProfilePage() {
           />
 
           <div className={styles.btnRow}>
+            <button className={styles.manualBtn} onClick={() => navigate('/brand-profiles')}>
+              Enter manually
+            </button>
             <span
               className={styles.scanBtnWrapper}
               title={!canScan ? 'Enter a valid website URL to enable AI scan' : undefined}
@@ -69,9 +72,6 @@ export default function NewProfilePage() {
                 AI scan
               </button>
             </span>
-            <button className={styles.manualBtn} onClick={() => navigate('/brand-profiles')}>
-              Enter manually
-            </button>
           </div>
         </div>
       </div>
