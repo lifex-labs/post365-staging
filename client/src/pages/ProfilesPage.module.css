@@ -107,7 +107,7 @@
 .fields {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 8px 8px;
+  gap: 4px 8px;
   min-width: 0;
 }
 
@@ -119,7 +119,7 @@
 }
 
 .fieldValue {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-2);
   white-space: nowrap;
   overflow: hidden;
@@ -128,6 +128,17 @@
 }
 
 .fields > :last-child {
+  margin-bottom: 4px;
+}
+
+.cardSummary {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   margin-bottom: 12px;
 }
 

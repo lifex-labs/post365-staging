@@ -387,6 +387,16 @@
   color: #fff;
 }
 
+.iconSquareRelated {
+  background: #d97706;
+  color: #fff;
+}
+
+.iconSquareLongtail {
+  background: #7c3aed;
+  color: #fff;
+}
+
 /* ===== Form fields ===== */
 .fieldGroup {
   display: flex;
@@ -450,6 +460,36 @@
 
 .fieldTextarea::placeholder {
   color: var(--text-3);
+}
+
+/* ===== Card 4 row - Related + Long tail keywords (equal width) ===== */
+.card4Row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 400px;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+}
+
+.card4RowActive {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card4Card {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ===== Card 3 - Step 2: Keywords ===== */
@@ -717,6 +757,17 @@
   display: block;
 }
 
+/* ===== No-reason table variant (related + long tail - no reason column) ===== */
+/* Position 3 is now volume (not reason), reset to standard padding */
+.noReason .kwThead th:nth-child(3),
+.noReason .kwTbody td:nth-child(3) {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Use auto layout so keyword column fills remaining space */
+.noReason .kwTable { table-layout: auto; }
+
 /* New row (no bottom border - save/cancel row provides it) */
 .kwRowNew { border-bottom: none !important; }
 
@@ -810,6 +861,18 @@
     min-height: unset;
   }
 
+  .card4Row {
+    flex-direction: column;
+    flex: unset;
+    min-height: unset;
+  }
+
+  .card4Card {
+    flex: none;
+    min-height: unset;
+    overflow: visible !important;
+  }
+
   .card,
   .card2Basic,
   .card2Advanced {
@@ -863,6 +926,12 @@
   }
 
   .colKeyword { width: auto; }
+
+  /* No-reason table mobile: hide vol(3) + diff(4), re-show actions(5) */
+  .noReason .kwThead th:nth-child(5),
+  .noReason .kwTbody td:nth-child(5) {
+    display: table-cell;
+  }
 
   /* Hide reason, volume, difficulty columns on mobile */
   .kwThead th:nth-child(3),

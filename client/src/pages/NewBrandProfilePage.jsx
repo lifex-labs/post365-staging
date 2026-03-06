@@ -1,15 +1,16 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Sparkles, Building2, Layers, Key, Pencil, Check, X, Trash2 } from 'lucide-react';
+import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, Pencil, Check, X, Trash2 } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 import modalStyles from '../components/LogoutModal.module.css';
 
 const STEPS = [
-  'Foundational company details',
-  'Primary brand & business keywords',
-  'Related & long tail keywords',
-  'Important LLM prompt questions',
-  'Specific instructions and notes',
+  'Overall company details',
+  'Primary brand keywords',
+  'Related keywords (ref: Primary)',
+  'Long tail keywords (ref: Primary)',
+  'Key LLM questions (ref: Primary)',
+  'Specific instructions',
 ];
 
 const isValidWebsite = (value) =>
@@ -40,6 +41,292 @@ const SAMPLE_KEYWORDS = [
   { id: 10, keyword: 'thought leadership content',      volume: 'High',   difficulty: 'High',   reason: 'Broad awareness keyword used by B2B brands investing in authority-building content to establish credibility within their industry. Typically represents marketing or communications teams tasked with positioning executive voices online, creating a strong fit for Post365\'s personal and brand profile features that support executive content at scale.' },
 ];
 
+const SAMPLE_RELATED_KEYWORDS = [
+  { id: 1, keyword: 'content distribution platform',  volume: 'High',   difficulty: 'Medium' },
+  { id: 2, keyword: 'AI content creation tool',        volume: 'High',   difficulty: 'High'   },
+  { id: 3, keyword: 'brand publishing platform',        volume: 'Medium', difficulty: 'Low'    },
+  { id: 4, keyword: 'content operations software',      volume: 'Medium', difficulty: 'Medium' },
+  { id: 5, keyword: 'automated blog writing',           volume: 'High',   difficulty: 'Medium' },
+  { id: 6, keyword: 'multi-channel content hub',        volume: 'Low',    difficulty: 'Low'    },
+  { id: 7, keyword: 'enterprise content platform',      volume: 'High',   difficulty: 'High'   },
+  { id: 8, keyword: 'content workflow automation',      volume: 'Medium', difficulty: 'Medium' },
+];
+
+const SAMPLE_LONGTAIL_KEYWORDS = [
+  { id: 1, keyword: 'best AI blog writing tool for B2B marketers',        volume: 'Low',    difficulty: 'Low'    },
+  { id: 2, keyword: 'how to create SEO content at scale',                  volume: 'Medium', difficulty: 'Low'    },
+  { id: 3, keyword: 'content marketing platform for startups',              volume: 'Low',    difficulty: 'Low'    },
+  { id: 4, keyword: 'AI tool to write thought leadership articles',         volume: 'Low',    difficulty: 'Low'    },
+  { id: 5, keyword: 'how to optimize content for generative AI search',     volume: 'Low',    difficulty: 'Low'    },
+  { id: 6, keyword: 'content calendar software for marketing teams',        volume: 'Medium', difficulty: 'Low'    },
+  { id: 7, keyword: 'how to build brand authority with content marketing',  volume: 'Medium', difficulty: 'Medium' },
+  { id: 8, keyword: 'B2B inbound lead generation through blog content',     volume: 'Low',    difficulty: 'Medium' },
+];
+
+// ===== Reusable keywords table card =====
+function KeywordsTable({ className, title, description, icon: Icon, iconClass, initialKeywords, showReason }) {
+  const [keywords, setKeywords] = useState(initialKeywords);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [editingId, setEditingId] = useState(null);
+  const [isNewRow, setIsNewRow] = useState(false);
+  const [editDraft, setEditDraft] = useState({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const allSelected = keywords.length > 0 && selectedIds.size === keywords.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+  const colSpan = showReason ? 6 : 5;
+
+  function toggleSelectAll() {
+    if (selectedIds.size > 0) setSelectedIds(new Set());
+    else setSelectedIds(new Set(keywords.map(k => k.id)));
+  }
+
+  function toggleSelect(id) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function handleEditStart(kw) {
+    setEditingId(kw.id);
+    setIsNewRow(false);
+    setEditDraft({ keyword: kw.keyword, reason: kw.reason || '', volume: kw.volume, difficulty: kw.difficulty });
+  }
+
+  function handleEditSave() {
+    setKeywords(prev => prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k));
+    setEditingId(null);
+    setIsNewRow(false);
+  }
+
+  function handleEditCancel() {
+    if (isNewRow) {
+      setKeywords(prev => prev.filter(k => k.id !== editingId));
+    }
+    setEditingId(null);
+    setIsNewRow(false);
+  }
+
+  function handleAddRow() {
+    const newId = Date.now();
+    setKeywords(prev => {
+      let updated = prev;
+      if (editingId !== null) {
+        updated = prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k);
+      }
+      return [...updated, { id: newId, keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' }];
+    });
+    setEditingId(newId);
+    setIsNewRow(true);
+    setEditDraft({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
+  }
+
+  function handleDeleteSelected() {
+    if (editingId && selectedIds.has(editingId)) { setEditingId(null); setIsNewRow(false); }
+    setKeywords(prev => prev.filter(k => !selectedIds.has(k.id)));
+    setSelectedIds(new Set());
+  }
+
+  return (
+    <div className={`${className}${!showReason ? ' ' + styles.noReason : ''}`}>
+      <div className={styles.card3Head}>
+        <div className={`${styles.iconSquare} ${iconClass}`}>
+          <Icon size={14} strokeWidth={2} />
+        </div>
+        <div className={styles.card3HeadRow}>
+          <div>
+            <h2 className={styles.card2Title}>{title}</h2>
+            <p className={styles.card2Desc}>{description}</p>
+          </div>
+          <div className={styles.card3HeadActions}>
+            <button className={styles.addRowBtn} onClick={handleAddRow}>
+              <Plus size={13} strokeWidth={2.5} />
+              Add keyword
+            </button>
+            {selectedIds.size > 0 && (
+              <button className={styles.deleteSelectedBtn} onClick={() => setShowDeleteConfirm(true)}>
+                <Trash2 size={13} />
+                Delete selected ({selectedIds.size})
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.kwTable}>
+          <colgroup>
+            <col className={styles.colCheck} />
+            <col className={styles.colKeyword} />
+            {showReason && <col className={styles.colReason} />}
+            <col className={styles.colVolume} />
+            <col className={styles.colDifficulty} />
+            <col className={styles.colActions} />
+          </colgroup>
+          <thead className={styles.kwThead}>
+            <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  className={styles.checkboxInput}
+                  checked={allSelected}
+                  ref={el => { if (el) el.indeterminate = someSelected; }}
+                  onChange={toggleSelectAll}
+                />
+              </th>
+              <th>Keyword</th>
+              {showReason && <th>Reason for selection</th>}
+              <th>Volume</th>
+              <th>Difficulty</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody className={styles.kwTbody}>
+            {keywords.map(kw => {
+              const isEditing = editingId === kw.id;
+              const isAdding  = isEditing && isNewRow;
+              return (
+                <Fragment key={kw.id}>
+                  <tr className={[
+                    styles.kwRow,
+                    isAdding               ? styles.kwRowNew     : '',
+                    isEditing && !isAdding ? styles.kwRowEditing : '',
+                    selectedIds.has(kw.id) ? styles.kwRowSelected : '',
+                  ].filter(Boolean).join(' ')}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={styles.checkboxInput}
+                        checked={selectedIds.has(kw.id)}
+                        onChange={() => toggleSelect(kw.id)}
+                      />
+                    </td>
+
+                    {isEditing ? (
+                      <>
+                        <td className={styles.tdEdit}>
+                          <input
+                            className={styles.editInput}
+                            value={editDraft.keyword}
+                            onChange={e => setEditDraft(d => ({ ...d, keyword: e.target.value }))}
+                            onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
+                            placeholder="Enter keyword"
+                            autoFocus
+                          />
+                        </td>
+                        {showReason && (
+                          <td className={styles.tdEdit}>
+                            <input
+                              className={styles.editInput}
+                              value={editDraft.reason}
+                              onChange={e => setEditDraft(d => ({ ...d, reason: e.target.value }))}
+                              onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
+                              placeholder="Reason for selection"
+                            />
+                          </td>
+                        )}
+                        <td className={styles.tdEdit}>
+                          <select
+                            className={styles.editSelect}
+                            value={editDraft.volume}
+                            onChange={e => setEditDraft(d => ({ ...d, volume: e.target.value }))}
+                          >
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                          </select>
+                        </td>
+                        <td className={styles.tdEdit}>
+                          <select
+                            className={styles.editSelect}
+                            value={editDraft.difficulty}
+                            onChange={e => setEditDraft(d => ({ ...d, difficulty: e.target.value }))}
+                          >
+                            <option>Low</option>
+                            <option>Medium</option>
+                            <option>High</option>
+                          </select>
+                        </td>
+                        <td>
+                          {!isAdding && (
+                            <div className={`${styles.actionsCell} ${styles.editIconActions}`}>
+                              <button className={`${styles.rowIconBtn} ${styles.rowIconBtnSave}`} onClick={handleEditSave} title="Save">
+                                <Check size={13} />
+                              </button>
+                              <button className={`${styles.rowIconBtn} ${styles.rowIconBtnCancel}`} onClick={handleEditCancel} title="Cancel">
+                                <X size={13} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className={styles.tdKeyword}>
+                          <div className={styles.cellClamp} style={{ fontSize: '14px' }}>{kw.keyword}</div>
+                        </td>
+                        {showReason && (
+                          <td className={styles.tdReason}>
+                            <div className={styles.cellClamp} style={{ fontSize: '13px', color: 'var(--text-2)' }}>{kw.reason}</div>
+                          </td>
+                        )}
+                        <td>
+                          <span className={styles.kwTag} style={VOLUME_COLORS[kw.volume]}>{kw.volume}</span>
+                        </td>
+                        <td>
+                          <span className={styles.kwTag} style={DIFFICULTY_COLORS[kw.difficulty]}>{kw.difficulty}</span>
+                        </td>
+                        <td>
+                          <div className={styles.actionsCell}>
+                            <button className={styles.rowIconBtn} onClick={() => handleEditStart(kw)} title="Edit">
+                              <Pencil size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+
+                  {isEditing && (
+                    <tr className={`${styles.saveCancelRow} ${!isAdding ? styles.saveCancelRowEdit : ''}`}>
+                      <td colSpan={colSpan} className={styles.saveCancelCell}>
+                        <div className={styles.saveCancelBtns}>
+                          <button className={styles.cancelTextBtn} onClick={handleEditCancel}>Cancel</button>
+                          <button className={styles.saveTextBtn} onClick={handleEditSave}>Save</button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {showDeleteConfirm && createPortal(
+        <div className={modalStyles.backdrop} onClick={() => setShowDeleteConfirm(false)}>
+          <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
+            <p className={modalStyles.title}>Delete keywords</p>
+            <p className={modalStyles.message}>
+              The selected keywords will be permanently removed from this profile. This action cannot be undone.
+            </p>
+            <div className={modalStyles.actions}>
+              <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+              <button className={modalStyles.logoutBtn} onClick={() => { handleDeleteSelected(); setShowDeleteConfirm(false); }}>Delete</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+// ===== Page =====
 export default function NewBrandProfilePage() {
   const [website, setWebsite] = useState('');
   const websiteInputRef = useRef(null);
@@ -58,18 +345,11 @@ export default function NewBrandProfilePage() {
   });
 
   const companyNameRef = useRef(null);
-  const [step, setStep] = useState('intro'); // 'intro' | 'details' | 'keywords'
+  const [step, setStep] = useState('intro');
   const [card1Active, setCard1Active] = useState(true);
   const [card2Active, setCard2Active] = useState(false);
   const [card3Active, setCard3Active] = useState(false);
-
-  // Keywords table state
-  const [keywords, setKeywords] = useState(SAMPLE_KEYWORDS);
-  const [selectedIds, setSelectedIds] = useState(new Set());
-  const [editingId, setEditingId] = useState(null);
-  const [isNewRow, setIsNewRow] = useState(false);
-  const [editDraft, setEditDraft] = useState({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [card4Active, setCard4Active] = useState(false);
 
   useEffect(() => {
     websiteInputRef.current?.focus();
@@ -117,61 +397,20 @@ export default function NewBrandProfilePage() {
     }, 160);
   }
 
-  // Keyword selection
-  const allSelected = keywords.length > 0 && selectedIds.size === keywords.length;
-  const someSelected = selectedIds.size > 0 && !allSelected;
-
-  function toggleSelectAll() {
-    if (selectedIds.size > 0) setSelectedIds(new Set());
-    else setSelectedIds(new Set(keywords.map(k => k.id)));
+  function handleAdvanceToRelated() {
+    setCard3Active(false);
+    setTimeout(() => {
+      setStep('related');
+      requestAnimationFrame(() => setCard4Active(true));
+    }, 160);
   }
 
-  function toggleSelect(id) {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  // Row edit
-  function handleEditStart(kw) {
-    setEditingId(kw.id);
-    setIsNewRow(false);
-    setEditDraft({ keyword: kw.keyword, reason: kw.reason, volume: kw.volume, difficulty: kw.difficulty });
-  }
-
-  function handleEditSave() {
-    setKeywords(prev => prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k));
-    setEditingId(null);
-    setIsNewRow(false);
-  }
-
-  function handleEditCancel() {
-    setKeywords(prev => prev.filter(k => !(k.id === editingId && k.keyword === '' && k.reason === '')));
-    setEditingId(null);
-    setIsNewRow(false);
-  }
-
-  function handleAddRow() {
-    const newId = Date.now();
-    setKeywords(prev => {
-      let updated = prev;
-      if (editingId !== null) {
-        updated = prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k);
-      }
-      return [...updated, { id: newId, keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' }];
-    });
-    setEditingId(newId);
-    setIsNewRow(true);
-    setEditDraft({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
-  }
-
-  function handleDeleteSelected() {
-    if (editingId && selectedIds.has(editingId)) { setEditingId(null); setIsNewRow(false); }
-    setKeywords(prev => prev.filter(k => !selectedIds.has(k.id)));
-    setSelectedIds(new Set());
+  function handleBackToKeywords() {
+    setCard4Active(false);
+    setTimeout(() => {
+      setStep('keywords');
+      requestAnimationFrame(() => setCard3Active(true));
+    }, 160);
   }
 
   return (
@@ -190,6 +429,12 @@ export default function NewBrandProfilePage() {
         {step === 'keywords' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToDetails}>Back</button>
+            <button className={styles.saveBtn} onClick={handleAdvanceToRelated}>Next</button>
+          </div>
+        )}
+        {step === 'related' && (
+          <div className={styles.headerBtns}>
+            <button className={styles.cancelBtn} onClick={handleBackToKeywords}>Back</button>
             <button className={styles.saveBtn}>Next</button>
           </div>
         )}
@@ -365,202 +610,43 @@ export default function NewBrandProfilePage() {
 
           {/* Card 3 - Step 2: Primary keywords */}
           {step === 'keywords' && (
-            <div className={`${styles.card3} ${card3Active ? styles.card3Active : ''}`}>
+            <KeywordsTable
+              className={`${styles.card3} ${card3Active ? styles.card3Active : ''}`}
+              title="Primary keywords"
+              description="Primary business and brand keywords for XEO"
+              icon={Key}
+              iconClass={styles.iconSquareKeywords}
+              initialKeywords={SAMPLE_KEYWORDS}
+              showReason={true}
+            />
+          )}
 
-              <div className={styles.card3Head}>
-                <div className={`${styles.iconSquare} ${styles.iconSquareKeywords}`}>
-                  <Key size={14} strokeWidth={2} />
-                </div>
-                <div className={styles.card3HeadRow}>
-                  <div>
-                    <h2 className={styles.card2Title}>Primary keywords</h2>
-                    <p className={styles.card2Desc}>Primary business and brand keywords for XEO</p>
-                  </div>
-                  <div className={styles.card3HeadActions}>
-                    <button className={styles.addRowBtn} onClick={handleAddRow}>
-                      <Plus size={13} strokeWidth={2.5} />
-                      Add keyword
-                    </button>
-                    {selectedIds.size > 0 && (
-                      <button className={styles.deleteSelectedBtn} onClick={() => setShowDeleteConfirm(true)}>
-                        <Trash2 size={13} />
-                        Delete selected ({selectedIds.size})
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.tableWrapper}>
-                <table className={styles.kwTable}>
-                  <colgroup>
-                    <col className={styles.colCheck} />
-                    <col className={styles.colKeyword} />
-                    <col className={styles.colReason} />
-                    <col className={styles.colVolume} />
-                    <col className={styles.colDifficulty} />
-                    <col className={styles.colActions} />
-                  </colgroup>
-                  <thead className={styles.kwThead}>
-                    <tr>
-                      <th>
-                        <input
-                          type="checkbox"
-                          className={styles.checkboxInput}
-                          checked={allSelected}
-                          ref={el => { if (el) el.indeterminate = someSelected; }}
-                          onChange={toggleSelectAll}
-                        />
-                      </th>
-                      <th>Keyword</th>
-                      <th>Reason for selection</th>
-                      <th>Volume</th>
-                      <th>Difficulty</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody className={styles.kwTbody}>
-                    {keywords.map(kw => {
-                      const isEditing = editingId === kw.id;
-                      const isAdding  = isEditing && isNewRow;
-                      return (
-                        <Fragment key={kw.id}>
-                          <tr className={[
-                            styles.kwRow,
-                            isAdding              ? styles.kwRowNew     : '',
-                            isEditing && !isAdding ? styles.kwRowEditing : '',
-                            selectedIds.has(kw.id) ? styles.kwRowSelected : '',
-                          ].filter(Boolean).join(' ')}>
-                            <td>
-                              <input
-                                type="checkbox"
-                                className={styles.checkboxInput}
-                                checked={selectedIds.has(kw.id)}
-                                onChange={() => toggleSelect(kw.id)}
-                              />
-                            </td>
-
-                            {isEditing ? (
-                              <>
-                                <td className={styles.tdEdit}>
-                                  <input
-                                    className={styles.editInput}
-                                    value={editDraft.keyword}
-                                    onChange={e => setEditDraft(d => ({ ...d, keyword: e.target.value }))}
-                                    onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
-                                    placeholder="Enter keyword"
-                                    autoFocus
-                                  />
-                                </td>
-                                <td className={styles.tdEdit}>
-                                  <input
-                                    className={styles.editInput}
-                                    value={editDraft.reason}
-                                    onChange={e => setEditDraft(d => ({ ...d, reason: e.target.value }))}
-                                    onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
-                                    placeholder="Reason for selection"
-                                  />
-                                </td>
-                                <td className={styles.tdEdit}>
-                                  <select
-                                    className={styles.editSelect}
-                                    value={editDraft.volume}
-                                    onChange={e => setEditDraft(d => ({ ...d, volume: e.target.value }))}
-                                  >
-                                    <option>High</option>
-                                    <option>Medium</option>
-                                    <option>Low</option>
-                                  </select>
-                                </td>
-                                <td className={styles.tdEdit}>
-                                  <select
-                                    className={styles.editSelect}
-                                    value={editDraft.difficulty}
-                                    onChange={e => setEditDraft(d => ({ ...d, difficulty: e.target.value }))}
-                                  >
-                                    <option>Low</option>
-                                    <option>Medium</option>
-                                    <option>High</option>
-                                  </select>
-                                </td>
-                                {/* Icon save/cancel: visible on mobile only for existing row edits */}
-                                <td>
-                                  {!isAdding && (
-                                    <div className={`${styles.actionsCell} ${styles.editIconActions}`}>
-                                      <button className={`${styles.rowIconBtn} ${styles.rowIconBtnSave}`} onClick={handleEditSave} title="Save">
-                                        <Check size={13} />
-                                      </button>
-                                      <button className={`${styles.rowIconBtn} ${styles.rowIconBtnCancel}`} onClick={handleEditCancel} title="Cancel">
-                                        <X size={13} />
-                                      </button>
-                                    </div>
-                                  )}
-                                </td>
-                              </>
-                            ) : (
-                              <>
-                                <td className={styles.tdKeyword}>
-                                  <div className={styles.cellClamp} style={{ fontSize: '14px' }}>{kw.keyword}</div>
-                                </td>
-                                <td className={styles.tdReason}>
-                                  <div className={styles.cellClamp} style={{ fontSize: '13px', color: 'var(--text-2)' }}>{kw.reason}</div>
-                                </td>
-                                <td>
-                                  <span className={styles.kwTag} style={VOLUME_COLORS[kw.volume]}>{kw.volume}</span>
-                                </td>
-                                <td>
-                                  <span className={styles.kwTag} style={DIFFICULTY_COLORS[kw.difficulty]}>{kw.difficulty}</span>
-                                </td>
-                                <td>
-                                  <div className={styles.actionsCell}>
-                                    <button className={styles.rowIconBtn} onClick={() => handleEditStart(kw)} title="Edit">
-                                      <Pencil size={13} />
-                                    </button>
-                                  </div>
-                                </td>
-                              </>
-                            )}
-                          </tr>
-
-                          {/* Save/Cancel row - for both add and edit, below the editing row */}
-                          {isEditing && (
-                            <tr className={`${styles.saveCancelRow} ${!isAdding ? styles.saveCancelRowEdit : ''}`}>
-                              <td colSpan={6} className={styles.saveCancelCell}>
-                                <div className={styles.saveCancelBtns}>
-                                  <button className={styles.cancelTextBtn} onClick={handleEditCancel}>Cancel</button>
-                                  <button className={styles.saveTextBtn} onClick={handleEditSave}>Save</button>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
+          {/* Card 4 row - Step 3: Related + Long tail keywords */}
+          {step === 'related' && (
+            <div className={`${styles.card4Row} ${card4Active ? styles.card4RowActive : ''}`}>
+              <KeywordsTable
+                className={styles.card4Card}
+                title="Related keywords"
+                description="Keyword variations and closely related search terms."
+                icon={Tags}
+                iconClass={styles.iconSquareRelated}
+                initialKeywords={SAMPLE_RELATED_KEYWORDS}
+                showReason={false}
+              />
+              <KeywordsTable
+                className={styles.card4Card}
+                title="Long tail keywords"
+                description="Specific, lower-competition phrases with higher intent."
+                icon={AlignLeft}
+                iconClass={styles.iconSquareLongtail}
+                initialKeywords={SAMPLE_LONGTAIL_KEYWORDS}
+                showReason={false}
+              />
             </div>
           )}
 
         </div>
       </div>
-
-      {showDeleteConfirm && createPortal(
-        <div className={modalStyles.backdrop} onClick={() => setShowDeleteConfirm(false)}>
-          <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
-            <p className={modalStyles.title}>Delete keywords</p>
-            <p className={modalStyles.message}>
-              The selected keywords will be permanently removed from this profile. This action cannot be undone.
-            </p>
-            <div className={modalStyles.actions}>
-              <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-              <button className={modalStyles.logoutBtn} onClick={() => { handleDeleteSelected(); setShowDeleteConfirm(false); }}>Delete</button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
     </div>
   );
 }

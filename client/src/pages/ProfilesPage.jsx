@@ -10,50 +10,50 @@ const SAMPLE_PROFILES = [
     name: 'TechCorp Solutions',
     website: 'techcorp.io',
     industry: 'Software Development',
-    brandTone: 'Authoritative',
-    targetAudience: 'CTOs and engineering leads at mid-market enterprises',
-    usp: 'Enterprise-grade AI automation for complex multi-system workflows',
+    foundedYear: '2019',
+    summary: 'TechCorp Solutions builds enterprise AI automation software that connects complex multi-system workflows for mid-market and large organisations. The platform reduces manual engineering overhead and accelerates deployment cycles across cloud, hybrid, and on-premise environments.',
     date: 'Feb 28, 2026',
+    status: 'complete',
   },
   {
     id: 2,
     name: 'StyleHive',
     website: 'stylehive.com',
     industry: 'E-commerce',
-    brandTone: 'Friendly',
-    targetAudience: 'Fashion-forward millennials and Gen Z shoppers aged 20 to 35',
-    usp: 'Curated sustainable fashion collections at accessible price points',
+    foundedYear: '2021',
+    summary: 'StyleHive is a curated online fashion marketplace focused on sustainable and ethically sourced clothing. It brings together independent designers and eco-conscious brands, making responsible fashion accessible and affordable for younger consumers.',
     date: 'Feb 20, 2026',
+    status: 'draft',
   },
   {
     id: 3,
     name: 'GrowthMind',
     website: 'growthmind.co',
     industry: 'Marketing & Advertising',
-    brandTone: 'Conversational',
-    targetAudience: 'Startup founders and growth marketers at early-stage companies',
-    usp: '',
+    foundedYear: '2020',
+    summary: 'GrowthMind is a growth marketing agency that helps early-stage startups build scalable acquisition channels and repeatable revenue systems. The team specialises in data-driven campaign strategy, conversion optimisation, and performance content.',
     date: 'Feb 15, 2026',
+    status: 'complete',
   },
   {
     id: 4,
     name: 'MedTrack',
     website: 'medtrack.health',
     industry: 'Healthcare Technology',
-    brandTone: 'Professional',
-    targetAudience: 'Hospital administrators and clinical care teams in acute care settings',
-    usp: 'Real-time patient flow optimization that reduces wait times by 40%',
+    foundedYear: '2018',
+    summary: 'MedTrack develops real-time patient flow and operational intelligence software for acute care hospitals. Its platform gives clinical and administrative teams live visibility into bed availability, staffing, and patient status to reduce wait times and improve outcomes.',
     date: 'Feb 10, 2026',
+    status: 'draft',
   },
   {
     id: 5,
     name: 'LearnForge',
     website: 'learnforge.io',
     industry: 'EdTech',
-    brandTone: 'Inspiring',
-    targetAudience: 'Corporate L&D managers and HR teams at companies with 500 or more employees',
-    usp: 'Adaptive learning paths that cut new hire onboarding time in half',
+    foundedYear: '2016',
+    summary: 'LearnForge is an enterprise learning platform that delivers adaptive, role-specific training paths for corporate teams. It integrates with existing HR systems to automate onboarding, compliance training, and ongoing skill development at scale.',
     date: 'Feb 5, 2026',
+    status: 'complete',
   },
 ];
 
@@ -81,7 +81,7 @@ export default function ProfilesPage() {
 
       <div className={styles.grid}>
         {profiles.map(profile => {
-          const isComplete = !!(profile.name && profile.website && profile.industry && profile.targetAudience && profile.usp);
+          const isComplete = profile.status === 'complete';
           return (
           <div key={profile.id} className={styles.card}>
             <div className={styles.cardTop}>
@@ -95,15 +95,10 @@ export default function ProfilesPage() {
             <div className={styles.fields}>
               <span className={styles.fieldLabel}>Industry:</span>
               <span className={styles.fieldValue}>{profile.industry}</span>
-              <span className={styles.fieldLabel}>Brand tone:</span>
-              <span className={styles.fieldValue}>{profile.brandTone}</span>
-              <span className={styles.fieldLabel}>Target audience:</span>
-              <span className={styles.fieldValueMulti}>{profile.targetAudience}</span>
-              {profile.usp && <>
-                <span className={styles.fieldLabel}>USP:</span>
-                <span className={styles.fieldValueMulti}>{profile.usp}</span>
-              </>}
+              <span className={styles.fieldLabel}>Founded:</span>
+              <span className={styles.fieldValue}>{profile.foundedYear}</span>
             </div>
+            {profile.summary && <p className={styles.cardSummary}>{profile.summary}</p>}
 
             <div className={styles.cardFooter}>
               <span className={`${styles.statusTag} ${isComplete ? styles.statusComplete : styles.statusDraft}`}>
