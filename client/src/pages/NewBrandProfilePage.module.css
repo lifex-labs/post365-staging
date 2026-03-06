@@ -442,35 +442,27 @@
   color: var(--text-3);
 }
 
-/* ===== Card 4 row - Related + Long tail keywords (equal width) ===== */
-.card4Row {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  align-items: stretch;
-  flex: 1;
-  min-height: 400px;
-  opacity: 0;
-  transform: scale(0.98);
-  transition: opacity 160ms ease-out, transform 160ms ease-out;
+/* ===== Sort indicators ===== */
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
 }
 
-.card4RowActive {
-  opacity: 1;
-  transform: scale(1);
+.sortable:hover { color: var(--text); }
+
+.sortIconOff {
+  opacity: 0.3;
+  margin-left: 3px;
+  vertical-align: middle;
 }
 
-.card4Card {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  background: var(--card-bg);
-  border-radius: var(--radius-m);
-  box-shadow: var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.sortIconOn {
+  color: var(--blue);
+  margin-left: 3px;
+  vertical-align: middle;
 }
+
 
 /* ===== Card 3 - Step 2: Keywords ===== */
 .card3 {
@@ -582,15 +574,26 @@
 .kwTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 .colCheck      { width: 36px; }
-.colKeyword    { width: 22%; }
-.colReason     { /* auto */ }
 .colVolume     { width: 100px; }
 .colDifficulty { width: 100px; }
 .colActions    { width: 52px; }
+
+/* Content-fit cell (keyword in primary table, primary keyword in grouped) */
+.tdFit {
+  max-width: 240px;
+  overflow: hidden;
+}
+
+.cellFit {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 /* thead */
 .kwThead th {
@@ -609,7 +612,7 @@
 }
 
 .kwThead th:first-child { padding-left: 8px; }
-.kwThead th:last-child  { padding-right: 0; padding-left: 8px; }
+.kwThead th:last-child  { padding-right: 8px; padding-left: 8px; }
 
 /* tbody */
 .kwTbody tr {
@@ -632,13 +635,15 @@
 }
 
 .kwTbody td:first-child { padding: 0 0 0 8px; }
-.kwTbody td:last-child  { padding: 0 0 0 8px; }
+.kwTbody td:last-child  { padding: 0 8px 0 8px; }
+
+.grouped .kwTbody td { height: 48px; }
 
 .kwThead th:nth-child(2),
-.kwTbody td:nth-child(2) { padding-right: 8px; }
+.kwTbody td:nth-child(2) { padding-right: 12px; }
 
 .kwThead th:nth-child(3),
-.kwTbody td:nth-child(3) { padding-left: 8px; padding-right: 24px; }
+.kwTbody td:nth-child(3) { padding-left: 8px; padding-right: 16px; }
 
 .kwThead th:nth-child(4),
 .kwTbody td:nth-child(4),
@@ -709,6 +714,14 @@
   gap: 4px;
 }
 
+/* Fixed-width primary keyword cell in grouped tables */
+.tdPrimary {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  overflow: hidden;
+}
+
 .rowIconBtn {
   width: 28px;
   height: 28px;
@@ -736,17 +749,6 @@
   accent-color: var(--blue);
   display: block;
 }
-
-/* ===== No-reason table variant (related + long tail - no reason column) ===== */
-/* Position 3 is now volume (not reason), reset to standard padding */
-.noReason .kwThead th:nth-child(3),
-.noReason .kwTbody td:nth-child(3) {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-
-/* Use auto layout so keyword column fills remaining space */
-.noReason .kwTable { table-layout: auto; }
 
 /* New row (no bottom border - save/cancel row provides it) */
 .kwRowNew { border-bottom: none !important; }
@@ -841,18 +843,6 @@
     min-height: unset;
   }
 
-  .card4Row {
-    flex-direction: column;
-    flex: unset;
-    min-height: unset;
-  }
-
-  .card4Card {
-    flex: none;
-    min-height: unset;
-    overflow: visible !important;
-  }
-
   .card,
   .card2Basic,
   .card2Advanced {
@@ -905,15 +895,7 @@
     padding-top: 16px;
   }
 
-  .colKeyword { width: auto; }
-
-  /* No-reason table mobile: hide vol(3) + diff(4), re-show actions(5) */
-  .noReason .kwThead th:nth-child(5),
-  .noReason .kwTbody td:nth-child(5) {
-    display: table-cell;
-  }
-
-  /* Hide reason, volume, difficulty columns on mobile */
+  /* Primary keywords table: hide reason(3), volume(4), difficulty(5) on mobile */
   .kwThead th:nth-child(3),
   .kwThead th:nth-child(4),
   .kwThead th:nth-child(5),
@@ -923,9 +905,19 @@
     display: none;
   }
 
-  .colReason,
-  .colVolume,
-  .colDifficulty { display: none; }
+  /* Grouped table (related/longtail): hide primary keyword(2), volume(4), difficulty(5) */
+  .grouped .kwThead th:nth-child(2),
+  .grouped .kwTbody td:nth-child(2),
+  .grouped .kwThead th:nth-child(4),
+  .grouped .kwTbody td:nth-child(4),
+  .grouped .kwThead th:nth-child(5),
+  .grouped .kwTbody td:nth-child(5) {
+    display: none;
+  }
 
-  .kwTable { table-layout: auto; }
+  /* Re-show keyword(3) for grouped table (hidden by general rule above) */
+  .grouped .kwThead th:nth-child(3),
+  .grouped .kwTbody td:nth-child(3) {
+    display: table-cell;
+  }
 }
