@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import PostCard from '../components/PostCard';
 import { POSTS } from '../data/posts';
-import styles from './PostsPage.module.css';
+import styles from './BrandPostsPage.module.css';
 
-export default function PostsPage() {
+export default function BrandPostsPage() {
   const [posts, setPosts] = useState(POSTS);
 
   function handleDelete(id) {

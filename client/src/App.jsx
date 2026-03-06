@@ -9,9 +9,9 @@ const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!CLERK_KEY) throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in .env');
 
 const AuthPage             = lazy(() => import('./pages/AuthPage'));
-const PostsPage            = lazy(() => import('./pages/PostsPage'));
+const BrandPostsPage       = lazy(() => import('./pages/BrandPostsPage'));
 const XeoBlogsPage         = lazy(() => import('./pages/XeoBlogsPage'));
-const ProfilesPage         = lazy(() => import('./pages/ProfilesPage'));
+const BrandProfilesPage    = lazy(() => import('./pages/BrandProfilesPage'));
 const SettingsPage         = lazy(() => import('./pages/SettingsPage'));
 const PersonalPostsPage    = lazy(() => import('./pages/PersonalPostsPage'));
 const PersonalProfilesPage = lazy(() => import('./pages/PersonalProfilesPage'));
@@ -61,9 +61,9 @@ function AppRoutes() {
         element={<ProtectedRoute><Layout /></ProtectedRoute>}
       >
         <Route index element={<Navigate to="/brand-posts" replace />} />
-        <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><PostsPage /></Suspense>} />
+        <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><BrandPostsPage /></Suspense>} />
         <Route path="xeo-blogs"         element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
-        <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><ProfilesPage /></Suspense>} />
+        <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><BrandProfilesPage /></Suspense>} />
         <Route path="brand-profiles/new" element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />
         <Route path="settings"          element={<Suspense fallback={<LoadingSpinner />}><SettingsPage /></Suspense>} />
         <Route path="personal-calendar" element={<Suspense fallback={<LoadingSpinner />}><PersonalCalendarPage /></Suspense>} />

@@ -1,16 +1,16 @@
 import { Fragment, useMemo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, Pencil, Check, X, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Check, X, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 import modalStyles from '../components/LogoutModal.module.css';
 
 const STEPS = [
   'Overall company details',
   'Primary brand keywords',
-  'Related keywords (ref: Primary)',
-  'Long tail keywords (ref: Primary)',
-  'Key LLM questions (ref: Primary)',
-  'Specific instructions',
+  'Related keywords',
+  'Long tail keywords',
+  'Key LLM questions',
+  'Blog themes',
 ];
 
 const isValidWebsite = (value) =>
@@ -68,6 +68,19 @@ const SAMPLE_LONGTAIL_KEYWORDS = [
   { id: 8,  primaryKeyword: 'B2B content strategy',       longtailKeyword: 'B2B inbound lead generation through blog content',   volume: 'Low',    difficulty: 'Medium' },
   { id: 9,  primaryKeyword: 'brand content calendar',     longtailKeyword: 'content calendar software for marketing teams',       volume: 'Medium', difficulty: 'Low'    },
   { id: 10, primaryKeyword: 'XEO optimization',           longtailKeyword: 'how to optimize content for AI search engines',       volume: 'Low',    difficulty: 'Low'    },
+];
+
+const SAMPLE_LLM_QUESTIONS = [
+  { id: 1,  primaryKeyword: 'content marketing platform',    llmQuestion: 'What is the best content marketing platform for scaling B2B content in 2025?',              volume: 'High',   difficulty: 'High'   },
+  { id: 2,  primaryKeyword: 'content marketing platform',    llmQuestion: 'How does a content marketing platform help reduce time spent on content production?',         volume: 'Medium', difficulty: 'Medium' },
+  { id: 3,  primaryKeyword: 'AI blog writer',                llmQuestion: 'Can AI write high-quality blog posts that rank on Google?',                                   volume: 'High',   difficulty: 'Medium' },
+  { id: 4,  primaryKeyword: 'AI blog writer',                llmQuestion: 'What is the best AI tool to write thought leadership articles for executives?',               volume: 'Medium', difficulty: 'Low'    },
+  { id: 5,  primaryKeyword: 'SEO content generation',        llmQuestion: 'How do I use AI to generate SEO-optimized blog content at scale?',                           volume: 'Medium', difficulty: 'Medium' },
+  { id: 6,  primaryKeyword: 'B2B content strategy',          llmQuestion: 'What is the most effective content strategy for B2B inbound lead generation?',               volume: 'High',   difficulty: 'High'   },
+  { id: 7,  primaryKeyword: 'B2B content strategy',          llmQuestion: 'How do I build a content strategy that drives measurable pipeline for B2B SaaS?',            volume: 'Medium', difficulty: 'Medium' },
+  { id: 8,  primaryKeyword: 'XEO optimization',              llmQuestion: 'What is XEO optimization and how does it combine SEO, AEO, and GEO?',                        volume: 'Low',    difficulty: 'Low'    },
+  { id: 9,  primaryKeyword: 'generative engine optimization', llmQuestion: 'How do I optimize my content to appear in ChatGPT and Perplexity search results?',          volume: 'Medium', difficulty: 'Low'    },
+  { id: 10, primaryKeyword: 'thought leadership content',    llmQuestion: 'How do I create thought leadership content that builds credibility and drives inbound leads?', volume: 'High',   difficulty: 'Medium' },
 ];
 
 // ===== Sort icon =====
@@ -324,7 +337,7 @@ function KeywordsTable({ className, title, description, icon: Icon, iconClass, i
 }
 
 // ===== Related / Long tail keywords table (flat, sorted) =====
-function GroupedKeywordsTable({ className, title, description, icon: Icon, iconClass, initialData, keywordField, keywordLabel, primaryKeywords }) {
+function GroupedKeywordsTable({ className, title, description, icon: Icon, iconClass, initialData, keywordField, keywordLabel, primaryKeywords, addLabel = 'Add keyword', truncateKeyword = false }) {
   const [data, setData] = useState(initialData);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editingId, setEditingId] = useState(null);
@@ -433,7 +446,7 @@ function GroupedKeywordsTable({ className, title, description, icon: Icon, iconC
           <div className={styles.card3HeadActions}>
             <button className={styles.addRowBtn} onClick={handleAddRow}>
               <Plus size={13} strokeWidth={2.5} />
-              Add keyword
+              {addLabel}
             </button>
             {selectedIds.size > 0 && (
               <button className={styles.deleteSelectedBtn} onClick={() => setShowDeleteConfirm(true)}>
@@ -534,8 +547,8 @@ function GroupedKeywordsTable({ className, title, description, icon: Icon, iconC
                         <td className={styles.tdPrimary}>
                           <div className={styles.cellFit} style={{ fontSize: '14px' }}>{row.primaryKeyword}</div>
                         </td>
-                        <td>
-                          <div className={styles.cellClamp} style={{ fontSize: '14px' }}>{row[keywordField]}</div>
+                        <td title={truncateKeyword ? row[keywordField] : undefined}>
+                          <div className={truncateKeyword ? styles.cellFit : styles.cellClamp} style={{ fontSize: '14px' }}>{row[keywordField]}</div>
                         </td>
                         <td><span className={styles.kwTag} style={VOLUME_COLORS[row.volume]}>{row.volume}</span></td>
                         <td><span className={styles.kwTag} style={DIFFICULTY_COLORS[row.difficulty]}>{row.difficulty}</span></td>
@@ -589,8 +602,15 @@ export default function NewBrandProfilePage() {
   const canScan = isValidWebsite(website);
 
   const [form, setForm] = useState({
-    companyName: '', companyWebsite: '', industry: '', foundedYear: '',
-    summary: '', targetAudience: '', problem: '', solution: '', usps: '',
+    companyName: 'Post365',
+    companyWebsite: 'post365.ai',
+    industry: 'Marketing Technology',
+    foundedYear: '2023',
+    summary: 'Post365 is an AI-powered content marketing platform that helps B2B brands generate, publish, and optimise content across multiple channels. The platform combines SEO, AEO, and GEO into a single XEO workflow to drive organic traffic and inbound leads at scale.',
+    targetAudience: 'Marketing directors, content managers, and growth marketers at B2B SaaS and professional services companies looking to scale content production and improve organic search performance without growing headcount.',
+    problem: 'B2B marketing teams struggle to produce enough high-quality, SEO-optimised content to compete organically. Manual content workflows are slow, expensive, and inconsistent - making it hard to maintain publishing cadence while keeping content aligned to brand voice and business goals.',
+    solution: 'Post365 automates the entire content workflow from keyword research to published article. AI generates first drafts optimised for XEO, brand profiles ensure consistent voice and targeting, and multi-channel publishing tools help teams ship content faster without sacrificing quality.',
+    usps: 'Proprietary XEO optimisation combining SEO, AEO, and GEO in a single workflow. Brand profile system that preserves tone, audience targeting, and messaging consistency at scale. Calendar-driven content planning with built-in performance tracking and multi-channel publishing.',
   });
 
   const companyNameRef = useRef(null);
@@ -600,6 +620,7 @@ export default function NewBrandProfilePage() {
   const [card3Active, setCard3Active] = useState(false);
   const [card4Active, setCard4Active] = useState(false);
   const [card5Active, setCard5Active] = useState(false);
+  const [card6Active, setCard6Active] = useState(false);
 
   useEffect(() => { websiteInputRef.current?.focus(); }, []);
   useEffect(() => {
@@ -619,8 +640,10 @@ export default function NewBrandProfilePage() {
   const handleBackToDetails     = () => transition(setCard3Active, 'details',   setCard2Active);
   const handleAdvanceToRelated  = () => transition(setCard3Active, 'related',   setCard4Active);
   const handleBackToKeywords    = () => transition(setCard4Active, 'keywords',  setCard3Active);
-  const handleAdvanceToLongtail = () => transition(setCard4Active, 'longtail',  setCard5Active);
-  const handleBackToRelated     = () => transition(setCard5Active, 'related',   setCard4Active);
+  const handleAdvanceToLongtail     = () => transition(setCard4Active, 'longtail',     setCard5Active);
+  const handleBackToRelated         = () => transition(setCard5Active, 'related',      setCard4Active);
+  const handleAdvanceToLlmQuestions = () => transition(setCard5Active, 'llmquestions', setCard6Active);
+  const handleBackToLongtail        = () => transition(setCard6Active, 'longtail',     setCard5Active);
 
   return (
     <div className={styles.page}>
@@ -650,6 +673,12 @@ export default function NewBrandProfilePage() {
         {step === 'longtail' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToRelated}>Back</button>
+            <button className={styles.saveBtn} onClick={handleAdvanceToLlmQuestions}>Next</button>
+          </div>
+        )}
+        {step === 'llmquestions' && (
+          <div className={styles.headerBtns}>
+            <button className={styles.cancelBtn} onClick={handleBackToLongtail}>Back</button>
             <button className={styles.saveBtn}>Next</button>
           </div>
         )}
@@ -791,6 +820,23 @@ export default function NewBrandProfilePage() {
               keywordField="longtailKeyword"
               keywordLabel="Long tail keyword"
               primaryKeywords={SAMPLE_KEYWORDS}
+            />
+          )}
+
+          {/* Card 6 - Key LLM questions */}
+          {step === 'llmquestions' && (
+            <GroupedKeywordsTable
+              className={`${styles.card3} ${card6Active ? styles.card3Active : ''}`}
+              title="Key LLM questions"
+              description="Questions users ask AI tools related to your primary keywords - optimize content to be cited in LLM-generated answers."
+              icon={HelpCircle}
+              iconClass={styles.iconSquareLlm}
+              initialData={SAMPLE_LLM_QUESTIONS}
+              keywordField="llmQuestion"
+              keywordLabel="LLM question"
+              primaryKeywords={SAMPLE_KEYWORDS}
+              addLabel="Add question"
+              truncateKeyword
             />
           )}
 

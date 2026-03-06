@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
-import styles from './ProfilesPage.module.css';
+import styles from './BrandProfilesPage.module.css';
 
 const SAMPLE_PROFILES = [
   {
@@ -57,7 +57,7 @@ const SAMPLE_PROFILES = [
   },
 ];
 
-export default function ProfilesPage() {
+export default function BrandProfilesPage() {
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState(SAMPLE_PROFILES);
   const [deletingId, setDeletingId] = useState(null);
