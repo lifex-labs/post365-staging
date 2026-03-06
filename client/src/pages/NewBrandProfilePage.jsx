@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Plus, Sparkles, Building2, Layers } from 'lucide-react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { Plus, Sparkles, Building2, Layers, Key, Pencil, Check, X, Trash2 } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 
 const STEPS = [
@@ -12,6 +12,31 @@ const STEPS = [
 
 const isValidWebsite = (value) =>
   /^(https?:\/\/)?[\w-]+(\.[\w-]+)+/.test(value.trim());
+
+const VOLUME_COLORS = {
+  High:   { background: '#a7f3d0', color: '#065f46' },
+  Medium: { background: '#fde68a', color: '#92400e' },
+  Low:    { background: '#fecaca', color: '#991b1b' },
+};
+
+const DIFFICULTY_COLORS = {
+  Low:    { background: '#a7f3d0', color: '#065f46' },
+  Medium: { background: '#fde68a', color: '#92400e' },
+  High:   { background: '#fecaca', color: '#991b1b' },
+};
+
+const SAMPLE_KEYWORDS = [
+  { id: 1,  keyword: 'content marketing platform',      volume: 'High',   difficulty: 'Medium', reason: 'High-intent term actively searched by marketing directors and content leads evaluating tools to centralize and scale their content operations. Users at this stage are typically in an active buying cycle, comparing platforms with feature-rich workflows that support multi-channel publishing, AI writing, and performance analytics.' },
+  { id: 2,  keyword: 'AI blog writer',                  volume: 'High',   difficulty: 'Low',    reason: 'Rapidly growing search trend driven by marketing managers seeking to reduce time spent on first-draft blog creation. This keyword captures early-funnel buyers exploring AI-assisted writing tools and positions Post365 as a solution before prospects evaluate competing platforms or enterprise-level alternatives.' },
+  { id: 3,  keyword: 'SEO content generation',          volume: 'Medium', difficulty: 'Medium', reason: 'Core use case keyword that bridges organic search strategy with AI-assisted content workflows. Attracts marketers who want to produce search-optimized content at volume without hiring additional writers, making it a strong entry point for demonstrating Post365\'s ability to generate high-ranking blog content at scale.' },
+  { id: 4,  keyword: 'B2B content strategy',            volume: 'High',   difficulty: 'High',   reason: 'Targets senior decision-makers at mid-market and enterprise companies rebuilding or scaling their content strategy to drive inbound pipeline. Buyers searching this term typically control content budgets and are looking for platforms that align content output directly with revenue goals and sales enablement.' },
+  { id: 5,  keyword: 'XEO optimization',                volume: 'Low',    difficulty: 'Low',    reason: 'Proprietary term that captures Post365\'s combined approach to AEO, GEO and SEO in a single content workflow. Building search authority around this term establishes brand leadership in an emerging discipline while attracting progressive marketers actively researching next-generation content strategies beyond traditional optimization.' },
+  { id: 6,  keyword: 'brand content calendar',          volume: 'Medium', difficulty: 'Low',    reason: 'Searched by marketing leads and content managers planning quarterly content schedules across multiple channels and brand voices. This term signals strong operational buying intent, attracting users who need structured planning tools that connect editorial calendars with publishing workflows and team collaboration features.' },
+  { id: 7,  keyword: 'inbound lead generation content', volume: 'Medium', difficulty: 'High',   reason: 'High commercial intent phrase attracting buyers who specifically want content solutions that convert organic traffic into qualified sales leads. Connects Post365 to revenue-driven content goals, making it ideal for targeting CMOs and growth marketers who measure performance through pipeline contribution and conversion metrics.' },
+  { id: 8,  keyword: 'AI-powered SEO blogs',            volume: 'High',   difficulty: 'Medium', reason: 'Combines two major demand trends - AI writing automation and search engine optimization - to attract traffic from both SEO practitioners and marketing generalists. Positions Post365 at the intersection of AI capability and organic search performance, targeting users exploring smarter blog production workflows to scale content output.' },
+  { id: 9,  keyword: 'generative engine optimization',  volume: 'Low',    difficulty: 'Low',    reason: 'Emerging category keyword as brands race to optimize content for AI-driven discovery platforms like Perplexity, ChatGPT search, and Google AI Overviews. Capturing early search volume for this term builds brand authority in a rapidly growing discipline while attracting progressive marketers investing in future-proof content strategies.' },
+  { id: 10, keyword: 'thought leadership content',      volume: 'High',   difficulty: 'High',   reason: 'Broad awareness keyword used by B2B brands investing in authority-building content to establish credibility within their industry. Typically represents marketing or communications teams tasked with positioning executive voices online, creating a strong fit for Post365\'s personal and brand profile features that support executive content at scale.' },
+];
 
 export default function NewBrandProfilePage() {
   const [website, setWebsite] = useState('');
@@ -31,9 +56,17 @@ export default function NewBrandProfilePage() {
   });
 
   const companyNameRef = useRef(null);
-  const [step, setStep] = useState('intro'); // 'intro' | 'details'
+  const [step, setStep] = useState('intro'); // 'intro' | 'details' | 'keywords'
   const [card1Active, setCard1Active] = useState(true);
   const [card2Active, setCard2Active] = useState(false);
+  const [card3Active, setCard3Active] = useState(false);
+
+  // Keywords table state
+  const [keywords, setKeywords] = useState(SAMPLE_KEYWORDS);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [editingId, setEditingId] = useState(null);
+  const [isNewRow, setIsNewRow] = useState(false);
+  const [editDraft, setEditDraft] = useState({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
 
   useEffect(() => {
     websiteInputRef.current?.focus();
@@ -65,6 +98,79 @@ export default function NewBrandProfilePage() {
     }, 160);
   }
 
+  function handleAdvanceToKeywords() {
+    setCard2Active(false);
+    setTimeout(() => {
+      setStep('keywords');
+      requestAnimationFrame(() => setCard3Active(true));
+    }, 160);
+  }
+
+  function handleBackToDetails() {
+    setCard3Active(false);
+    setTimeout(() => {
+      setStep('details');
+      requestAnimationFrame(() => setCard2Active(true));
+    }, 160);
+  }
+
+  // Keyword selection
+  const allSelected = keywords.length > 0 && selectedIds.size === keywords.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
+  function toggleSelectAll() {
+    if (selectedIds.size > 0) setSelectedIds(new Set());
+    else setSelectedIds(new Set(keywords.map(k => k.id)));
+  }
+
+  function toggleSelect(id) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  // Row edit
+  function handleEditStart(kw) {
+    setEditingId(kw.id);
+    setIsNewRow(false);
+    setEditDraft({ keyword: kw.keyword, reason: kw.reason, volume: kw.volume, difficulty: kw.difficulty });
+  }
+
+  function handleEditSave() {
+    setKeywords(prev => prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k));
+    setEditingId(null);
+    setIsNewRow(false);
+  }
+
+  function handleEditCancel() {
+    setKeywords(prev => prev.filter(k => !(k.id === editingId && k.keyword === '' && k.reason === '')));
+    setEditingId(null);
+    setIsNewRow(false);
+  }
+
+  function handleAddRow() {
+    const newId = Date.now();
+    setKeywords(prev => {
+      let updated = prev;
+      if (editingId !== null) {
+        updated = prev.map(k => k.id === editingId ? { ...k, ...editDraft } : k);
+      }
+      return [...updated, { id: newId, keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' }];
+    });
+    setEditingId(newId);
+    setIsNewRow(true);
+    setEditDraft({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
+  }
+
+  function handleDeleteSelected() {
+    if (editingId && selectedIds.has(editingId)) { setEditingId(null); setIsNewRow(false); }
+    setKeywords(prev => prev.filter(k => !selectedIds.has(k.id)));
+    setSelectedIds(new Set());
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -75,6 +181,12 @@ export default function NewBrandProfilePage() {
         {step === 'details' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleGoBack}>Back</button>
+            <button className={styles.saveBtn} onClick={handleAdvanceToKeywords}>Next</button>
+          </div>
+        )}
+        {step === 'keywords' && (
+          <div className={styles.headerBtns}>
+            <button className={styles.cancelBtn} onClick={handleBackToDetails}>Back</button>
             <button className={styles.saveBtn}>Next</button>
           </div>
         )}
@@ -247,6 +359,186 @@ export default function NewBrandProfilePage() {
             </div>
 
           </div>}
+
+          {/* Card 3 - Step 2: Primary keywords */}
+          {step === 'keywords' && (
+            <div className={`${styles.card3} ${card3Active ? styles.card3Active : ''}`}>
+
+              <div className={styles.card3Head}>
+                <div className={`${styles.iconSquare} ${styles.iconSquareKeywords}`}>
+                  <Key size={14} strokeWidth={2} />
+                </div>
+                <div className={styles.card3HeadRow}>
+                  <div>
+                    <h2 className={styles.card2Title}>Primary keywords</h2>
+                    <p className={styles.card2Desc}>Primary business and brand keywords for XEO</p>
+                  </div>
+                  <div className={styles.card3HeadActions}>
+                    <button className={styles.addRowBtn} onClick={handleAddRow}>
+                      <Plus size={13} strokeWidth={2.5} />
+                      Add keyword
+                    </button>
+                    {selectedIds.size > 0 && (
+                      <button className={styles.deleteSelectedBtn} onClick={handleDeleteSelected}>
+                        <Trash2 size={13} />
+                        Delete selected ({selectedIds.size})
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.tableWrapper}>
+                <table className={styles.kwTable}>
+                  <colgroup>
+                    <col className={styles.colCheck} />
+                    <col className={styles.colKeyword} />
+                    <col className={styles.colReason} />
+                    <col className={styles.colVolume} />
+                    <col className={styles.colDifficulty} />
+                    <col className={styles.colActions} />
+                  </colgroup>
+                  <thead className={styles.kwThead}>
+                    <tr>
+                      <th>
+                        <input
+                          type="checkbox"
+                          className={styles.checkboxInput}
+                          checked={allSelected}
+                          ref={el => { if (el) el.indeterminate = someSelected; }}
+                          onChange={toggleSelectAll}
+                        />
+                      </th>
+                      <th>Keyword</th>
+                      <th>Reason for selection</th>
+                      <th>Volume</th>
+                      <th>Difficulty</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody className={styles.kwTbody}>
+                    {keywords.map(kw => {
+                      const isEditing = editingId === kw.id;
+                      const isAdding  = isEditing && isNewRow;
+                      return (
+                        <Fragment key={kw.id}>
+                          <tr className={[
+                            styles.kwRow,
+                            isAdding              ? styles.kwRowNew     : '',
+                            isEditing && !isAdding ? styles.kwRowEditing : '',
+                            selectedIds.has(kw.id) ? styles.kwRowSelected : '',
+                          ].filter(Boolean).join(' ')}>
+                            <td>
+                              <input
+                                type="checkbox"
+                                className={styles.checkboxInput}
+                                checked={selectedIds.has(kw.id)}
+                                onChange={() => toggleSelect(kw.id)}
+                              />
+                            </td>
+
+                            {isEditing ? (
+                              <>
+                                <td className={styles.tdEdit}>
+                                  <input
+                                    className={styles.editInput}
+                                    value={editDraft.keyword}
+                                    onChange={e => setEditDraft(d => ({ ...d, keyword: e.target.value }))}
+                                    onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
+                                    placeholder="Enter keyword"
+                                    autoFocus
+                                  />
+                                </td>
+                                <td className={styles.tdEdit}>
+                                  <input
+                                    className={styles.editInput}
+                                    value={editDraft.reason}
+                                    onChange={e => setEditDraft(d => ({ ...d, reason: e.target.value }))}
+                                    onKeyDown={e => { if (e.key === 'Enter') handleEditSave(); if (e.key === 'Escape') handleEditCancel(); }}
+                                    placeholder="Reason for selection"
+                                  />
+                                </td>
+                                <td className={styles.tdEdit}>
+                                  <select
+                                    className={styles.editSelect}
+                                    value={editDraft.volume}
+                                    onChange={e => setEditDraft(d => ({ ...d, volume: e.target.value }))}
+                                  >
+                                    <option>High</option>
+                                    <option>Medium</option>
+                                    <option>Low</option>
+                                  </select>
+                                </td>
+                                <td className={styles.tdEdit}>
+                                  <select
+                                    className={styles.editSelect}
+                                    value={editDraft.difficulty}
+                                    onChange={e => setEditDraft(d => ({ ...d, difficulty: e.target.value }))}
+                                  >
+                                    <option>Low</option>
+                                    <option>Medium</option>
+                                    <option>High</option>
+                                  </select>
+                                </td>
+                                {/* Icon save/cancel: visible on mobile only for existing row edits */}
+                                <td>
+                                  {!isAdding && (
+                                    <div className={`${styles.actionsCell} ${styles.editIconActions}`}>
+                                      <button className={`${styles.rowIconBtn} ${styles.rowIconBtnSave}`} onClick={handleEditSave} title="Save">
+                                        <Check size={13} />
+                                      </button>
+                                      <button className={`${styles.rowIconBtn} ${styles.rowIconBtnCancel}`} onClick={handleEditCancel} title="Cancel">
+                                        <X size={13} />
+                                      </button>
+                                    </div>
+                                  )}
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className={styles.tdKeyword}>
+                                  <div className={styles.cellClamp} style={{ fontSize: '14px' }}>{kw.keyword}</div>
+                                </td>
+                                <td className={styles.tdReason}>
+                                  <div className={styles.cellClamp} style={{ fontSize: '13px', color: 'var(--text-2)' }}>{kw.reason}</div>
+                                </td>
+                                <td>
+                                  <span className={styles.kwTag} style={VOLUME_COLORS[kw.volume]}>{kw.volume}</span>
+                                </td>
+                                <td>
+                                  <span className={styles.kwTag} style={DIFFICULTY_COLORS[kw.difficulty]}>{kw.difficulty}</span>
+                                </td>
+                                <td>
+                                  <div className={styles.actionsCell}>
+                                    <button className={styles.rowIconBtn} onClick={() => handleEditStart(kw)} title="Edit">
+                                      <Pencil size={13} />
+                                    </button>
+                                  </div>
+                                </td>
+                              </>
+                            )}
+                          </tr>
+
+                          {/* Save/Cancel row - for both add and edit, below the editing row */}
+                          {isEditing && (
+                            <tr className={`${styles.saveCancelRow} ${!isAdding ? styles.saveCancelRowEdit : ''}`}>
+                              <td colSpan={6} className={styles.saveCancelCell}>
+                                <div className={styles.saveCancelBtns}>
+                                  <button className={styles.cancelTextBtn} onClick={handleEditCancel}>Cancel</button>
+                                  <button className={styles.saveTextBtn} onClick={handleEditSave}>Save</button>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          )}
 
         </div>
       </div>

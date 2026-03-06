@@ -10,7 +10,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 20px 24px 24px 32px;
+  padding: 20px 24px 16px 32px;
   flex-shrink: 0;
 }
 
@@ -88,7 +88,7 @@
 
 @media (min-width: 769px) {
   .header {
-    padding: 24px 24px 24px 32px;
+    padding: 24px 24px 16px 32px;
   }
 
   .description {
@@ -108,7 +108,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 0 24px 24px;
+  padding: 0 24px 16px;
 }
 
 /* ===== Cards column (slides vertically) ===== */
@@ -279,15 +279,15 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--blue);
-  background: #eff6ff;
-  border: none;
+  background: #ffffff;
+  border: 1px solid var(--blue);
   border-radius: var(--radius-s);
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .manualBtn:hover {
-  background: #dbeafe;
+  background: var(--blue-bg);
 }
 
 /* ===== Card 2 row - Basic + Advanced ===== */
@@ -343,7 +343,7 @@
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .card2Desc {
@@ -351,9 +351,6 @@
   color: var(--text-2);
   line-height: 1.5;
   margin-bottom: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .card2Fields {
@@ -455,6 +452,325 @@
   color: var(--text-3);
 }
 
+/* ===== Card 3 - Step 2: Keywords ===== */
+.card3 {
+  flex: 1;
+  min-height: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+}
+
+.card3Active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card3Head {
+  padding: 40px 40px 16px 40px;
+  flex-shrink: 0;
+}
+
+.iconSquareKeywords {
+  background: #059669;
+  color: #fff;
+}
+
+/* ===== Card 3 header row ===== */
+.card3HeadRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.card3HeadActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ===== Table toolbar ===== */
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.addRowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blue);
+  background: #ffffff;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.addRowBtn:hover {
+  background: var(--blue-bg);
+}
+
+.deleteSelectedBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #dc2626;
+  background: #fef2f2;
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.deleteSelectedBtn:hover {
+  background: #fee2e2;
+}
+
+/* ===== Keywords table ===== */
+.tableWrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 40px 40px;
+}
+
+.kwTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colCheck      { width: 36px; }
+.colKeyword    { width: 22%; }
+.colReason     { /* auto */ }
+.colVolume     { width: 82px; }
+.colDifficulty { width: 82px; }
+.colActions    { width: 52px; }
+
+/* thead */
+.kwThead th {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-align: left;
+  height: 36px;
+  border-bottom: 1px solid var(--separator);
+  white-space: nowrap;
+}
+
+.kwThead th:first-child { padding-left: 8px; }
+.kwThead th:last-child  { padding-right: 0; padding-left: 8px; }
+
+/* tbody */
+.kwTbody tr {
+  border-bottom: 1px solid var(--separator);
+  transition: background 0.1s;
+}
+
+.kwTbody tr:last-child {
+  border-bottom: none;
+}
+
+.kwTbody td {
+  height: 64px;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.kwTbody td:first-child { padding: 0 0 0 8px; }
+.kwTbody td:last-child  { padding: 0 0 0 8px; }
+
+.kwThead th:nth-child(2),
+.kwTbody td:nth-child(2) { padding-right: 8px; }
+
+.kwThead th:nth-child(3),
+.kwTbody td:nth-child(3) { padding-left: 8px; padding-right: 16px; }
+
+.kwThead th:nth-child(4),
+.kwTbody td:nth-child(4),
+.kwThead th:nth-child(5),
+.kwTbody td:nth-child(5) { padding-left: 8px; padding-right: 8px; }
+
+.kwRow:hover { background: var(--hover-overlay); }
+
+.kwRowSelected       { background: var(--blue-bg); }
+.kwRowSelected:hover { background: var(--blue-bg); }
+
+/* Cell content */
+.cellClamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+}
+
+/* Inline edit cells */
+.tdEdit { padding: 0; }
+
+.editInput {
+  width: 100%;
+  height: 30px;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-s);
+  padding: 0 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+}
+
+.editInput::placeholder { color: var(--text-3); }
+
+.editSelect {
+  width: 100%;
+  height: 30px;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-s);
+  padding: 0 6px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  cursor: pointer;
+}
+
+.kwTag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Row action buttons */
+.actionsCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rowIconBtn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hover-overlay);
+  border: none;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.rowIconBtn:hover        { background: #dbeafe; color: var(--blue); }
+.rowIconBtnSave          { color: #059669; }
+.rowIconBtnSave:hover    { background: #d1fae5; color: #047857; }
+.rowIconBtnCancel:hover  { background: #fee2e2; color: #dc2626; }
+
+.checkboxInput {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--blue);
+  display: block;
+}
+
+/* New row (no bottom border - save/cancel row provides it) */
+.kwRowNew { border-bottom: none !important; }
+
+/* Editing existing row - no bottom border on desktop (save/cancel row below provides it) */
+@media (min-width: 769px) {
+  .kwRowEditing { border-bottom: none !important; }
+  .editIconActions { display: none !important; }
+}
+
+/* Save/cancel row for existing edits - hidden on mobile (icon buttons used instead) */
+@media (max-width: 768px) {
+  .saveCancelRowEdit { display: none !important; }
+}
+
+/* Save / Cancel row (below new keyword input row) */
+.saveCancelRow td {
+  height: auto !important;
+  padding: 8px 0 8px !important;
+}
+
+.saveCancelCell { }
+
+.saveCancelBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.saveTextBtn {
+  height: 28px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+
+.saveTextBtn:hover { background: var(--blue-dark); }
+
+.cancelTextBtn {
+  height: 28px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--hover-overlay);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+
+.cancelTextBtn:hover { background: var(--active-overlay); }
+
 /* ===== Mobile ===== */
 @media (max-width: 768px) {
   .header {
@@ -474,7 +790,7 @@
 
   .center {
     overflow-y: auto;
-    padding: 0 16px 24px;
+    padding: 0 16px 16px;
   }
 
   .cardsCol {
@@ -496,4 +812,54 @@
   .card2Basic {
     width: 100%;
   }
+
+  .card3 {
+    flex: unset;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .card3Head {
+    padding: 24px 16px 16px;
+  }
+
+  /* Stack buttons below description, full width */
+  .card3HeadRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card3HeadActions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .addRowBtn,
+  .deleteSelectedBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .tableWrapper {
+    flex: unset;
+    overflow-y: visible;
+    padding: 0 24px;
+    table-layout: auto;
+  }
+
+  /* Hide reason, volume, difficulty columns on mobile */
+  .kwThead th:nth-child(3),
+  .kwThead th:nth-child(4),
+  .kwThead th:nth-child(5),
+  .kwTbody td:nth-child(3),
+  .kwTbody td:nth-child(4),
+  .kwTbody td:nth-child(5) {
+    display: none;
+  }
+
+  .colReason,
+  .colVolume,
+  .colDifficulty { display: none; }
+
+  .kwTable { table-layout: auto; }
 }
