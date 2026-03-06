@@ -719,6 +719,12 @@
   gap: 4px;
 }
 
+/* Fills remaining width; forces overflow:hidden so nowrap text doesn't squeeze other columns */
+.tdFill {
+  overflow: hidden;
+  max-width: 0;
+}
+
 /* Fixed-width primary keyword cell in grouped tables */
 .tdPrimary {
   width: 240px;

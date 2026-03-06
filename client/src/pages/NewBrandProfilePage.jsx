@@ -547,7 +547,7 @@ function GroupedKeywordsTable({ className, title, description, icon: Icon, iconC
                         <td className={styles.tdPrimary}>
                           <div className={styles.cellFit} style={{ fontSize: '14px' }}>{row.primaryKeyword}</div>
                         </td>
-                        <td title={truncateKeyword ? row[keywordField] : undefined}>
+                        <td className={truncateKeyword ? styles.tdFill : undefined} title={truncateKeyword ? row[keywordField] : undefined}>
                           <div className={truncateKeyword ? styles.cellFit : styles.cellClamp} style={{ fontSize: '14px' }}>{row[keywordField]}</div>
                         </td>
                         <td><span className={styles.kwTag} style={VOLUME_COLORS[row.volume]}>{row.volume}</span></td>
