@@ -10,24 +10,18 @@ const NAV_SECTIONS = [
   {
     label: 'Personal',
     items: [
-      { path: '/personal-posts',    label: 'Personal posts',    icon: PenLine    },
-      { path: '/personal-profiles', label: 'Personal profiles', icon: UserRound  },
+      { path: '/personal-calendar', label: 'Personal calendar', icon: CalendarDays },
+      { path: '/personal-posts',    label: 'Personal posts',    icon: PenLine      },
+      { path: '/personal-profiles', label: 'Personal profiles', icon: UserRound    },
     ],
   },
   {
     label: 'Company',
     items: [
-      { path: '/xeo-blogs', label: 'XEO blogs',       icon: Rss        },
-      { path: '/brand-posts',     label: 'Brand posts',    icon: LayoutList },
-      { path: '/brand-profiles',  label: 'Brand profiles', icon: User       },
-    ],
-  },
-  {
-    label: 'Calendars',
-    items: [
-      { path: '/calendar-company', label: 'Company',         icon: CalendarDays },
-      { path: '/calendar-arjun',   label: 'Arjun V. Shenoy', icon: CalendarDays },
-      { path: '/calendar-naveen',  label: 'Naveen Prabhu',   icon: CalendarDays },
+      { path: '/brand-calendar',  label: 'Brand calendar', icon: CalendarDays },
+      { path: '/xeo-blogs',       label: 'XEO blogs',      icon: Rss          },
+      { path: '/brand-posts',     label: 'Brand posts',    icon: LayoutList   },
+      { path: '/brand-profiles',  label: 'Brand profiles', icon: User         },
     ],
   },
 ];

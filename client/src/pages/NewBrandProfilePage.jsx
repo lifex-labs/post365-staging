@@ -1,6 +1,8 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Sparkles, Building2, Layers, Key, Pencil, Check, X, Trash2 } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
+import modalStyles from '../components/LogoutModal.module.css';
 
 const STEPS = [
   'Foundational company details',
@@ -67,6 +69,7 @@ export default function NewBrandProfilePage() {
   const [editingId, setEditingId] = useState(null);
   const [isNewRow, setIsNewRow] = useState(false);
   const [editDraft, setEditDraft] = useState({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     websiteInputRef.current?.focus();
@@ -379,7 +382,7 @@ export default function NewBrandProfilePage() {
                       Add keyword
                     </button>
                     {selectedIds.size > 0 && (
-                      <button className={styles.deleteSelectedBtn} onClick={handleDeleteSelected}>
+                      <button className={styles.deleteSelectedBtn} onClick={() => setShowDeleteConfirm(true)}>
                         <Trash2 size={13} />
                         Delete selected ({selectedIds.size})
                       </button>
@@ -542,6 +545,22 @@ export default function NewBrandProfilePage() {
 
         </div>
       </div>
+
+      {showDeleteConfirm && createPortal(
+        <div className={modalStyles.backdrop} onClick={() => setShowDeleteConfirm(false)}>
+          <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
+            <p className={modalStyles.title}>Delete keywords</p>
+            <p className={modalStyles.message}>
+              The selected keywords will be permanently removed from this profile. This action cannot be undone.
+            </p>
+            <div className={modalStyles.actions}>
+              <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+              <button className={modalStyles.logoutBtn} onClick={() => { handleDeleteSelected(); setShowDeleteConfirm(false); }}>Delete</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

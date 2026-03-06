@@ -15,9 +15,8 @@ const ProfilesPage         = lazy(() => import('./pages/ProfilesPage'));
 const SettingsPage         = lazy(() => import('./pages/SettingsPage'));
 const PersonalPostsPage    = lazy(() => import('./pages/PersonalPostsPage'));
 const PersonalProfilesPage = lazy(() => import('./pages/PersonalProfilesPage'));
-const CalendarCompanyPage  = lazy(() => import('./pages/CalendarCompanyPage'));
-const CalendarArjunPage    = lazy(() => import('./pages/CalendarArjunPage'));
-const CalendarNaveenPage   = lazy(() => import('./pages/CalendarNaveenPage'));
+const PersonalCalendarPage = lazy(() => import('./pages/PersonalCalendarPage'));
+const BrandCalendarPage    = lazy(() => import('./pages/BrandCalendarPage'));
 const NewBrandProfilePage  = lazy(() => import('./pages/NewBrandProfilePage'));
 
 function ProtectedRoute({ children }) {
@@ -67,11 +66,10 @@ function AppRoutes() {
         <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><ProfilesPage /></Suspense>} />
         <Route path="brand-profiles/new" element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />
         <Route path="settings"          element={<Suspense fallback={<LoadingSpinner />}><SettingsPage /></Suspense>} />
+        <Route path="personal-calendar" element={<Suspense fallback={<LoadingSpinner />}><PersonalCalendarPage /></Suspense>} />
         <Route path="personal-posts"    element={<Suspense fallback={<LoadingSpinner />}><PersonalPostsPage /></Suspense>} />
         <Route path="personal-profiles" element={<Suspense fallback={<LoadingSpinner />}><PersonalProfilesPage /></Suspense>} />
-        <Route path="calendar-company"  element={<Suspense fallback={<LoadingSpinner />}><CalendarCompanyPage /></Suspense>} />
-        <Route path="calendar-arjun"    element={<Suspense fallback={<LoadingSpinner />}><CalendarArjunPage /></Suspense>} />
-        <Route path="calendar-naveen"   element={<Suspense fallback={<LoadingSpinner />}><CalendarNaveenPage /></Suspense>} />
+        <Route path="brand-calendar"    element={<Suspense fallback={<LoadingSpinner />}><BrandCalendarPage /></Suspense>} />
       </Route>
       <Route path="*" element={<Navigate to="/sign-in" replace />} />
     </Routes>

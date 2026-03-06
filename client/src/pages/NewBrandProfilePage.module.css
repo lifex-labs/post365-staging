@@ -473,8 +473,12 @@
 }
 
 .card3Head {
-  padding: 40px 40px 16px 40px;
+  padding: 40px 40px 20px 40px;
   flex-shrink: 0;
+}
+
+.card3Head .card2Desc {
+  margin-bottom: 0;
 }
 
 .iconSquareKeywords {
@@ -579,7 +583,8 @@
   color: var(--text-2);
   text-align: left;
   height: 36px;
-  border-bottom: 1px solid var(--separator);
+  padding-bottom: 16px;
+  box-shadow: inset 0 -1px 0 var(--separator);
   white-space: nowrap;
 }
 
@@ -590,6 +595,10 @@
 .kwTbody tr {
   border-bottom: 1px solid var(--separator);
   transition: background 0.1s;
+}
+
+.kwTbody tr:first-child {
+  border-top: none;
 }
 
 .kwTbody tr:last-child {
@@ -609,7 +618,7 @@
 .kwTbody td:nth-child(2) { padding-right: 8px; }
 
 .kwThead th:nth-child(3),
-.kwTbody td:nth-child(3) { padding-left: 8px; padding-right: 16px; }
+.kwTbody td:nth-child(3) { padding-left: 8px; padding-right: 24px; }
 
 .kwThead th:nth-child(4),
 .kwTbody td:nth-child(4),
@@ -714,6 +723,7 @@
 /* Editing existing row - no bottom border on desktop (save/cancel row below provides it) */
 @media (min-width: 769px) {
   .kwRowEditing { border-bottom: none !important; }
+  .kwThead th { padding-top: 16px; }
 }
 
 /* Icon save/cancel buttons always hidden - text Save/Cancel used everywhere */
@@ -846,6 +856,10 @@
     min-height: unset;
     overflow-y: visible;
     padding: 0 24px 24px;
+  }
+
+  .kwThead th {
+    padding-top: 16px;
   }
 
   .colKeyword { width: auto; }
