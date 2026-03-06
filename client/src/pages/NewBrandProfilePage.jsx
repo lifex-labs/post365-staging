@@ -465,29 +465,24 @@ export default function NewBrandProfilePage() {
               ))}
             </div>
 
-            <input
-              className={styles.websiteInput}
-              type="text"
-              value={website}
-              onChange={e => setWebsite(e.target.value)}
-              ref={websiteInputRef}
-              onKeyDown={e => { if (e.key === 'Enter' && canScan) handleAdvance(); }}
-              placeholder="Enter your company website"
-            />
-
-            <div className={styles.btnRow}>
-              <button className={styles.manualBtn} onClick={handleAdvance}>
-                Enter manually
-              </button>
-              <span
-                className={styles.scanBtnWrapper}
-                title={!canScan ? 'Enter a valid website URL to enable AI scan' : undefined}
+            <div className={styles.websiteInputWrap}>
+              <input
+                className={styles.websiteInput}
+                type="text"
+                value={website}
+                onChange={e => setWebsite(e.target.value)}
+                ref={websiteInputRef}
+                onKeyDown={e => { if (e.key === 'Enter' && canScan) handleAdvance(); }}
+                placeholder="Enter your company website"
+              />
+              <button
+                className={styles.websiteArrowBtn}
+                disabled={!canScan}
+                onClick={handleAdvance}
               >
-                <button className={styles.scanBtn} disabled={!canScan} onClick={handleAdvance}>
-                  <Sparkles size={13} strokeWidth={2} />
-                  AI scan
-                </button>
-              </span>
+                <Sparkles size={13} strokeWidth={2} />
+                AI scan
+              </button>
             </div>
           </div>}
 
