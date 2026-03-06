@@ -564,8 +564,8 @@
 .colCheck      { width: 36px; }
 .colKeyword    { width: 22%; }
 .colReason     { /* auto */ }
-.colVolume     { width: 82px; }
-.colDifficulty { width: 82px; }
+.colVolume     { width: 100px; }
+.colDifficulty { width: 100px; }
 .colActions    { width: 52px; }
 
 /* thead */
@@ -714,13 +714,10 @@
 /* Editing existing row - no bottom border on desktop (save/cancel row below provides it) */
 @media (min-width: 769px) {
   .kwRowEditing { border-bottom: none !important; }
-  .editIconActions { display: none !important; }
 }
 
-/* Save/cancel row for existing edits - hidden on mobile (icon buttons used instead) */
-@media (max-width: 768px) {
-  .saveCancelRowEdit { display: none !important; }
-}
+/* Icon save/cancel buttons always hidden - text Save/Cancel used everywhere */
+.editIconActions { display: none !important; }
 
 /* Save / Cancel row (below new keyword input row) */
 .saveCancelRow td {
@@ -794,7 +791,7 @@
   }
 
   .cardsCol {
-    flex: unset;
+    flex: none;
   }
 
   .card2Row {
@@ -814,13 +811,17 @@
   }
 
   .card3 {
-    flex: unset;
-    min-height: 0;
-    overflow: visible;
+    flex: none;
+    min-height: unset;
+    overflow: visible !important;
   }
 
   .card3Head {
-    padding: 24px 16px 16px;
+    padding: 24px 24px 20px;
+  }
+
+  .card3Head .card2Desc {
+    margin-bottom: 0;
   }
 
   /* Stack buttons below description, full width */
@@ -841,11 +842,13 @@
   }
 
   .tableWrapper {
-    flex: unset;
+    flex: none;
+    min-height: unset;
     overflow-y: visible;
-    padding: 0 24px;
-    table-layout: auto;
+    padding: 0 24px 24px;
   }
+
+  .colKeyword { width: auto; }
 
   /* Hide reason, volume, difficulty columns on mobile */
   .kwThead th:nth-child(3),
