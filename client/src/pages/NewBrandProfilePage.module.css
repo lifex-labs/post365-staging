@@ -931,4 +931,22 @@
   .grouped .kwTbody td:nth-child(3) {
     display: table-cell;
   }
+
+  /* Primary keywords: fix checkbox width, row height, and expand keyword column to fill remaining space */
+  .colCheck { min-width: 36px; }
+  :not(.grouped) .kwTbody td { height: 48px; }
+  .kwTbody .tdFit { width: 100%; overflow: hidden; }
+
+  /* Grouped tables (related/longtail/LLM): keyword col fills remaining space, single-line truncation */
+  .grouped .kwTbody td:nth-child(3) {
+    overflow: hidden;
+    max-width: 0;
+    width: 100%;
+  }
+  .grouped .kwTbody td:nth-child(3) .cellClamp {
+    display: block;
+    white-space: nowrap;
+    -webkit-line-clamp: unset;
+    text-overflow: ellipsis;
+  }
 }
