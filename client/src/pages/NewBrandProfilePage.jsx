@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Check, X, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Check, X, Trash2, ChevronUp, ChevronDown, RefreshCw } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 import modalStyles from '../components/LogoutModal.module.css';
 
@@ -656,30 +656,35 @@ export default function NewBrandProfilePage() {
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleGoBack}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToKeywords}>Next</button>
+            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'keywords' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToDetails}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToRelated}>Next</button>
+            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'related' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToKeywords}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLongtail}>Next</button>
+            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'longtail' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToRelated}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLlmQuestions}>Next</button>
+            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'llmquestions' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToLongtail}>Back</button>
             <button className={styles.saveBtn}>Next</button>
+            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
       </header>
