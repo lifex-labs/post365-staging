@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Check, X, Trash2, ChevronUp, ChevronDown, RefreshCw } from 'lucide-react';
+import { Plus, Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Check, X, Trash2, ChevronUp, ChevronDown, Globe, Link, GitBranch } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 import modalStyles from '../components/LogoutModal.module.css';
 
@@ -8,9 +8,10 @@ const STEPS = [
   'Overall company details',
   'Primary brand keywords',
   'Related keywords',
+  'LSI keywords',
   'Long tail keywords',
   'Key LLM questions',
-  'Blog themes',
+  'Blog themes & clusters',
 ];
 
 const isValidWebsite = (value) =>
@@ -30,6 +31,20 @@ const DIFFICULTY_COLORS = {
 
 const VOL_ORDER  = { High: 3, Medium: 2, Low: 1 };
 const DIFF_ORDER = { Low: 1, Medium: 2, High: 3 };
+
+const CONTEXT_ROWS = [
+  { key: 'problem',          label: 'Problem',           placeholder: 'What problem does your company solve?' },
+  { key: 'solution',         label: 'Solution',          placeholder: 'How does your product or service solve it?' },
+  { key: 'usps',             label: 'USPs',              placeholder: 'What makes you uniquely different?' },
+  { key: 'valueProposition', label: 'Value proposition', placeholder: 'What is your core value promise?' },
+];
+
+const CONTEXT_LABEL_COLORS = {
+  problem:          { background: '#fee2e2', color: '#991b1b' },
+  solution:         { background: '#dcfce7', color: '#166534' },
+  usps:             { background: '#e0e7ff', color: '#3730a3' },
+  valueProposition: { background: '#dbeafe', color: '#1e40af' },
+};
 
 const SAMPLE_KEYWORDS = [
   { id: 1,  keyword: 'content marketing platform',      volume: 'High',   difficulty: 'Medium', reason: 'High-intent term actively searched by marketing directors and content leads evaluating tools to centralize and scale their content operations. Users at this stage are typically in an active buying cycle, comparing platforms with feature-rich workflows that support multi-channel publishing, AI writing, and performance analytics.' },
@@ -55,6 +70,19 @@ const SAMPLE_RELATED_KEYWORDS = [
   { id: 8,  primaryKeyword: 'B2B content strategy',       relatedKeyword: 'enterprise content platform',     volume: 'High',   difficulty: 'High'   },
   { id: 9,  primaryKeyword: 'B2B content strategy',       relatedKeyword: 'multi-channel content hub',       volume: 'Low',    difficulty: 'Low'    },
   { id: 10, primaryKeyword: 'brand content calendar',     relatedKeyword: 'content workflow automation',     volume: 'Medium', difficulty: 'Medium' },
+];
+
+const SAMPLE_LSI_KEYWORDS = [
+  { id: 1,  primaryKeyword: 'content marketing platform', lsiKeyword: 'content strategy',              volume: 'High',   difficulty: 'Medium' },
+  { id: 2,  primaryKeyword: 'content marketing platform', lsiKeyword: 'editorial calendar',            volume: 'Medium', difficulty: 'Low'    },
+  { id: 3,  primaryKeyword: 'content marketing platform', lsiKeyword: 'content management system',     volume: 'High',   difficulty: 'High'   },
+  { id: 4,  primaryKeyword: 'AI blog writer',             lsiKeyword: 'natural language generation',   volume: 'Low',    difficulty: 'Low'    },
+  { id: 5,  primaryKeyword: 'AI blog writer',             lsiKeyword: 'large language model',          volume: 'Medium', difficulty: 'Medium' },
+  { id: 6,  primaryKeyword: 'SEO content generation',     lsiKeyword: 'keyword research',              volume: 'High',   difficulty: 'Medium' },
+  { id: 7,  primaryKeyword: 'SEO content generation',     lsiKeyword: 'on-page optimisation',          volume: 'Medium', difficulty: 'Medium' },
+  { id: 8,  primaryKeyword: 'B2B content strategy',       lsiKeyword: 'demand generation',             volume: 'High',   difficulty: 'High'   },
+  { id: 9,  primaryKeyword: 'B2B content strategy',       lsiKeyword: 'thought leadership',            volume: 'High',   difficulty: 'Medium' },
+  { id: 10, primaryKeyword: 'brand content calendar',     lsiKeyword: 'content publishing schedule',   volume: 'Low',    difficulty: 'Low'    },
 ];
 
 const SAMPLE_LONGTAIL_KEYWORDS = [
@@ -607,11 +635,14 @@ export default function NewBrandProfilePage() {
     industry: 'Marketing Technology',
     foundedYear: '2023',
     summary: 'Post365 is an AI-powered content marketing platform that helps B2B brands generate, publish, and optimise content across multiple channels. The platform combines SEO, AEO, and GEO into a single XEO workflow to drive organic traffic and inbound leads at scale.',
-    targetAudience: 'Marketing directors, content managers, and growth marketers at B2B SaaS and professional services companies looking to scale content production and improve organic search performance without growing headcount.',
     problem: 'B2B marketing teams struggle to produce enough high-quality, SEO-optimised content to compete organically. Manual content workflows are slow, expensive, and inconsistent - making it hard to maintain publishing cadence while keeping content aligned to brand voice and business goals.',
     solution: 'Post365 automates the entire content workflow from keyword research to published article. AI generates first drafts optimised for XEO, brand profiles ensure consistent voice and targeting, and multi-channel publishing tools help teams ship content faster without sacrificing quality.',
     usps: 'Proprietary XEO optimisation combining SEO, AEO, and GEO in a single workflow. Brand profile system that preserves tone, audience targeting, and messaging consistency at scale. Calendar-driven content planning with built-in performance tracking and multi-channel publishing.',
+    valueProposition: 'Post365 gives B2B marketing teams the fastest path from keyword strategy to published, search-optimised content - combining AI generation, brand consistency, and XEO in one platform.',
   });
+
+  const [contextEditingField, setContextEditingField] = useState(null);
+  const [contextEditDraft, setContextEditDraft] = useState('');
 
   const companyNameRef = useRef(null);
   const [step, setStep] = useState('intro');
@@ -621,6 +652,7 @@ export default function NewBrandProfilePage() {
   const [card4Active, setCard4Active] = useState(false);
   const [card5Active, setCard5Active] = useState(false);
   const [card6Active, setCard6Active] = useState(false);
+  const [card7Active, setCard7Active] = useState(false);
 
   useEffect(() => { websiteInputRef.current?.focus(); }, []);
   useEffect(() => {
@@ -640,10 +672,12 @@ export default function NewBrandProfilePage() {
   const handleBackToDetails     = () => transition(setCard3Active, 'details',   setCard2Active);
   const handleAdvanceToRelated  = () => transition(setCard3Active, 'related',   setCard4Active);
   const handleBackToKeywords    = () => transition(setCard4Active, 'keywords',  setCard3Active);
-  const handleAdvanceToLongtail     = () => transition(setCard4Active, 'longtail',     setCard5Active);
+  const handleAdvanceToLsi          = () => transition(setCard4Active, 'lsi',          setCard5Active);
   const handleBackToRelated         = () => transition(setCard5Active, 'related',      setCard4Active);
-  const handleAdvanceToLlmQuestions = () => transition(setCard5Active, 'llmquestions', setCard6Active);
-  const handleBackToLongtail        = () => transition(setCard6Active, 'longtail',     setCard5Active);
+  const handleAdvanceToLongtail     = () => transition(setCard5Active, 'longtail',     setCard6Active);
+  const handleBackToLsi             = () => transition(setCard6Active, 'lsi',          setCard5Active);
+  const handleAdvanceToLlmQuestions = () => transition(setCard6Active, 'llmquestions', setCard7Active);
+  const handleBackToLongtail        = () => transition(setCard7Active, 'longtail',     setCard6Active);
 
   return (
     <div className={styles.page}>
@@ -656,35 +690,36 @@ export default function NewBrandProfilePage() {
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleGoBack}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToKeywords}>Next</button>
-            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'keywords' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToDetails}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToRelated}>Next</button>
-            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'related' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToKeywords}>Back</button>
+            <button className={styles.saveBtn} onClick={handleAdvanceToLsi}>Next</button>
+          </div>
+        )}
+        {step === 'lsi' && (
+          <div className={styles.headerBtns}>
+            <button className={styles.cancelBtn} onClick={handleBackToRelated}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLongtail}>Next</button>
-            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'longtail' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToRelated}>Back</button>
+            <button className={styles.cancelBtn} onClick={handleBackToLsi}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLlmQuestions}>Next</button>
-            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
         {step === 'llmquestions' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={handleBackToLongtail}>Back</button>
             <button className={styles.saveBtn}>Next</button>
-            <button className={styles.refreshBtn}><RefreshCw size={14} strokeWidth={2} /></button>
           </div>
         )}
       </header>
@@ -694,35 +729,75 @@ export default function NewBrandProfilePage() {
 
           {/* Card 1 - Intro */}
           {step === 'intro' && (
-            <div className={`${styles.card} ${card1Active ? styles.cardActive : ''}`}>
-              <div className={styles.iconCircle}>
-                <Plus size={14} strokeWidth={2.5} />
+            <div className={`${styles.introRow} ${card1Active ? styles.introRowActive : ''}`}>
+
+              {/* Left: info card */}
+              <div className={styles.introInfoCard}>
+                <div className={`${styles.iconSquare} ${styles.iconSquareInfo}`}>
+                  <Globe size={14} strokeWidth={2} />
+                </div>
+                <h2 className={styles.card2Title}>Create a brand profile</h2>
+                <p className={styles.card2Desc}>
+                  We'll follow a simple process to create your brand profile. It should take just a few minutes.
+                </p>
+                <hr className={styles.divider} />
+                <ul className={styles.introExamples}>
+                  <li className={styles.introExampleItem}>
+                    <span className={styles.introExampleTitle}>Home page</span>
+                    <span className={styles.introExampleDesc}>Brand positioning, tone and core messaging</span>
+                  </li>
+                  <li className={styles.introExampleItem}>
+                    <span className={styles.introExampleTitle}>Product page</span>
+                    <span className={styles.introExampleDesc}>Features, benefits and product-level messaging</span>
+                  </li>
+                  <li className={styles.introExampleItem}>
+                    <span className={styles.introExampleTitle}>Solutions page</span>
+                    <span className={styles.introExampleDesc}>How your offering solves customer problems</span>
+                  </li>
+                  <li className={styles.introExampleItem}>
+                    <span className={styles.introExampleTitle}>Services page</span>
+                    <span className={styles.introExampleDesc}>Service categories, scope and positioning details</span>
+                  </li>
+                  <li className={styles.introExampleItem}>
+                    <span className={styles.introExampleTitle}>Case study page</span>
+                    <span className={styles.introExampleDesc}>Proof points, outcomes and success context</span>
+                  </li>
+                </ul>
+                <p className={styles.introFootnote}>Note: This is an indicative, not exhaustive list.</p>
               </div>
-              <h2 className={styles.cardTitle}>Create a brand profile</h2>
-              <p className={styles.cardDesc}>
-                We'll follow a simple process to create your brand profile. It should take just a few minutes.
-              </p>
-              <hr className={styles.divider} />
-              <div className={styles.steps}>
-                {STEPS.map((s, i) => (
-                  <div key={i} className={styles.step}>
-                    <div className={styles.stepCircle}>{i + 1}</div>
-                    <span className={styles.stepLabel}>{s}</span>
-                  </div>
-                ))}
+
+              {/* Right: website URL card */}
+              <div className={styles.introWebsiteCard}>
+                <div className={`${styles.iconSquare} ${styles.iconSquareWebsite}`}>
+                  <Link size={14} strokeWidth={2} />
+                </div>
+                <h2 className={styles.card2Title}>Website URL</h2>
+                <p className={styles.card2Desc}>
+                  Enter the URL of the page you want to scan and our AI agents will synthesize the required information.
+                </p>
+                <hr className={styles.divider} />
+                <div className={styles.steps}>
+                  {STEPS.map((s, i) => (
+                    <div key={i} className={styles.step}>
+                      <div className={styles.stepCircle}>{i + 1}</div>
+                      <span className={styles.stepLabel}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.websiteInputWrap}>
+                  <input
+                    className={styles.websiteInput} type="text" value={website}
+                    onChange={e => setWebsite(e.target.value)} ref={websiteInputRef}
+                    onKeyDown={e => { if (e.key === 'Enter' && canScan) handleAdvance(); }}
+                    placeholder="Enter your company website"
+                  />
+                  <button className={styles.websiteArrowBtn} disabled={!canScan} onClick={handleAdvance}>
+                    <Sparkles size={13} strokeWidth={2} />
+                    AI scan
+                  </button>
+                </div>
               </div>
-              <div className={styles.websiteInputWrap}>
-                <input
-                  className={styles.websiteInput} type="text" value={website}
-                  onChange={e => setWebsite(e.target.value)} ref={websiteInputRef}
-                  onKeyDown={e => { if (e.key === 'Enter' && canScan) handleAdvance(); }}
-                  placeholder="Enter your company website"
-                />
-                <button className={styles.websiteArrowBtn} disabled={!canScan} onClick={handleAdvance}>
-                  <Sparkles size={13} strokeWidth={2} />
-                  AI scan
-                </button>
-              </div>
+
             </div>
           )}
 
@@ -758,29 +833,85 @@ export default function NewBrandProfilePage() {
                   </div>
                 </div>
               </div>
-              <div className={styles.card2Advanced}>
-                <div className={styles.card2Body}>
-                  <div className={`${styles.iconSquare} ${styles.iconSquareAdvanced}`}><Layers size={14} strokeWidth={2} /></div>
-                  <h2 className={styles.card2Title}>Advanced details</h2>
-                  <p className={styles.card2Desc}>Deeper brand context for targeted content.</p>
-                  <div className={`${styles.card2Fields} ${styles.card2FieldsFlex}`}>
-                    <div className={`${styles.fieldGroup} ${styles.fieldGroupFlex}`}>
-                      <label className={styles.fieldLabel}>Target audience</label>
-                      <textarea className={styles.fieldTextarea} value={form.targetAudience} onChange={e => updateForm('targetAudience', e.target.value)} placeholder="Who your product or service is for" />
-                    </div>
-                    <div className={`${styles.fieldGroup} ${styles.fieldGroupFlex}`}>
-                      <label className={styles.fieldLabel}>Problem</label>
-                      <textarea className={styles.fieldTextarea} value={form.problem} onChange={e => updateForm('problem', e.target.value)} placeholder="What problem does your company solve?" />
-                    </div>
-                    <div className={`${styles.fieldGroup} ${styles.fieldGroupFlex}`}>
-                      <label className={styles.fieldLabel}>Solution</label>
-                      <textarea className={styles.fieldTextarea} value={form.solution} onChange={e => updateForm('solution', e.target.value)} placeholder="How does your product or service solve it?" />
-                    </div>
-                    <div className={`${styles.fieldGroup} ${styles.fieldGroupFlex}`}>
-                      <label className={styles.fieldLabel}>USPs</label>
-                      <textarea className={styles.fieldTextarea} value={form.usps} onChange={e => updateForm('usps', e.target.value)} placeholder="What makes you uniquely different?" />
-                    </div>
+              <div className={styles.card2ContextCard}>
+                <div className={styles.card3Head}>
+                  <div className={`${styles.iconSquare} ${styles.iconSquareAdvanced}`}>
+                    <Layers size={14} strokeWidth={2} />
                   </div>
+                  <h2 className={styles.card2Title}>Brand context</h2>
+                  <p className={styles.card2Desc}>Core positioning and differentiation for content generation.</p>
+                </div>
+                <div className={styles.desktopContextTable}>
+                  <div className={styles.tableWrapper}>
+                    <table className={`${styles.kwTable} ${styles.contextTable}`}>
+                      <colgroup>
+                        <col className={styles.colContextLabel} />
+                        <col />
+                        <col className={styles.colActions} />
+                      </colgroup>
+                      <tbody className={styles.kwTbody}>
+                        {CONTEXT_ROWS.map(({ key, label, placeholder }) => {
+                          const isEditing = contextEditingField === key;
+                          return (
+                            <Fragment key={key}>
+                              <tr className={`${styles.kwRow} ${isEditing ? styles.kwRowEditing : ''}`}>
+                                <td><span className={styles.kwTag} style={CONTEXT_LABEL_COLORS[key]}>{label}</span></td>
+                                <td>
+                                  {isEditing ? (
+                                    <textarea
+                                      className={styles.editContextTextarea}
+                                      value={contextEditDraft}
+                                      onChange={e => setContextEditDraft(e.target.value)}
+                                      placeholder={placeholder}
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <span className={styles.cellClamp}>{form[key]}</span>
+                                  )}
+                                </td>
+                                <td>
+                                  <div className={styles.actionsCell}>
+                                    {!isEditing && (
+                                      <button
+                                        className={styles.rowIconBtn}
+                                        onClick={() => { setContextEditingField(key); setContextEditDraft(form[key]); }}
+                                      >
+                                        <Pencil size={13} strokeWidth={2} />
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                              {isEditing && (
+                                <tr className={styles.saveCancelRow}>
+                                  <td />
+                                  <td colSpan={2}>
+                                    <div className={styles.saveCancelBtns}>
+                                      <button className={styles.cancelTextBtn} onClick={() => setContextEditingField(null)}>Cancel</button>
+                                      <button className={styles.saveTextBtn} onClick={() => { updateForm(key, contextEditDraft); setContextEditingField(null); }}>Save</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </Fragment>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className={styles.mobileContextFields}>
+                  {CONTEXT_ROWS.map(({ key, label, placeholder }) => (
+                    <div key={key} className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel}>{label}</label>
+                      <textarea
+                        className={styles.fieldTextarea}
+                        value={form[key]}
+                        onChange={e => updateForm(key, e.target.value)}
+                        placeholder={placeholder}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -813,10 +944,25 @@ export default function NewBrandProfilePage() {
             />
           )}
 
-          {/* Card 5 - Long tail keywords */}
-          {step === 'longtail' && (
+          {/* Card 5 - LSI keywords */}
+          {step === 'lsi' && (
             <GroupedKeywordsTable
               className={`${styles.card3} ${card5Active ? styles.card3Active : ''}`}
+              title="LSI keywords"
+              description="Semantically related terms that reinforce topical relevance for each primary keyword."
+              icon={GitBranch}
+              iconClass={styles.iconSquareLsi}
+              initialData={SAMPLE_LSI_KEYWORDS}
+              keywordField="lsiKeyword"
+              keywordLabel="LSI keyword"
+              primaryKeywords={SAMPLE_KEYWORDS}
+            />
+          )}
+
+          {/* Card 6 - Long tail keywords */}
+          {step === 'longtail' && (
+            <GroupedKeywordsTable
+              className={`${styles.card3} ${card6Active ? styles.card3Active : ''}`}
               title="Long tail keywords"
               description="Specific, lower-competition phrases with higher intent sorted by primary keyword."
               icon={AlignLeft}
@@ -828,10 +974,10 @@ export default function NewBrandProfilePage() {
             />
           )}
 
-          {/* Card 6 - Key LLM questions */}
+          {/* Card 7 - Key LLM questions */}
           {step === 'llmquestions' && (
             <GroupedKeywordsTable
-              className={`${styles.card3} ${card6Active ? styles.card3Active : ''}`}
+              className={`${styles.card3} ${card7Active ? styles.card3Active : ''}`}
               title="Key LLM questions"
               description="Questions users ask AI tools related to your primary keywords - optimize content to be cited in LLM-generated answers."
               icon={HelpCircle}
