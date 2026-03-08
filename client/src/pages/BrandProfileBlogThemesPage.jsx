@@ -412,12 +412,16 @@ export default function BrandProfileBlogThemesPage() {
               ) : (
                 <div className={`${styles.panelCallout} ${styles.panelSectionSpaced}`}>
                   <p className={styles.panelCalloutText}>
-                    Use this blog theme in XEO blogs, brand articles and brand posts to write and distribute content, drive traffic to your website and generate inbound leads.
+                    Use this blog theme in XEO blogs, brand articles and brand posts to write and distribute content, drive traffic to your website and generate inbound leads that convert into paying customers.
                   </p>
                   <div className={styles.panelCalloutActions}>
                     <button className={styles.panelCalloutBtn} onClick={() => navigate('/xeo-blogs')}>
                       <ExternalLink size={13} />
                       Go to XEO blogs
+                    </button>
+                    <button className={styles.panelCalloutBtn} onClick={() => navigate('/brand-articles')}>
+                      <ExternalLink size={13} />
+                      Go to brand articles
                     </button>
                     <button className={styles.panelCalloutBtn} onClick={() => navigate('/brand-posts')}>
                       <ExternalLink size={13} />

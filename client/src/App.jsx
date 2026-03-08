@@ -17,6 +17,7 @@ const PersonalPostsPage    = lazy(() => import('./pages/PersonalPostsPage'));
 const PersonalProfilesPage = lazy(() => import('./pages/PersonalProfilesPage'));
 const PersonalCalendarPage = lazy(() => import('./pages/PersonalCalendarPage'));
 const BrandCalendarPage    = lazy(() => import('./pages/BrandCalendarPage'));
+const BrandArticlesPage            = lazy(() => import('./pages/BrandArticlesPage'));
 const NewBrandProfilePage          = lazy(() => import('./pages/NewBrandProfilePage'));
 const EditBrandProfilePage         = lazy(() => import('./pages/EditBrandProfilePage'));
 const BrandProfileBlogThemesPage   = lazy(() => import('./pages/BrandProfileBlogThemesPage'));
@@ -64,7 +65,8 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/brand-posts" replace />} />
         <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><BrandPostsPage /></Suspense>} />
-        <Route path="xeo-blogs"         element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
+        <Route path="xeo-blogs"          element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
+        <Route path="brand-articles"     element={<Suspense fallback={<LoadingSpinner />}><BrandArticlesPage /></Suspense>} />
         <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><BrandProfilesPage /></Suspense>} />
         <Route path="brand-profiles/new"                element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />
         <Route path="brand-profiles/edit/:profileSlug"  element={<Suspense fallback={<LoadingSpinner />}><EditBrandProfilePage /></Suspense>} />

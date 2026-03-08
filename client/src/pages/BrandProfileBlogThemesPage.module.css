@@ -65,7 +65,7 @@
   font-size: 13px;
   font-weight: 500;
   border-radius: var(--radius-s);
-  background: transparent;
+  background: #fff;
   color: var(--text-2);
   border: 1px solid var(--separator);
   white-space: nowrap;
@@ -221,7 +221,7 @@
   top: 0;
   right: 0;
   height: 100vh;
-  width: 540px;
+  width: 600px;
   max-width: 100vw;
   background: var(--card-bg);
   display: flex;
@@ -550,6 +550,15 @@
     background: #fee2e2;
     color: #dc2626;
     border-color: #fca5a5;
+  }
+
+  .panelCalloutActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .panelCalloutBtn {
+    justify-content: center;
   }
 }
 

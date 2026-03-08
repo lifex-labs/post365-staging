@@ -183,6 +183,7 @@ Writing and Style Rules:
 - Humanize all text. Write like a knowledgeable person explaining something to a colleague. Not like a textbook. Not like a press release. Vary sentence length. Use contractions where they feel natural. Let the writing breathe.
 - Target less than 30% AI-written content score on ZeroGPT.
 - Never use em-dashes or en-dashes. Use commas, periods, or rewrite the sentence instead.
+- Use sentence case throughout all text fields. Do not capitalize the first letter of every word. Only capitalize proper nouns, brand names, acronyms, and the first word of a sentence.
 - When referencing external data, include credible third-party links and references (industry reports, well-known publications, research papers). Weave them naturally into the text. Do not use numbered citations like [1] or [2]. Instead, mention the source by name in the sentence itself.
 
 

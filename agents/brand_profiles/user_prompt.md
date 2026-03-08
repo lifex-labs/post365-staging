@@ -52,5 +52,6 @@ Reminders:
 
 - Write in simple English. Short sentences. Natural, human tone.
 - No em-dashes. No en-dashes. Use commas or periods instead.
+- Use sentence case everywhere. Do not capitalize the first letter of every word. Only capitalize proper nouns, brand names, acronyms, and the first word of a sentence.
 - Keep the writing under 30% AI score on ZeroGPT. Vary sentence structure. Use contractions. Sound like a real person.
 - Return the entire result as a single valid JSON object following the schema defined in your instructions.

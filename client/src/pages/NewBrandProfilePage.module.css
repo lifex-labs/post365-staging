@@ -53,7 +53,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--text);
-  background: transparent;
+  background: #fff;
   border: 1px solid var(--separator);
   border-radius: var(--radius-s);
   cursor: pointer;
@@ -315,7 +315,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 32px !important;
+  height: 36px !important;
   width: 100%;
   justify-content: center;
   margin-top: 8px;
