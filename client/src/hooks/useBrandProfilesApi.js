@@ -29,5 +29,6 @@ export function useBrandProfilesApi() {
     updateProfile:  (slug, data) => apiFetch(`/api/brand-profiles/${slug}`, { method: 'PUT',    body: JSON.stringify(data) }),
     deleteProfile:  (slug)       => apiFetch(`/api/brand-profiles/${slug}`, { method: 'DELETE' }),
     seedProfile:    ()           => apiFetch('/api/brand-profiles/seed',    { method: 'POST' }),
+    scanWebsite:    (urls, signal) => apiFetch('/api/brand-profile-agent/scan', { method: 'POST', body: JSON.stringify({ urls }), signal }),
   };
 }

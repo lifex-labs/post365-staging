@@ -20,11 +20,30 @@ export default function BrandProfileBlogThemesPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editDraft, setEditDraft] = useState(null);
 
+  // Normalize a blog theme from raw agent format to view format, if needed
+  function normalizeTheme(t, i) {
+    if (t.theme !== undefined) return t; // already normalized
+    return {
+      id:             t.number ?? i + 1,
+      primaryKeyword: (t.primary_keywords_included || [])[0] || '',
+      theme:          t.blog_theme   || '',
+      summary:        t.blog_theme_summary || '',
+      date:           new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+      keywords: {
+        primary:      t.primary_keywords_included   || [],
+        related:      t.related_keywords_included   || [],
+        lsi:          t.lsi_keywords_included       || [],
+        longtail:     t.long_tail_keywords_included || [],
+        llmQuestions: t.key_llm_questions_included  || [],
+      },
+    };
+  }
+
   useEffect(() => {
     api.getProfile(profileSlug)
       .then(res => {
         setProfile(res.profile);
-        setThemes(res.profile.blog_themes || []);
+        setThemes((res.profile.blog_themes || []).map(normalizeTheme));
       })
       .finally(() => setLoading(false));
   }, [profileSlug]);

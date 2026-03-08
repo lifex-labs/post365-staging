@@ -236,43 +236,89 @@
 }
 
 /* ===== Website input wrapper ===== */
-.websiteInputWrap {
-  position: relative;
+/* ===== URL tag input ===== */
+.urlTagBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-s);
+  padding: 6px 10px;
+  background: #ffffff;
+  cursor: text;
+  transition: border-color 0.15s;
   margin-top: auto;
 }
 
-.websiteInput {
-  width: 100%;
-  height: 36px;
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  border-radius: var(--radius-s);
-  padding: 0 96px 0 12px;
-  background: #ffffff;
-  font-size: 14px;
-  color: var(--text);
-  outline: none;
-  font-family: var(--font);
-  min-width: 0;
-  transition: border-color 0.15s;
-}
-
-.websiteInput:focus {
+.urlTagBox:focus-within {
   border-color: var(--blue);
 }
 
-.websiteInput::placeholder {
+.urlTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 6px 0 8px;
+  background: var(--blue-bg);
+  color: var(--blue);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.urlTagRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 2px;
+  color: var(--blue);
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.urlTagRemove:hover {
+  opacity: 1;
+}
+
+.urlTagInput {
+  flex: 1;
+  min-width: 160px;
+  height: 24px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--font);
+  padding: 0;
+}
+
+.urlTagInput::placeholder {
   color: var(--text-3);
 }
 
 .websiteArrowBtn {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 28px !important;
+  height: 32px !important;
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
   padding: 0 12px !important;
   font-size: 13px;
   font-weight: 500;
@@ -1325,4 +1371,128 @@
 .buildViewBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ===== Scanning modal ===== */
+.scanModal {
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.scanningIcon {
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinnerIcon {
+  animation: spin 1s linear infinite;
+  color: var(--blue);
+}
+
+.scanProgressTop {
+  margin-top: 20px;
+}
+
+.scanActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.scanCancelBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--separator);
+  cursor: pointer;
+}
+
+.scanCancelBtn:hover {
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+/* ===== Cancel confirmation modal ===== */
+.confirmModal {
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confirmTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.confirmDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.confirmKeepBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--separator);
+  cursor: pointer;
+}
+
+.confirmKeepBtn:hover {
+  background: var(--hover-overlay);
+}
+
+.confirmStopBtn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-s);
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.confirmStopBtn:hover {
+  background: #b91c1c;
+}
+
+/* ===== Scan error ===== */
+.scanError {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 6px;
 }
