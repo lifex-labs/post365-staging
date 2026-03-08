@@ -1,147 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { Pencil, Trash2, X, ExternalLink, BookOpen } from 'lucide-react';
-import { BRAND_PROFILES } from '../data/brandProfiles';
+import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import modalStyles from '../components/LogoutModal.module.css';
 import styles from './BrandProfileBlogThemesPage.module.css';
-
-const MOCK_BLOG_THEMES = [
-  {
-    id: 1,
-    primaryKeyword: 'content marketing platform',
-    theme: 'How to scale B2B content production without hiring more writers',
-    summary: 'Explores how marketing teams can use AI-powered platforms to increase content output, maintain brand consistency, and reduce reliance on freelancers - with a focus on workflow automation and quality control at scale.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['content marketing platform', 'B2B content production', 'content automation', 'marketing workflow'],
-      related: ['content management system', 'editorial workflow tool', 'content operations', 'marketing automation platform'],
-      lsi: ['content velocity', 'brand voice consistency', 'editorial calendar', 'content governance', 'scalable content ops'],
-      longtail: ['how to scale content marketing without more staff', 'B2B content production platform for teams', 'automate content workflow for marketing teams'],
-      llmQuestions: ['What is the best platform for scaling B2B content production?', 'How do marketing teams automate content creation?', 'Can AI replace freelance writers for B2B content?'],
-    },
-  },
-  {
-    id: 2,
-    primaryKeyword: 'AI blog writer',
-    theme: "The CMO's guide to AI blog writing: what works and what doesn't",
-    summary: 'A practical breakdown of how senior marketers are integrating AI writing tools into their content teams, covering use cases, limitations, editorial standards, and how to maintain a distinctive brand voice.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['AI blog writer', 'AI content generation', 'AI writing tool', 'automated blog writing'],
-      related: ['AI copywriting tool', 'generative AI for content', 'machine learning content creator', 'GPT blog writer'],
-      lsi: ['brand voice AI', 'editorial AI workflow', 'content quality AI', 'AI-assisted writing', 'human-AI collaboration'],
-      longtail: ['best AI blog writer for marketing teams', 'how CMOs use AI writing tools', 'AI blog writing tools that maintain brand voice'],
-      llmQuestions: ['Which AI writing tool is best for B2B blogs?', 'How do I maintain brand voice when using AI to write blogs?', 'What are the limitations of AI blog writers?'],
-    },
-  },
-  {
-    id: 3,
-    primaryKeyword: 'SEO content generation',
-    theme: 'SEO content generation at scale: a step-by-step framework',
-    summary: 'A detailed playbook for generating SEO-optimised content in volume - covering keyword clustering, AI-assisted drafting, on-page optimisation, and internal linking strategies that improve organic rankings without sacrificing quality.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['SEO content generation', 'SEO content strategy', 'content SEO', 'organic content creation'],
-      related: ['on-page SEO', 'keyword clustering', 'content optimisation tool', 'SEO writing assistant'],
-      lsi: ['topical authority', 'semantic SEO', 'content cluster', 'internal linking strategy', 'SERP ranking'],
-      longtail: ['how to generate SEO content at scale', 'step-by-step SEO content framework for brands', 'AI SEO content generation playbook'],
-      llmQuestions: ['What is the best framework for generating SEO content at scale?', 'How does keyword clustering improve SEO content?', 'Can AI-generated content rank on Google?'],
-    },
-  },
-  {
-    id: 4,
-    primaryKeyword: 'B2B content strategy',
-    theme: 'Building a B2B content strategy that drives measurable pipeline',
-    summary: 'Outlines a revenue-focused content strategy framework for B2B marketing teams, covering audience segmentation, content-to-pipeline attribution, channel selection, and how to align editorial calendars with sales cycles.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['B2B content strategy', 'B2B marketing content', 'content-led growth', 'revenue content strategy'],
-      related: ['B2B demand generation', 'content pipeline attribution', 'B2B editorial calendar', 'content marketing ROI'],
-      lsi: ['pipeline attribution model', 'buyer journey content', 'sales enablement content', 'content funnel', 'ABM content'],
-      longtail: ['how to build a B2B content strategy for pipeline growth', 'B2B content marketing attribution framework', 'aligning editorial calendar with sales cycles'],
-      llmQuestions: ['How do I measure content impact on B2B pipeline?', 'What content types work best for B2B demand generation?', 'How do I align content strategy with the B2B sales cycle?'],
-    },
-  },
-  {
-    id: 5,
-    primaryKeyword: 'XEO optimization',
-    theme: 'XEO optimization: the next evolution of search content strategy',
-    summary: 'Introduces XEO as the unified approach combining SEO, AEO, and GEO - explaining how brands can optimize content to rank in traditional search, appear in featured snippets, and get cited by AI-generated answers simultaneously.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['XEO optimization', 'XEO content strategy', 'search experience optimization', 'multi-channel search'],
-      related: ['AEO answer engine optimization', 'GEO generative engine optimization', 'featured snippet optimization', 'AI search visibility'],
-      lsi: ['SGE content', 'zero-click search', 'structured content', 'entity optimization', 'AI citation strategy'],
-      longtail: ['what is XEO optimization and how does it work', 'how to optimize content for AI search and traditional SEO', 'XEO strategy for B2B content teams'],
-      llmQuestions: ['What is XEO optimization?', 'How does XEO differ from SEO and AEO?', 'How do I get my content cited by AI-generated answers?'],
-    },
-  },
-  {
-    id: 6,
-    primaryKeyword: 'brand content calendar',
-    theme: 'How to build a brand content calendar that your team will actually use',
-    summary: 'A practical guide to creating and maintaining a content calendar that connects editorial planning with publishing workflows, team collaboration, and performance tracking - including templates and tool recommendations.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['brand content calendar', 'editorial calendar', 'content planning tool', 'publishing schedule'],
-      related: ['content workflow management', 'content scheduling tool', 'team content calendar', 'marketing calendar template'],
-      lsi: ['editorial workflow', 'content cadence', 'publishing rhythm', 'content team collaboration', 'campaign planning'],
-      longtail: ['how to build a content calendar your team will actually use', 'best content calendar tools for marketing teams', 'brand content calendar template and guide'],
-      llmQuestions: ['What is the best tool for managing a brand content calendar?', 'How do I get my team to consistently use a content calendar?', 'How do I connect my editorial calendar to publishing workflows?'],
-    },
-  },
-  {
-    id: 7,
-    primaryKeyword: 'thought leadership content',
-    theme: 'Thought leadership at scale: turning executive insights into inbound leads',
-    summary: 'Shows B2B brands how to systematically create thought leadership content from executive interviews, internal data, and proprietary research - and how to distribute it across channels to build credibility and generate inbound pipeline.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['thought leadership content', 'executive content', 'B2B thought leadership', 'expert-led content'],
-      related: ['original research content', 'proprietary data content', 'executive ghostwriting', 'founder-led marketing'],
-      lsi: ['credibility content', 'authority building', 'inbound lead generation', 'trust-based marketing', 'content distribution'],
-      longtail: ['how to turn executive insights into thought leadership content', 'B2B thought leadership content strategy for inbound leads', 'scaling executive thought leadership at a B2B company'],
-      llmQuestions: ['How do B2B brands create effective thought leadership content?', 'What types of executive content generate the most inbound leads?', 'How do I scale thought leadership content production?'],
-    },
-  },
-  {
-    id: 8,
-    primaryKeyword: 'inbound lead generation content',
-    theme: 'Content-led inbound: how to turn organic traffic into qualified sales leads',
-    summary: 'Breaks down the content types, conversion paths, and optimization strategies that turn blog readers into pipeline - covering lead magnets, CTAs, content upgrades, and how to measure content contribution to revenue.',
-    date: 'Mar 7, 2026',
-    keywords: {
-      primary: ['inbound lead generation content', 'content-led inbound', 'organic lead generation', 'content conversion strategy'],
-      related: ['lead magnet content', 'CTA optimization', 'content upgrade strategy', 'blog-to-lead conversion'],
-      lsi: ['conversion path optimization', 'content funnel', 'lead nurture content', 'gated content strategy', 'revenue attribution'],
-      longtail: ['how to turn organic blog traffic into qualified sales leads', 'best content types for inbound lead generation', 'content-led inbound marketing strategy for B2B'],
-      llmQuestions: ['What content types convert organic traffic into leads most effectively?', 'How do I measure content contribution to revenue?', 'What is a content-led inbound strategy and how does it work?'],
-    },
-  },
-];
 
 export default function BrandProfileBlogThemesPage() {
   const { profileSlug } = useParams();
   const navigate = useNavigate();
-  const profileData = BRAND_PROFILES.find(p => p.slug === profileSlug);
-  const profile = profileData
-    ? { companyName: profileData.name, website: profileData.website, industry: profileData.industry, foundedYear: profileData.foundedYear }
-    : { companyName: 'Unknown', website: '', industry: '', foundedYear: '' };
-  const [themes, setThemes] = useState(MOCK_BLOG_THEMES);
+  const api = useBrandProfilesApi();
+
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
+  const [themes, setThemes] = useState([]);
   const [deletingId, setDeletingId] = useState(null);
   const [showDeleteProfile, setShowDeleteProfile] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editDraft, setEditDraft] = useState(null);
 
-  function handleDelete(id) {
-    setThemes(prev => prev.filter(t => t.id !== id));
-    setDeletingId(null);
+  useEffect(() => {
+    api.getProfile(profileSlug)
+      .then(res => {
+        setProfile(res.profile);
+        setThemes(res.profile.blog_themes || []);
+      })
+      .finally(() => setLoading(false));
+  }, [profileSlug]);
+
+  async function persistThemes(updatedThemes) {
+    try {
+      await api.updateProfile(profileSlug, { blogThemes: updatedThemes });
+    } catch {
+      // silently ignore — UI already reflects the change
+    }
   }
 
-  function handleDeleteProfile() {
-    setShowDeleteProfile(false);
+  async function handleDeleteProfile() {
+    try {
+      await api.deleteProfile(profileSlug);
+    } finally {
+      setShowDeleteProfile(false);
+      navigate('/brand-profiles');
+    }
+  }
+
+  function handleDelete(id) {
+    const updatedThemes = themes.filter(t => t.id !== id);
+    setThemes(updatedThemes);
+    setDeletingId(null);
+    persistThemes(updatedThemes);
   }
 
   function handleCardClick(theme) {
@@ -158,13 +67,13 @@ export default function BrandProfileBlogThemesPage() {
 
   function handleEditOpen() {
     setEditDraft({
-      theme: selectedTheme.theme,
-      summary: selectedTheme.summary,
-      primaryKw: selectedTheme.keywords.primary.join('\n'),
-      relatedKw: selectedTheme.keywords.related.join('\n'),
-      lsiKw: selectedTheme.keywords.lsi.join('\n'),
+      theme:      selectedTheme.theme,
+      summary:    selectedTheme.summary,
+      primaryKw:  selectedTheme.keywords.primary.join('\n'),
+      relatedKw:  selectedTheme.keywords.related.join('\n'),
+      lsiKw:      selectedTheme.keywords.lsi.join('\n'),
       longtailKw: selectedTheme.keywords.longtail.join('\n'),
-      llmKw: selectedTheme.keywords.llmQuestions.join('\n'),
+      llmKw:      selectedTheme.keywords.llmQuestions.join('\n'),
     });
     setIsEditing(true);
   }
@@ -178,27 +87,55 @@ export default function BrandProfileBlogThemesPage() {
     const parseLine = str => str.split('\n').map(s => s.trim()).filter(Boolean);
     const updated = {
       ...selectedTheme,
-      theme: editDraft.theme,
+      theme:   editDraft.theme,
       summary: editDraft.summary,
       keywords: {
-        primary: parseLine(editDraft.primaryKw),
-        related: parseLine(editDraft.relatedKw),
-        lsi: parseLine(editDraft.lsiKw),
-        longtail: parseLine(editDraft.longtailKw),
+        primary:      parseLine(editDraft.primaryKw),
+        related:      parseLine(editDraft.relatedKw),
+        lsi:          parseLine(editDraft.lsiKw),
+        longtail:     parseLine(editDraft.longtailKw),
         llmQuestions: parseLine(editDraft.llmKw),
       },
     };
-    setThemes(prev => prev.map(t => t.id === selectedTheme.id ? updated : t));
+    const updatedThemes = themes.map(t => t.id === selectedTheme.id ? updated : t);
+    setThemes(updatedThemes);
     setSelectedTheme(updated);
     setIsEditing(false);
     setEditDraft(null);
+    persistThemes(updatedThemes);
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.header}>
+          <div className={styles.headerText}>
+            <h1 className={styles.title}>Blog themes</h1>
+            <p className={styles.description}>Loading...</p>
+          </div>
+        </header>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.header}>
+          <div className={styles.headerText}>
+            <h1 className={styles.title}>Profile not found</h1>
+            <p className={styles.description}>The brand profile you are looking for does not exist.</p>
+          </div>
+        </header>
+      </div>
+    );
   }
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>{profile.companyName}</h1>
+          <h1 className={styles.title}>{profile.name}</h1>
           <p className={styles.description}>Viewing blog themes created for this brand profile.</p>
         </div>
         <div className={styles.headerActions}>
@@ -239,7 +176,7 @@ export default function BrandProfileBlogThemesPage() {
                 <button
                   className={styles.iconBtn}
                   title="Edit"
-                  onClick={e => { e.stopPropagation(); navigate(`/brand-profiles/edit/${profileSlug}`); }}
+                  onClick={e => { e.stopPropagation(); handleCardClick(theme); handleEditOpen(); }}
                 >
                   <Pencil size={13} />
                 </button>
@@ -260,7 +197,7 @@ export default function BrandProfileBlogThemesPage() {
         <div className={modalStyles.backdrop} onClick={() => setDeletingId(null)}>
           <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
             <p className={modalStyles.title}>Delete blog theme</p>
-            <p className={modalStyles.message}>This blog theme will be permanently removed. This action cannot be undone.</p>
+            <p className={modalStyles.message}>This blog theme will be permanently removed. This cannot be undone.</p>
             <div className={modalStyles.actions}>
               <button className={modalStyles.cancelBtn} onClick={() => setDeletingId(null)}>Cancel</button>
               <button className={modalStyles.logoutBtn} onClick={() => handleDelete(deletingId)}>Delete</button>
@@ -274,7 +211,7 @@ export default function BrandProfileBlogThemesPage() {
         <div className={modalStyles.backdrop} onClick={() => setShowDeleteProfile(false)}>
           <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
             <p className={modalStyles.title}>Delete brand profile</p>
-            <p className={modalStyles.message}>This will permanently delete the brand profile and all associated blog themes. This action cannot be undone.</p>
+            <p className={modalStyles.message}>This will permanently delete the brand profile and all associated blog themes. This cannot be undone.</p>
             <div className={modalStyles.actions}>
               <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteProfile(false)}>Cancel</button>
               <button className={modalStyles.logoutBtn} onClick={handleDeleteProfile}>Delete</button>
@@ -322,7 +259,7 @@ export default function BrandProfileBlogThemesPage() {
                 <dl className={styles.panelMeta}>
                   <div className={styles.panelMetaRow}>
                     <dt className={styles.panelMetaLabel}>Company</dt>
-                    <dd className={styles.panelMetaValue}>{profile.companyName}</dd>
+                    <dd className={styles.panelMetaValue}>{profile.name}</dd>
                   </div>
                   <div className={styles.panelMetaRow}>
                     <dt className={styles.panelMetaLabel}>Website</dt>

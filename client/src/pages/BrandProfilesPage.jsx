@@ -1,17 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
-import { BRAND_PROFILES } from '../data/brandProfiles';
+import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import styles from './BrandProfilesPage.module.css';
+
+function formatDate(isoStr) {
+  return new Date(isoStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
 export default function BrandProfilesPage() {
   const navigate = useNavigate();
-  const [profiles, setProfiles] = useState(BRAND_PROFILES);
-  const [deletingId, setDeletingId] = useState(null);
+  const api = useBrandProfilesApi();
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingSlug, setDeletingSlug] = useState(null);
 
-  function handleDelete(id) {
-    setProfiles(prev => prev.filter(p => p.id !== id));
+  useEffect(() => {
+    api.listProfiles()
+      .then(res => setProfiles(res.profiles))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleDelete(slug) {
+    try {
+      await api.deleteProfile(slug);
+      setProfiles(prev => prev.filter(p => p.slug !== slug));
+    } catch {
+      // silently ignore
+    }
   }
 
   return (
@@ -27,51 +44,57 @@ export default function BrandProfilesPage() {
         </button>
       </header>
 
-      <div className={styles.grid}>
-        {profiles.map(profile => {
-          const isComplete = profile.status === 'complete';
-          return (
-          <div key={profile.id} className={styles.card} onClick={() => navigate(`/brand-profiles/view/${profile.slug}`)}>
-            <div className={styles.cardHeader}>
-              <span className={`${styles.statusTag} ${isComplete ? styles.statusComplete : styles.statusDraft}`}>
-                {isComplete ? 'Complete' : 'Draft'}
-              </span>
-              <span className={styles.cardDate}>{profile.date}</span>
-            </div>
+      {loading ? (
+        <div className={styles.grid}>
+          {[1, 2, 3].map(i => <div key={i} className={`${styles.card} ${styles.cardSkeleton}`} />)}
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {profiles.map(profile => {
+            const isComplete = profile.status === 'complete';
+            return (
+              <div key={profile.id} className={styles.card} onClick={() => navigate(`/brand-profiles/view/${profile.slug}`)}>
+                <div className={styles.cardHeader}>
+                  <span className={`${styles.statusTag} ${isComplete ? styles.statusComplete : styles.statusDraft}`}>
+                    {isComplete ? 'Complete' : 'Draft'}
+                  </span>
+                  <span className={styles.cardDate}>{formatDate(profile.created_at)}</span>
+                </div>
 
-            <div className={styles.cardBody}>
-              <h3 className={styles.cardName} title={profile.name}>{profile.name}</h3>
-              {profile.summary && <p className={styles.cardDesc} title={profile.summary}>{profile.summary}</p>}
-            </div>
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardName} title={profile.name}>{profile.name}</h3>
+                  {profile.summary && <p className={styles.cardDesc} title={profile.summary}>{profile.summary}</p>}
+                </div>
 
-            <div className={styles.cardFooter}>
-              <div className={styles.cardContextual} />
-              <div className={styles.cardActions}>
-                <button
-                  className={styles.iconBtn}
-                  title="Edit"
-                  onClick={e => { e.stopPropagation(); navigate(`/brand-profiles/edit/${profile.slug}`); }}
-                >
-                  <Pencil size={13} />
-                </button>
-                <button
-                  className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                  onClick={e => { e.stopPropagation(); setDeletingId(profile.id); }}
-                  title="Delete"
-                >
-                  <Trash2 size={13} />
-                </button>
+                <div className={styles.cardFooter}>
+                  <div className={styles.cardContextual} />
+                  <div className={styles.cardActions}>
+                    <button
+                      className={styles.iconBtn}
+                      title="Edit"
+                      onClick={e => { e.stopPropagation(); navigate(`/brand-profiles/edit/${profile.slug}`); }}
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                      onClick={e => { e.stopPropagation(); setDeletingSlug(profile.slug); }}
+                      title="Delete"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
-      {deletingId !== null && (
+      {deletingSlug !== null && (
         <DeleteModal
-          onConfirm={() => { handleDelete(deletingId); setDeletingId(null); }}
-          onCancel={() => setDeletingId(null)}
+          onConfirm={() => { handleDelete(deletingSlug); setDeletingSlug(null); }}
+          onCancel={() => setDeletingSlug(null)}
         />
       )}
     </div>

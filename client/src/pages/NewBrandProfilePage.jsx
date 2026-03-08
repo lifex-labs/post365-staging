@@ -7,8 +7,9 @@ import modalStyles from '../components/LogoutModal.module.css';
 import {
   CONTEXT_ROWS, CONTEXT_LABEL_COLORS,
   SAMPLE_KEYWORDS, SAMPLE_RELATED_KEYWORDS, SAMPLE_LSI_KEYWORDS, SAMPLE_LONGTAIL_KEYWORDS, SAMPLE_LLM_QUESTIONS,
-  KeywordsTable, GroupedKeywordsTable,
-} from '../components/BrandProfileWizardShared';
+} from '../components/BrandProfileWizardConstants';
+import { KeywordsTable, GroupedKeywordsTable } from '../components/BrandProfileWizardShared';
+import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 
 const STEPS = [
   'Overall company details',
@@ -25,6 +26,7 @@ const isValidWebsite = (value) =>
 
 export default function NewBrandProfilePage() {
   const navigate = useNavigate();
+  const api = useBrandProfilesApi();
   const [website, setWebsite] = useState('');
   const websiteInputRef = useRef(null);
   const canScan = isValidWebsite(website);
@@ -41,6 +43,13 @@ export default function NewBrandProfilePage() {
     valueProposition: 'Post365 gives B2B marketing teams the fastest path from keyword strategy to published, search-optimised content - combining AI generation, brand consistency, and XEO in one platform.',
   });
 
+  // Lifted keyword state — preserves data across step transitions and passed to the API on save
+  const [keywordsData,  setKeywordsData]  = useState(SAMPLE_KEYWORDS);
+  const [relatedData,   setRelatedData]   = useState(SAMPLE_RELATED_KEYWORDS);
+  const [lsiData,       setLsiData]       = useState(SAMPLE_LSI_KEYWORDS);
+  const [longtailData,  setLongtailData]  = useState(SAMPLE_LONGTAIL_KEYWORDS);
+  const [llmData,       setLlmData]       = useState(SAMPLE_LLM_QUESTIONS);
+
   const [contextEditingField, setContextEditingField] = useState(null);
   const [contextEditDraft, setContextEditDraft] = useState('');
 
@@ -56,6 +65,7 @@ export default function NewBrandProfilePage() {
 
   const [showBuildingModal, setShowBuildingModal] = useState(false);
   const [buildProgress, setBuildProgress] = useState(0);
+  const [newProfileSlug, setNewProfileSlug] = useState(null);
   const buildDone = buildProgress >= 100;
 
   useEffect(() => { websiteInputRef.current?.focus(); }, []);
@@ -94,9 +104,34 @@ export default function NewBrandProfilePage() {
   const handleAdvanceToLlmQuestions  = () => transition(setCard6Active, 'llmquestions', setCard7Active);
   const handleBackToLongtail         = () => transition(setCard7Active, 'longtail',     setCard6Active);
 
-  function handleFinishLlm() {
+  async function handleFinishLlm() {
     setCard7Active(false);
     setTimeout(() => setShowBuildingModal(true), 160);
+
+    try {
+      const res = await api.createProfile({
+        name:             form.companyName,
+        website:          form.companyWebsite,
+        industry:         form.industry,
+        foundedYear:      form.foundedYear,
+        summary:          form.summary,
+        problem:          form.problem,
+        solution:         form.solution,
+        usps:             form.usps,
+        valueProposition: form.valueProposition,
+        primaryKeywords:  keywordsData,
+        relatedKeywords:  relatedData,
+        lsiKeywords:      lsiData,
+        longtailKeywords: longtailData,
+        llmQuestions:     llmData,
+        blogThemes:       [],
+        status:           'complete',
+        stepsCompleted:   6,
+      });
+      setNewProfileSlug(res.profile.slug);
+    } catch {
+      // If save fails, fall back to profiles list on view
+    }
   }
 
   function handleCancelBuilding() {
@@ -355,7 +390,8 @@ export default function NewBrandProfilePage() {
               description="Primary business and brand keywords for XEO"
               icon={Key}
               iconClass={styles.iconSquareKeywords}
-              initialKeywords={SAMPLE_KEYWORDS}
+              initialKeywords={keywordsData}
+              onDataChange={setKeywordsData}
             />
           )}
 
@@ -367,10 +403,11 @@ export default function NewBrandProfilePage() {
               description="Keyword variations and closely related search terms sorted by primary keyword."
               icon={Tags}
               iconClass={styles.iconSquareRelated}
-              initialData={SAMPLE_RELATED_KEYWORDS}
+              initialData={relatedData}
               keywordField="relatedKeyword"
               keywordLabel="Related keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setRelatedData}
             />
           )}
 
@@ -382,10 +419,11 @@ export default function NewBrandProfilePage() {
               description="Semantically related terms that reinforce topical relevance for each primary keyword."
               icon={GitBranch}
               iconClass={styles.iconSquareLsi}
-              initialData={SAMPLE_LSI_KEYWORDS}
+              initialData={lsiData}
               keywordField="lsiKeyword"
               keywordLabel="LSI keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setLsiData}
             />
           )}
 
@@ -397,10 +435,11 @@ export default function NewBrandProfilePage() {
               description="Specific, lower-competition phrases with higher intent sorted by primary keyword."
               icon={AlignLeft}
               iconClass={styles.iconSquareLongtail}
-              initialData={SAMPLE_LONGTAIL_KEYWORDS}
+              initialData={longtailData}
               keywordField="longtailKeyword"
               keywordLabel="Long tail keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setLongtailData}
             />
           )}
 
@@ -412,12 +451,13 @@ export default function NewBrandProfilePage() {
               description="Questions users ask AI tools related to your primary keywords - optimize content to be cited in LLM-generated answers."
               icon={HelpCircle}
               iconClass={styles.iconSquareLlm}
-              initialData={SAMPLE_LLM_QUESTIONS}
+              initialData={llmData}
               keywordField="llmQuestion"
               keywordLabel="LLM question"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
               addLabel="Add question"
               truncateKeyword
+              onDataChange={setLlmData}
             />
           )}
 
@@ -437,7 +477,7 @@ export default function NewBrandProfilePage() {
               <button
                 className={styles.buildViewBtn}
                 disabled={!buildDone}
-                onClick={() => navigate('/brand-profile/p365ai2026m07d07')}
+                onClick={() => navigate(newProfileSlug ? `/brand-profiles/view/${newProfileSlug}` : '/brand-profiles')}
               >
                 View results
               </button>

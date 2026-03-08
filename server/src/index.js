@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import apiRoutes from './routes/api.js';
+import brandProfilesRoutes from './routes/brandProfiles.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
+app.use('/api/brand-profiles', brandProfilesRoutes);
 
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

@@ -1,21 +1,21 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, GitBranch } from 'lucide-react';
-import { BRAND_PROFILES } from '../data/brandProfiles';
 import {
   CONTEXT_ROWS, CONTEXT_LABEL_COLORS,
-  SAMPLE_KEYWORDS, SAMPLE_RELATED_KEYWORDS, SAMPLE_LSI_KEYWORDS, SAMPLE_LONGTAIL_KEYWORDS, SAMPLE_LLM_QUESTIONS,
-  KeywordsTable, GroupedKeywordsTable,
-} from '../components/BrandProfileWizardShared';
+} from '../components/BrandProfileWizardConstants';
+import { KeywordsTable, GroupedKeywordsTable } from '../components/BrandProfileWizardShared';
+import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import styles from './NewBrandProfilePage.module.css';
 
 export default function EditBrandProfilePage() {
   const { profileSlug } = useParams();
   const navigate = useNavigate();
-
-  const profile = BRAND_PROFILES.find(p => p.slug === profileSlug);
+  const api = useBrandProfilesApi();
 
   const companyNameRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [step, setStep] = useState('details');
   const [card1Active, setCard1Active] = useState(true);
   const [card2Active, setCard2Active] = useState(false);
@@ -24,20 +24,49 @@ export default function EditBrandProfilePage() {
   const [card5Active, setCard5Active] = useState(false);
   const [card6Active, setCard6Active] = useState(false);
 
-  const [form, setForm] = useState(profile ? {
-    companyName:      profile.name,
-    companyWebsite:   profile.website,
-    industry:         profile.industry,
-    foundedYear:      profile.foundedYear,
-    summary:          profile.summary,
-    problem:          profile.problem,
-    solution:         profile.solution,
-    usps:             profile.usps,
-    valueProposition: profile.valueProposition,
-  } : {});
+  const [form, setForm] = useState({
+    companyName: '', companyWebsite: '', industry: '', foundedYear: '',
+    summary: '', problem: '', solution: '', usps: '', valueProposition: '',
+  });
+
+  // Lifted keyword state — loaded from API, preserved across step transitions
+  const [keywordsData,  setKeywordsData]  = useState([]);
+  const [relatedData,   setRelatedData]   = useState([]);
+  const [lsiData,       setLsiData]       = useState([]);
+  const [longtailData,  setLongtailData]  = useState([]);
+  const [llmData,       setLlmData]       = useState([]);
 
   const [contextEditingField, setContextEditingField] = useState(null);
   const [contextEditDraft, setContextEditDraft]       = useState('');
+
+  useEffect(() => {
+    api.getProfile(profileSlug)
+      .then(res => {
+        const p = res.profile;
+        setForm({
+          companyName:      p.name,
+          companyWebsite:   p.website,
+          industry:         p.industry,
+          foundedYear:      p.founded_year,
+          summary:          p.summary,
+          problem:          p.problem,
+          solution:         p.solution,
+          usps:             p.usps,
+          valueProposition: p.value_proposition,
+        });
+        setKeywordsData(p.primary_keywords  || []);
+        setRelatedData( p.related_keywords  || []);
+        setLsiData(     p.lsi_keywords      || []);
+        setLongtailData(p.longtail_keywords || []);
+        setLlmData(     p.llm_questions     || []);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [profileSlug]);
+
+  useEffect(() => {
+    if (step === 'details' && !loading) setTimeout(() => companyNameRef.current?.focus(), 350);
+  }, [step, loading]);
 
   function updateForm(key, value) { setForm(prev => ({ ...prev, [key]: value })); }
 
@@ -57,7 +86,45 @@ export default function EditBrandProfilePage() {
   const handleAdvanceToLlmQuestions = () => transition(setCard5Active, 'llmquestions', setCard6Active);
   const handleBackToLongtail       = () => transition(setCard6Active, 'longtail',      setCard5Active);
 
-  if (!profile) {
+  async function handleFinish() {
+    try {
+      await api.updateProfile(profileSlug, {
+        name:             form.companyName,
+        website:          form.companyWebsite,
+        industry:         form.industry,
+        foundedYear:      form.foundedYear,
+        summary:          form.summary,
+        problem:          form.problem,
+        solution:         form.solution,
+        usps:             form.usps,
+        valueProposition: form.valueProposition,
+        primaryKeywords:  keywordsData,
+        relatedKeywords:  relatedData,
+        lsiKeywords:      lsiData,
+        longtailKeywords: longtailData,
+        llmQuestions:     llmData,
+        status:           'complete',
+        stepsCompleted:   6,
+      });
+    } finally {
+      navigate('/brand-profiles');
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.header}>
+          <div className={styles.headerText}>
+            <h1 className={styles.title}>Edit brand profile</h1>
+            <p className={styles.description}>Loading profile...</p>
+          </div>
+        </header>
+      </div>
+    );
+  }
+
+  if (notFound) {
     return (
       <div className={styles.page}>
         <header className={styles.header}>
@@ -78,7 +145,7 @@ export default function EditBrandProfilePage() {
       <header className={styles.header}>
         <div className={styles.headerText}>
           <h1 className={styles.title}>Edit brand profile</h1>
-          <p className={styles.description}>Update company details and brand context for {profile.name}.</p>
+          <p className={styles.description}>Update company details and brand context for {form.companyName}.</p>
         </div>
 
         {step === 'details' && (
@@ -114,7 +181,7 @@ export default function EditBrandProfilePage() {
         {step === 'llmquestions' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
-            <button className={styles.saveBtn} onClick={() => navigate('/brand-profiles')}>Finish</button>
+            <button className={styles.saveBtn} onClick={handleFinish}>Finish</button>
           </div>
         )}
       </header>
@@ -232,7 +299,8 @@ export default function EditBrandProfilePage() {
               description="Primary business and brand keywords for XEO"
               icon={Key}
               iconClass={styles.iconSquareKeywords}
-              initialKeywords={SAMPLE_KEYWORDS}
+              initialKeywords={keywordsData}
+              onDataChange={setKeywordsData}
             />
           )}
 
@@ -244,10 +312,11 @@ export default function EditBrandProfilePage() {
               description="Keyword variations and closely related search terms sorted by primary keyword."
               icon={Tags}
               iconClass={styles.iconSquareRelated}
-              initialData={SAMPLE_RELATED_KEYWORDS}
+              initialData={relatedData}
               keywordField="relatedKeyword"
               keywordLabel="Related keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setRelatedData}
             />
           )}
 
@@ -259,10 +328,11 @@ export default function EditBrandProfilePage() {
               description="Semantically related terms that reinforce topical relevance for each primary keyword."
               icon={GitBranch}
               iconClass={styles.iconSquareLsi}
-              initialData={SAMPLE_LSI_KEYWORDS}
+              initialData={lsiData}
               keywordField="lsiKeyword"
               keywordLabel="LSI keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setLsiData}
             />
           )}
 
@@ -274,10 +344,11 @@ export default function EditBrandProfilePage() {
               description="Specific, lower-competition phrases with higher intent sorted by primary keyword."
               icon={AlignLeft}
               iconClass={styles.iconSquareLongtail}
-              initialData={SAMPLE_LONGTAIL_KEYWORDS}
+              initialData={longtailData}
               keywordField="longtailKeyword"
               keywordLabel="Long tail keyword"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
+              onDataChange={setLongtailData}
             />
           )}
 
@@ -289,12 +360,13 @@ export default function EditBrandProfilePage() {
               description="Questions users ask AI tools related to your primary keywords - optimize content to be cited in LLM-generated answers."
               icon={HelpCircle}
               iconClass={styles.iconSquareLlm}
-              initialData={SAMPLE_LLM_QUESTIONS}
+              initialData={llmData}
               keywordField="llmQuestion"
               keywordLabel="LLM question"
-              primaryKeywords={SAMPLE_KEYWORDS}
+              primaryKeywords={keywordsData}
               addLabel="Add question"
               truncateKeyword
+              onDataChange={setLlmData}
             />
           )}
 
