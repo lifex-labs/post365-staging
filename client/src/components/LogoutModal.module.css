@@ -55,3 +55,12 @@
 .logoutBtn:hover {
   background: #b91c1c;
 }
+
+.primaryBtn {
+  background: var(--blue);
+  color: #fff;
+}
+
+.primaryBtn:hover {
+  background: var(--blue-dark);
+}

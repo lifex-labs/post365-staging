@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Globe, Link, GitBranch, Flag } from 'lucide-react';
+import { Sparkles, Building2, Layers, Key, Tags, AlignLeft, HelpCircle, Pencil, Globe, Link, GitBranch } from 'lucide-react';
 import styles from './NewBrandProfilePage.module.css';
 import modalStyles from '../components/LogoutModal.module.css';
 import {
@@ -210,9 +210,7 @@ export default function NewBrandProfilePage() {
                     </div>
                   ))}
                   <div className={styles.step}>
-                    <div className={`${styles.stepCircle} ${styles.stepCircleGoal}`}>
-                      <Flag size={9} strokeWidth={2.5} />
-                    </div>
+                    <div className={styles.stepCircle}>7</div>
                     <span className={styles.stepLabel}>Blog themes &amp; clusters</span>
                   </div>
                 </div>

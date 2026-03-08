@@ -117,6 +117,7 @@ export function KeywordsTable({ className, title, description, icon: Icon, iconC
   const [isNewRow, setIsNewRow] = useState(false);
   const [editDraft, setEditDraft] = useState({ keyword: '', reason: '', volume: 'Medium', difficulty: 'Medium' });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showManualWarning, setShowManualWarning] = useState(false);
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
 
@@ -207,7 +208,7 @@ export function KeywordsTable({ className, title, description, icon: Icon, iconC
             <p className={styles.card2Desc}>{description}</p>
           </div>
           <div className={styles.card3HeadActions}>
-            <button className={styles.addRowBtn} onClick={handleAddRow}>
+            <button className={styles.addRowBtn} onClick={() => setShowManualWarning(true)}>
               <Plus size={13} strokeWidth={2.5} />
               Add keyword
             </button>
@@ -341,10 +342,24 @@ export function KeywordsTable({ className, title, description, icon: Icon, iconC
         <div className={modalStyles.backdrop} onClick={() => setShowDeleteConfirm(false)}>
           <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
             <p className={modalStyles.title}>Delete keywords</p>
-            <p className={modalStyles.message}>The selected keywords will be permanently removed from this profile. This action cannot be undone.</p>
+            <p className={modalStyles.message}>Selected keywords will be permanently removed from this profile. This cannot be undone.</p>
             <div className={modalStyles.actions}>
               <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
               <button className={modalStyles.logoutBtn} onClick={() => { handleDeleteSelected(); setShowDeleteConfirm(false); }}>Delete</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showManualWarning && createPortal(
+        <div className={modalStyles.backdrop} onClick={() => setShowManualWarning(false)}>
+          <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
+            <p className={modalStyles.title}>Manual input</p>
+            <p className={modalStyles.message}>AI won't process this keyword automatically. You'll need to manually add corresponding entries across all relevant steps in this workflow.</p>
+            <div className={modalStyles.actions}>
+              <button className={modalStyles.cancelBtn} onClick={() => setShowManualWarning(false)}>Cancel</button>
+              <button className={modalStyles.primaryBtn} onClick={() => { setShowManualWarning(false); handleAddRow(); }}>Proceed</button>
             </div>
           </div>
         </div>,
@@ -362,6 +377,7 @@ export function GroupedKeywordsTable({ className, title, description, icon: Icon
   const [isNewRow, setIsNewRow] = useState(false);
   const [editDraft, setEditDraft] = useState({ primaryKeyword: '', [keywordField]: '', volume: 'Medium', difficulty: 'Medium' });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showManualWarning, setShowManualWarning] = useState(false);
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
 
@@ -462,7 +478,7 @@ export function GroupedKeywordsTable({ className, title, description, icon: Icon
             <p className={styles.card2Desc}>{description}</p>
           </div>
           <div className={styles.card3HeadActions}>
-            <button className={styles.addRowBtn} onClick={handleAddRow}>
+            <button className={styles.addRowBtn} onClick={() => setShowManualWarning(true)}>
               <Plus size={13} strokeWidth={2.5} />
               {addLabel}
             </button>
@@ -598,10 +614,24 @@ export function GroupedKeywordsTable({ className, title, description, icon: Icon
         <div className={modalStyles.backdrop} onClick={() => setShowDeleteConfirm(false)}>
           <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
             <p className={modalStyles.title}>Delete keywords</p>
-            <p className={modalStyles.message}>The selected keywords will be permanently removed from this profile. This action cannot be undone.</p>
+            <p className={modalStyles.message}>Selected keywords will be permanently removed from this profile. This cannot be undone.</p>
             <div className={modalStyles.actions}>
               <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
               <button className={modalStyles.logoutBtn} onClick={() => { handleDeleteSelected(); setShowDeleteConfirm(false); }}>Delete</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showManualWarning && createPortal(
+        <div className={modalStyles.backdrop} onClick={() => setShowManualWarning(false)}>
+          <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
+            <p className={modalStyles.title}>Manual input</p>
+            <p className={modalStyles.message}>AI won't process this entry automatically. You'll need to manually add corresponding entries across all relevant steps in this workflow.</p>
+            <div className={modalStyles.actions}>
+              <button className={modalStyles.cancelBtn} onClick={() => setShowManualWarning(false)}>Cancel</button>
+              <button className={modalStyles.primaryBtn} onClick={() => { setShowManualWarning(false); handleAddRow(); }}>Proceed</button>
             </div>
           </div>
         </div>,
