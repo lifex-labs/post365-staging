@@ -9,14 +9,18 @@ export default function PostCard({ post, onDelete }) {
   return (
     <>
       <article className={styles.card}>
-        <div className={styles.meta}>
+        <div className={styles.cardHeader}>
           <span className={styles.category}>{post.category}</span>
           <span className={styles.date}>{post.date}</span>
         </div>
-        <h3 className={styles.title}>{post.title}</h3>
-        <p className={styles.excerpt}>{post.excerpt}</p>
-        <div className={styles.footer}>
-          <span className={styles.readTime}>{post.readTime} read</span>
+        <div className={styles.cardBody}>
+          <h3 className={styles.cardName} title={post.title}>{post.title}</h3>
+          <p className={styles.cardDesc} title={post.excerpt}>{post.excerpt}</p>
+        </div>
+        <div className={styles.cardFooter}>
+          <div className={styles.cardContextual}>
+            <span className={styles.readTime}>{post.readTime} read</span>
+          </div>
           <div className={styles.actions}>
             <button className={styles.iconBtn} title="Edit">
               <Pencil size={13} />

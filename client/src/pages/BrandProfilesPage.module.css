@@ -66,41 +66,41 @@
   background: var(--card-bg);
   border-radius: var(--radius-m);
   box-shadow: var(--card-shadow);
-  padding: 14px 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
   transition: box-shadow 0.15s;
+  cursor: pointer;
 }
 
 .card:hover {
   box-shadow: var(--card-shadow-hover);
 }
 
-.cardTop {
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.cardBody {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 6px;
+  flex: 1;
 }
 
 .cardName {
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
-  white-space: nowrap;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ===== Website row ===== */
-.websiteRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 /* ===== Fields grid ===== */
@@ -127,11 +127,7 @@
   min-width: 0;
 }
 
-.fields > :last-child {
-  margin-bottom: 4px;
-}
-
-.cardSummary {
+.cardDesc {
   font-size: 13px;
   color: var(--text-2);
   line-height: 1.5;
@@ -139,7 +135,6 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 12px;
 }
 
 .fieldValueMulti {
@@ -186,11 +181,16 @@
 }
 
 /* ===== Card footer ===== */
+.cardContextual {
+  display: flex;
+  align-items: center;
+}
+
 .cardFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: auto;
+  margin-top: 20px;
 }
 
 .cardDate {

@@ -22,16 +22,16 @@ const CATEGORY_COLORS = {
 };
 
 const SAMPLE_BLOGS = [
-  { title: 'How AI is Transforming B2B Content Marketing',              excerpt: 'AI is reshaping how brands create, distribute, and optimize content at scale.',          category: 'New',        date: 'Mar 1, 2026',  readTime: '6 min' },
-  { title: '10 SEO Mistakes That Are Killing Your Organic Traffic',     excerpt: 'Avoid these common pitfalls that silently drain your search rankings and visibility.',    category: 'New',        date: 'Feb 28, 2026', readTime: '8 min' },
-  { title: 'The Complete Guide to Competitor Gap Analysis',             excerpt: 'Find the topics your competitors rank for that you are missing and close the gap fast.',   category: 'Competitor', date: 'Feb 25, 2026', readTime: '10 min' },
-  { title: 'Why Your Blog Traffic Dropped and How to Fix It',           excerpt: 'Diagnose the root causes of traffic loss and apply targeted fixes to recover rankings.',  category: 'Refresh',    date: 'Feb 22, 2026', readTime: '5 min' },
-  { title: 'Product-Led Growth: Turning Features Into Blog Topics',     excerpt: 'Use your product features as a content engine to attract high-intent search traffic.',    category: 'Product',    date: 'Feb 19, 2026', readTime: '7 min' },
-  { title: 'GEO vs SEO: What Generative Engine Optimization Means for You', excerpt: 'Learn how to optimize content for AI-driven discovery alongside traditional search.', category: 'New',    date: 'Feb 16, 2026', readTime: '9 min' },
-  { title: 'How to Turn a Whitepaper Into 10 High-Traffic Blog Posts',  excerpt: 'Repurpose long-form research into a steady stream of SEO-optimized blog content.',       category: 'Whitepaper', date: 'Feb 13, 2026', readTime: '6 min' },
-  { title: 'Trending Topics Your Audience Is Searching for This Quarter', excerpt: 'Capture short-term traffic spikes by publishing around timely industry topics.',       category: 'Trending',   date: 'Feb 10, 2026', readTime: '4 min' },
-  { title: 'AEO Basics: Answering Questions Your Buyers Are Asking',    excerpt: 'Structure your content to appear in AI answer engines and voice search results.',         category: 'New',        date: 'Feb 7, 2026',  readTime: '5 min' },
-  { title: 'Launching a New Feature? Here Is Your Blog Content Plan',   excerpt: 'Contextualize product launches within search queries your ideal customers are making.',   category: 'Product',    date: 'Feb 4, 2026',  readTime: '7 min' },
+  { title: 'How AI is Transforming B2B Content Marketing',              excerpt: 'AI is fundamentally reshaping how B2B brands plan, produce, and distribute content at scale. From automated drafting to intelligent topic clustering, marketing teams are using AI to reduce production time, maintain brand consistency, and publish more without hiring additional writers.',          category: 'New',        date: 'Mar 1, 2026',  readTime: '6 min' },
+  { title: '10 SEO Mistakes That Are Killing Your Organic Traffic',     excerpt: 'Even well-intentioned SEO strategies can backfire. This post breaks down the ten most common mistakes - from keyword cannibalization to slow page speed - that quietly erode your search rankings and explains exactly how to diagnose and fix each one before they do further damage.',    category: 'New',        date: 'Feb 28, 2026', readTime: '8 min' },
+  { title: 'The Complete Guide to Competitor Gap Analysis',             excerpt: 'Competitor gap analysis reveals the keywords and topics your rivals rank for that your brand has not yet covered. This guide walks through the full process - from identifying gaps using SEO tools to prioritizing content that can realistically close the ranking difference fast.',   category: 'Competitor', date: 'Feb 25, 2026', readTime: '10 min' },
+  { title: 'Why Your Blog Traffic Dropped and How to Fix It',           excerpt: 'A sudden drop in blog traffic can have multiple causes - algorithm updates, index coverage issues, cannibalized keywords, or outdated content. This post helps you systematically diagnose the root cause using Search Console and analytics data, then apply targeted fixes to recover.',  category: 'Refresh',    date: 'Feb 22, 2026', readTime: '5 min' },
+  { title: 'Product-Led Growth: Turning Features Into Blog Topics',     excerpt: 'Your product roadmap is a content goldmine most marketing teams overlook. This post shows how to extract high-intent blog topics from product features, use cases, and customer jobs-to-be-done - creating content that attracts search traffic already in a buying mindset.',    category: 'Product',    date: 'Feb 19, 2026', readTime: '7 min' },
+  { title: 'GEO vs SEO: What Generative Engine Optimization Means for You', excerpt: 'Generative engine optimization is emerging as a discipline alongside traditional SEO as AI-powered tools like ChatGPT and Perplexity become primary research channels. This post explains what GEO is, how it differs from SEO, and how to structure content to rank in both.', category: 'New',    date: 'Feb 16, 2026', readTime: '9 min' },
+  { title: 'How to Turn a Whitepaper Into 10 High-Traffic Blog Posts',  excerpt: 'A single whitepaper or research report contains enough material for a dozen keyword-targeted blog posts. This guide covers how to extract distinct angles, map each to a search query, and repurpose your long-form asset into a steady pipeline of SEO-optimized content.',       category: 'Whitepaper', date: 'Feb 13, 2026', readTime: '6 min' },
+  { title: 'Trending Topics Your Audience Is Searching for This Quarter', excerpt: 'Publishing content around timely industry trends can generate significant short-term traffic before competition increases. This post covers how to identify emerging topics early using tools like Google Trends and social listening platforms, and how to publish fast without sacrificing quality.',       category: 'Trending',   date: 'Feb 10, 2026', readTime: '4 min' },
+  { title: 'AEO Basics: Answering Questions Your Buyers Are Asking',    excerpt: 'Answer engine optimization focuses on structuring content so AI tools and voice assistants can extract and cite your answers directly. This primer explains the core principles of AEO, how it overlaps with traditional SEO, and practical steps to optimize your existing content for question-based queries.',         category: 'New',        date: 'Feb 7, 2026',  readTime: '5 min' },
+  { title: 'Launching a New Feature? Here Is Your Blog Content Plan',   excerpt: 'A product launch is one of the highest-leverage moments to publish SEO content, yet most teams miss it. This post outlines a content plan that maps new feature announcements to the search queries your ideal customers are already making - turning launches into long-term organic traffic drivers.',   category: 'Product',    date: 'Feb 4, 2026',  readTime: '7 min' },
 ];
 
 export default function XeoBlogsPage() {
@@ -71,14 +71,18 @@ export default function XeoBlogsPage() {
       <div className={styles.grid}>
         {blogs.map((blog, i) => (
           <article key={i} className={styles.card}>
-            <div className={styles.cardMeta}>
+            <div className={styles.cardHeader}>
               <span className={styles.tag} style={CATEGORY_COLORS[blog.category]}>{blog.category}</span>
               <span className={styles.date}>{blog.date}</span>
             </div>
-            <h3 className={styles.cardTitle}>{blog.title}</h3>
-            <p className={styles.excerpt}>{blog.excerpt}</p>
+            <div className={styles.cardBody}>
+              <h3 className={styles.cardTitle} title={blog.title}>{blog.title}</h3>
+              <p className={styles.excerpt} title={blog.excerpt}>{blog.excerpt}</p>
+            </div>
             <div className={styles.cardFooter}>
-              <span className={styles.readTime}>{blog.readTime} read</span>
+              <div className={styles.cardContextual}>
+                <span className={styles.readTime}>{blog.readTime} read</span>
+              </div>
               <div className={styles.cardActions}>
                 <button className={styles.iconBtn} title="Edit"><Pencil size={13} /></button>
                 <button className={`${styles.iconBtn} ${styles.iconBtnDanger}`} title="Delete" onClick={() => setDeletingIndex(i)}><Trash2 size={13} /></button>
