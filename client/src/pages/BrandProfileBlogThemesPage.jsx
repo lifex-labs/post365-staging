@@ -230,7 +230,7 @@ export default function BrandProfileBlogThemesPage() {
         <div className={modalStyles.backdrop} onClick={() => setShowDeleteProfile(false)}>
           <div className={modalStyles.sheet} onClick={e => e.stopPropagation()}>
             <p className={modalStyles.title}>Delete brand profile</p>
-            <p className={modalStyles.message}>This will permanently delete the brand profile and all associated blog themes. This cannot be undone.</p>
+            <p className={modalStyles.message}>This will delete the brand profile and all associated blog themes. This cannot be undone.</p>
             <div className={modalStyles.actions}>
               <button className={modalStyles.cancelBtn} onClick={() => setShowDeleteProfile(false)}>Cancel</button>
               <button className={modalStyles.logoutBtn} onClick={handleDeleteProfile}>Delete</button>

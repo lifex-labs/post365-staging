@@ -246,7 +246,7 @@
   height: 28px;
   width: 28px;
   padding: 0;
-  background: #fff;
+  background: var(--hover-overlay);
   color: var(--text-2);
   border-radius: var(--radius-s);
 }

@@ -541,13 +541,11 @@
 
   .headerOutlineBtn {
     justify-content: center;
-    background: #dbeafe;
-    color: var(--blue);
-    border-color: #bfdbfe;
+    background: #fff;
   }
 
   .headerDangerBtn {
-    background: #fee2e2;
+    background: #fff;
     color: #dc2626;
     border-color: #fca5a5;
   }
