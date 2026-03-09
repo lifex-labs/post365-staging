@@ -13,7 +13,7 @@ export default function NewXeoBlogPage() {
   const location = useLocation();
   const api = useBrandProfilesApi();
 
-  if (!location.state) return <Navigate to="/xeo-blogs" replace />;
+  if (!location.state) return <Navigate to="/new-xeo-blogs" replace />;
 
   const profileSlug = location.state?.profileSlug;
   const themeId = location.state?.themeId;
@@ -38,6 +38,7 @@ export default function NewXeoBlogPage() {
   const [generateProgress, setGenerateProgress] = useState(0);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [generateMode, setGenerateMode] = useState(''); // 'blog' or 'topics'
+  const [generateError, setGenerateError] = useState('');
   const abortControllerRef = useRef(null);
   const progressIntervalRef = useRef(null);
 
@@ -88,6 +89,7 @@ export default function NewXeoBlogPage() {
       existingTopics: topics.map(t => t.name),
     };
 
+    setGenerateError('');
     setGenerateMode('topics');
     setIsGenerating(true);
     const controller = new AbortController();
@@ -114,6 +116,7 @@ export default function NewXeoBlogPage() {
       setGenerateMode('');
       if (err.name === 'AbortError') return;
       console.error('[xeo-blog] Topic generation failed:', err.message);
+      setGenerateError('Topic generation ran into an issue. Please try again.');
     }
   }
 
@@ -229,6 +232,7 @@ export default function NewXeoBlogPage() {
       checklists: selectedChecklists,
     };
 
+    setGenerateError('');
     setGenerateMode('blog');
     setIsGenerating(true);
     const controller = new AbortController();
@@ -239,6 +243,17 @@ export default function NewXeoBlogPage() {
       setIsGenerating(false);
       setGenerateMode('');
 
+      // Count words from actual content
+      const c = res.result?.content || {};
+      const allText = [
+        c.tldr,
+        c.introduction,
+        ...(c.sections || []).flatMap(s => [s.body, ...(s.subsections || []).map(sub => sub.body)]),
+        c.conclusion,
+        ...(res.result?.faq || []).map(f => f.answer),
+      ].filter(Boolean).join(' ');
+      const wordCount = allText.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length;
+
       // Save blog to DB
       const blogRes = await api.createBlog({
         brand_profile_id:     profile?.id,
@@ -247,10 +262,10 @@ export default function NewXeoBlogPage() {
         excerpt:              selectedTopic?.description || '',
         blog_data:            res.result,
         checklist_selections: selectedChecklists,
-        word_count:           res.result?.word_count_estimate || 0,
+        word_count:           wordCount,
       });
 
-      navigate(`/xeo-blogs/${blogRes.blog.slug}`, {
+      navigate(`/new-xeo-blogs/${blogRes.blog.slug}`, {
         state: {
           blogName: selectedTopic?.name || 'Untitled blog',
           blogExcerpt: selectedTopic?.description || '',
@@ -263,6 +278,7 @@ export default function NewXeoBlogPage() {
       setGenerateMode('');
       if (err.name === 'AbortError') return;
       console.error('[xeo-blog] Generation failed:', err.message);
+      setGenerateError('Blog generation ran into an issue. Please try again.');
     }
   }
 
@@ -281,7 +297,7 @@ export default function NewXeoBlogPage() {
             <p className={styles.description}>Select optimization checklists for your blog</p>
           </div>
           <div className={styles.headerActions}>
-            <button className={styles.cancelBtn} onClick={() => navigate('/xeo-blogs')}>
+            <button className={styles.cancelBtn} onClick={() => navigate('/new-xeo-blogs')}>
               Cancel
             </button>
             <button className={styles.cancelBtn} onClick={() => setStep(1)}>
@@ -342,7 +358,7 @@ export default function NewXeoBlogPage() {
                 <Loader2 size={20} strokeWidth={2} className={styles.spinnerIcon} />
               </div>
               <p className={styles.generateTitle}>{generateMode === 'topics' ? 'Generating topics' : 'Writing your blog'}</p>
-              <p className={styles.generateDesc}>{generateMode === 'topics' ? 'Our AI agent is generating blog topic ideas. This can take up to 5 minutes. Please do not close this window.' : 'Our AI agent is generating your XEO blog post. This can take up to 5 minutes. Please do not close this window.'}</p>
+              <p className={styles.generateDesc}>{generateMode === 'topics' ? 'Our AI agents are generating blog topic ideas. This can take up to 5 minutes. Please do not close this window.' : 'Our AI agents are generating your New XEO blog post. This can take up to 5 minutes. Please do not close this window.'}</p>
               <div className={styles.generateProgressTrack}>
                 <div className={styles.generateProgressFill} style={{ width: `${generateProgress}%` }} />
               </div>
@@ -367,6 +383,19 @@ export default function NewXeoBlogPage() {
           </div>,
           document.body
         )}
+
+        {generateError && createPortal(
+          <div className={styles.generateBackdrop}>
+            <div className={styles.confirmModal}>
+              <p className={styles.confirmTitle}>Generation failed</p>
+              <p className={styles.confirmDesc}>{generateError}</p>
+              <div className={styles.confirmActions}>
+                <button className={styles.confirmKeepBtn} onClick={() => setGenerateError('')}>OK</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
       </div>
     );
   }
@@ -379,7 +408,7 @@ export default function NewXeoBlogPage() {
           <p className={styles.description}>Configure and generate an individual blog for your theme</p>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.cancelBtn} onClick={() => navigate('/xeo-blogs')}>
+          <button className={styles.cancelBtn} onClick={() => navigate('/new-xeo-blogs')}>
             Cancel
           </button>
           <button className={styles.nextBtn} disabled={!selectedTopicId} onClick={() => setStep(2)}>
@@ -511,12 +540,12 @@ export default function NewXeoBlogPage() {
                 </div>
                 <button className={`${styles.addBlogBtn} ${styles.addBlogBtnDesktop}`} onClick={handleAddTopic} disabled={isAdding}>
                   <Plus size={13} strokeWidth={2.5} />
-                  Add blog
+                  Add topic
                 </button>
               </div>
               <button className={`${styles.addBlogBtn} ${styles.addBlogBtnMobile}`} onClick={handleAddTopic} disabled={isAdding}>
                 <Plus size={13} strokeWidth={2.5} />
-                Add blog
+                Add topic
               </button>
               <div className={styles.topicScroll}>
                 {isAdding && (
@@ -586,7 +615,7 @@ export default function NewXeoBlogPage() {
               <Loader2 size={20} strokeWidth={2} className={styles.spinnerIcon} />
             </div>
             <p className={styles.generateTitle}>Generating topics</p>
-            <p className={styles.generateDesc}>Our AI agent is generating blog topic ideas. This can take up to 5 minutes. Please do not close this window.</p>
+            <p className={styles.generateDesc}>Our AI agents are generating blog topic ideas. This can take up to 5 minutes. Please do not close this window.</p>
             <div className={styles.generateProgressTrack}>
               <div className={styles.generateProgressFill} style={{ width: `${generateProgress}%` }} />
             </div>

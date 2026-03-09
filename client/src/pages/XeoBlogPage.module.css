@@ -394,7 +394,7 @@
   line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-word;
-  text-align: justify;
+  text-align: left;
 }
 
 .contentText p {
@@ -441,6 +441,16 @@
   color: var(--text-2);
   border-bottom: 2px solid var(--separator);
   background: var(--blue-bg);
+}
+
+.contentText a {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.contentText a:hover {
+  color: var(--blue-dark);
 }
 
 /* ===== FAQ ===== */
@@ -622,6 +632,81 @@
   height: 6px;
   border-radius: 50%;
   background: var(--blue);
+}
+
+/* ===== About ===== */
+.aboutGroup {
+  margin-bottom: 0;
+}
+
+.aboutGroup + .aboutGroup {
+  border-top: 1px solid var(--separator);
+  margin-top: 24px;
+  padding-top: 24px;
+}
+
+.aboutGroupLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.blogTypeTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 12px;
+  line-height: 1.4;
+}
+
+.aboutGroupDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 16px;
+}
+
+.aboutTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.aboutTable td {
+  padding: 6px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  vertical-align: top;
+  border-bottom: 1px solid var(--separator);
+}
+
+.aboutTable tr:last-child td {
+  border-bottom: none;
+}
+
+.aboutLabel {
+  color: var(--text-2);
+  font-weight: 500;
+  width: 140px;
+  padding-right: 16px;
+}
+
+.aboutValue {
+  color: var(--text);
+  word-break: break-word;
+}
+
+.aboutBulletList {
+  margin: 0;
+  padding-left: 16px;
+  list-style: disc;
+}
+
+.aboutBulletList li {
+  padding: 1px 0;
 }
 
 /* ===== Word count ===== */

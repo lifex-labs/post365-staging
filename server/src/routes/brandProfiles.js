@@ -28,7 +28,8 @@ router.get('/', async (req, res) => {
       .order('created_at', { ascending: false });
     if (error) throw error;
     res.json({ profiles: data });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to fetch profiles' });
   }
 });
@@ -45,7 +46,8 @@ router.get('/:slug', async (req, res) => {
       .single();
     if (error || !data) return res.status(404).json({ error: 'Profile not found' });
     res.json({ profile: data });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
@@ -90,7 +92,8 @@ router.post('/', async (req, res) => {
       .single();
     if (error) throw error;
     res.status(201).json({ profile: data });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to create profile' });
   }
 });
@@ -135,7 +138,8 @@ router.put('/:slug', async (req, res) => {
       .single();
     if (error || !data) return res.status(404).json({ error: 'Profile not found' });
     res.json({ profile: data });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
@@ -151,7 +155,8 @@ router.delete('/:slug', async (req, res) => {
       .eq('slug', req.params.slug);
     if (error) throw error;
     res.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to delete profile' });
   }
 });
@@ -273,7 +278,8 @@ router.post('/seed', async (req, res) => {
       .single();
     if (error) throw error;
     res.status(201).json({ profile: data, message: 'Seed profile created' });
-  } catch {
+  } catch (err) {
+    console.error('[brand-profiles]', err.code || err.message);
     res.status(500).json({ error: 'Failed to create seed profile' });
   }
 });

@@ -5,10 +5,20 @@ import * as cheerio from 'cheerio';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../middleware/auth.js';
 import supabase from '../lib/supabase.js';
 
 const router = Router();
+
+// Rate limit: 10 requests per hour per user for agent endpoints
+const agentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) => req.clerkUserId || req.ip,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+router.use(agentLimiter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -203,6 +213,23 @@ router.post('/scan', requireAuth, async (req, res) => {
     try {
       const p = new URL(raw.trim());
       if (!['http:', 'https:'].includes(p.protocol)) throw new Error('bad protocol');
+
+      // SSRF protection: block private/internal IPs and localhost
+      const hostname = p.hostname.toLowerCase();
+      if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1' ||
+        hostname === '0.0.0.0' ||
+        hostname.endsWith('.local') ||
+        hostname.startsWith('10.') ||
+        hostname.startsWith('192.168.') ||
+        hostname.startsWith('169.254.') ||
+        /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
+      ) {
+        return res.status(400).json({ error: 'URLs pointing to internal or private networks are not allowed.' });
+      }
+
       parsedUrls.push(p.toString());
     } catch {
       return res.status(400).json({ error: `Invalid URL: ${raw}. Must be a valid http or https address.` });
@@ -263,15 +290,15 @@ router.post('/scan', requireAuth, async (req, res) => {
           ...columns,
         });
       if (!dbError) profileSlug = slug;
-      else console.error('[brand-profile-agent] DB insert error:', dbError.message);
+      else console.error('[brand-profile-agent] DB insert failed:', dbError.code);
     } catch (dbErr) {
-      console.error('[brand-profile-agent] DB error:', dbErr.message);
+      console.error('[brand-profile-agent] DB error:', dbErr.code || dbErr.message);
     }
 
     return res.json({ result, profileSlug });
 
   } catch (err) {
-    console.error('[brand-profile-agent] Error:', err.message);
+    console.error('[brand-profile-agent] Failed:', err.code || err.message);
 
     if (err instanceof Anthropic.AuthenticationError) {
       return res.status(500).json({ error: 'Agent configuration error. Please contact support.' });

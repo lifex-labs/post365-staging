@@ -3,9 +3,20 @@ import Anthropic from '@anthropic-ai/sdk';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { jsonrepair } from 'jsonrepair';
+import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
+
+// Rate limit: 10 requests per hour per user for agent endpoints
+const agentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) => req.clerkUserId || req.ip,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+router.use(agentLimiter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -22,30 +33,11 @@ function stripComments(text) {
     .trim();
 }
 
-// Attempt to repair truncated JSON by closing open brackets/braces
-function repairJson(raw) {
+// Parse JSON from LLM output, using jsonrepair for malformed responses
+function parseJson(raw) {
   try { return JSON.parse(raw); } catch {}
-  let fixed = raw;
-  // Remove trailing comma before closing bracket/brace
-  fixed = fixed.replace(/,\s*$/, '');
-  // Count open vs close for [] and {}
-  let braces = 0, brackets = 0, inString = false, escaped = false;
-  for (const ch of fixed) {
-    if (escaped) { escaped = false; continue; }
-    if (ch === '\\') { escaped = true; continue; }
-    if (ch === '"') { inString = !inString; continue; }
-    if (inString) continue;
-    if (ch === '{') braces++;
-    if (ch === '}') braces--;
-    if (ch === '[') brackets++;
-    if (ch === ']') brackets--;
-  }
-  // Close any unterminated string
-  if (inString) fixed += '"';
-  // Append missing closers
-  while (brackets > 0) { fixed += ']'; brackets--; }
-  while (braces > 0)   { fixed += '}'; braces--; }
-  return JSON.parse(fixed);
+  const repaired = jsonrepair(raw);
+  return JSON.parse(repaired);
 }
 
 // POST /api/xeo-blog-agent/generate
@@ -115,11 +107,11 @@ router.post('/generate', requireAuth, async (req, res) => {
       return res.status(502).json({ error: 'Agent did not return valid JSON. Please try again.' });
     }
 
-    const result = repairJson(match[0]);
+    const result = parseJson(match[0]);
     return res.json({ result });
 
   } catch (err) {
-    console.error('[xeo-blog-agent] Error:', err.message);
+    console.error('[xeo-blog-agent] Generate failed:', err.code || err.message);
 
     if (err instanceof Anthropic.AuthenticationError) {
       return res.status(500).json({ error: 'Agent configuration error. Please contact support.' });
@@ -188,12 +180,12 @@ router.post('/generate-topics', requireAuth, async (req, res) => {
       return res.status(502).json({ error: 'Agent did not return valid JSON. Please try again.' });
     }
 
-    const result = repairJson(match[0]);
-    console.log('[xeo-blog-agent] Topics generated:', result?.topics?.length || 0);
+    const result = parseJson(match[0]);
+    // Topics generated successfully
     return res.json({ result });
 
   } catch (err) {
-    console.error('[xeo-blog-agent] Topics error:', err.message);
+    console.error('[xeo-blog-agent] Topics failed:', err.code || err.message);
 
     if (err instanceof Anthropic.AuthenticationError) {
       return res.status(500).json({ error: 'Agent configuration error. Please contact support.' });
@@ -203,6 +195,84 @@ router.post('/generate-topics', requireAuth, async (req, res) => {
     }
 
     return res.status(500).json({ error: 'Topic generation failed. Please try again.' });
+  }
+});
+
+// POST /api/xeo-blog-agent/generate-pillar
+// Body: { theme, keywords, llmQuestions, checklists }
+router.post('/generate-pillar', requireAuth, async (req, res) => {
+  const { theme, keywords, llmQuestions, checklists } = req.body;
+
+  if (!theme?.name) {
+    return res.status(400).json({ error: 'Theme name is required.' });
+  }
+
+  try {
+    const [rawSystem, rawUser] = await Promise.all([
+      readFile(path.join(PROMPTS_DIR, 'pillar_system_prompt.md'), 'utf-8'),
+      readFile(path.join(PROMPTS_DIR, 'pillar_user_prompt.md'),   'utf-8'),
+    ]);
+
+    const primaryKw  = (keywords?.primary  || []).join(', ');
+    const relatedKw  = (keywords?.related  || []).join(', ');
+    const lsiKw      = (keywords?.lsi      || []).join(', ');
+    const longtailKw = (keywords?.longtail || []).join(', ');
+    const questions  = (llmQuestions        || []).join('\n');
+    const aeoList    = (checklists?.aeo     || []).map(i => '- ' + i).join('\n');
+    const geoList    = (checklists?.geo     || []).map(i => '- ' + i).join('\n');
+    const seoList    = (checklists?.seo     || []).map(i => '- ' + i).join('\n');
+
+    const systemPrompt = stripComments(rawSystem);
+    const userPrompt   = stripComments(rawUser)
+      .replace('{{BLOG_THEME_NAME}}',    theme.name    || '')
+      .replace('{{BLOG_THEME_SUMMARY}}', theme.summary || '')
+      .replace('{{PRIMARY_KEYWORDS}}',   primaryKw)
+      .replace('{{RELATED_KEYWORDS}}',   relatedKw)
+      .replace('{{LSI_KEYWORDS}}',       lsiKw)
+      .replace('{{LONG_TAIL_KEYWORDS}}', longtailKw)
+      .replace('{{KEY_LLM_QUESTIONS}}',  questions)
+      .replace('{{AEO_CHECKLIST}}',      aeoList)
+      .replace('{{GEO_CHECKLIST}}',      geoList)
+      .replace('{{SEO_CHECKLIST}}',      seoList);
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const stream = client.messages.stream({
+      model:      'claude-sonnet-4-6',
+      max_tokens: 64000,
+      system:     systemPrompt,
+      messages:   [{ role: 'user', content: userPrompt }],
+    });
+    const response = await stream.finalMessage();
+
+    const text = response.content
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('\n');
+
+    if (!text) {
+      return res.status(502).json({ error: 'Agent did not return a response. Please try again.' });
+    }
+
+    const match = text.match(/\{[\s\S]*\}?/);
+    if (!match) {
+      return res.status(502).json({ error: 'Agent did not return valid JSON. Please try again.' });
+    }
+
+    const result = parseJson(match[0]);
+    // Pillar blog generated successfully
+    return res.json({ result });
+
+  } catch (err) {
+    console.error('[xeo-blog-agent] Pillar failed:', err.code || err.message);
+
+    if (err instanceof Anthropic.AuthenticationError) {
+      return res.status(500).json({ error: 'Agent configuration error. Please contact support.' });
+    }
+    if (err instanceof Anthropic.RateLimitError) {
+      return res.status(429).json({ error: 'Too many requests. Please try again shortly.' });
+    }
+
+    return res.status(500).json({ error: 'Pillar blog generation failed. Please try again.' });
   }
 });
 

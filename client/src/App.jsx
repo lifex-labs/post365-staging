@@ -22,7 +22,9 @@ const NewBrandProfilePage          = lazy(() => import('./pages/NewBrandProfileP
 const EditBrandProfilePage         = lazy(() => import('./pages/EditBrandProfilePage'));
 const BrandProfileBlogThemesPage   = lazy(() => import('./pages/BrandProfileBlogThemesPage'));
 const NewXeoBlogPage               = lazy(() => import('./pages/NewXeoBlogPage'));
+const NewPillarBlogPage            = lazy(() => import('./pages/NewPillarBlogPage'));
 const XeoBlogPage                  = lazy(() => import('./pages/XeoBlogPage'));
+const ContentRefreshPage           = lazy(() => import('./pages/ContentRefreshPage'));
 
 function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -67,10 +69,12 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/brand-posts" replace />} />
         <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><BrandPostsPage /></Suspense>} />
-        <Route path="xeo-blogs"          element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
-        <Route path="xeo-blogs/new-individual-blog" element={<Suspense fallback={<LoadingSpinner />}><NewXeoBlogPage /></Suspense>} />
-        <Route path="xeo-blogs/:slug"   element={<Suspense fallback={<LoadingSpinner />}><XeoBlogPage /></Suspense>} />
+        <Route path="new-xeo-blogs"          element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
+        <Route path="new-xeo-blogs/new-individual-blog" element={<Suspense fallback={<LoadingSpinner />}><NewXeoBlogPage /></Suspense>} />
+        <Route path="new-xeo-blogs/new-pillar-blog" element={<Suspense fallback={<LoadingSpinner />}><NewPillarBlogPage /></Suspense>} />
+        <Route path="new-xeo-blogs/:slug"   element={<Suspense fallback={<LoadingSpinner />}><XeoBlogPage /></Suspense>} />
         <Route path="brand-articles"     element={<Suspense fallback={<LoadingSpinner />}><BrandArticlesPage /></Suspense>} />
+        <Route path="content-refresh"   element={<Suspense fallback={<LoadingSpinner />}><ContentRefreshPage /></Suspense>} />
         <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><BrandProfilesPage /></Suspense>} />
         <Route path="brand-profiles/new"                element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />
         <Route path="brand-profiles/edit/:profileSlug"  element={<Suspense fallback={<LoadingSpinner />}><EditBrandProfilePage /></Suspense>} />

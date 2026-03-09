@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Rss, ChevronDown, Search } from 'lucide-react';
+import { Plus, Trash2, Rss, ChevronDown, Search, Landmark } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
 import EmptyCard from '../components/EmptyCard';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,8 +9,8 @@ import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import styles from './XeoBlogsPage.module.css';
 
 const BLOG_TYPES = [
-  'Pillar blog for the theme',
-  'Individual blog for a theme',
+  { value: 'pillar', name: 'Pillar post', desc: 'Main post that covers the entire theme' },
+  { value: 'individual', name: 'Individual post', desc: 'Focused post on one topic in the theme' },
 ];
 
 const STATUS_COLORS = {
@@ -149,16 +149,17 @@ export default function XeoBlogsPage() {
   }
 
   function handleNext() {
-    if (selectedType === 'Individual blog for a theme') {
-      const state = {
-        profileSlug: selectedProfile,
-        themeId: selectedTheme,
-        type: selectedType,
-      };
-      handleClose();
-      navigate('/xeo-blogs/new-individual-blog', { state });
+    const state = {
+      profileSlug: selectedProfile,
+      themeId: selectedTheme,
+      type: selectedType,
+    };
+    handleClose();
+    if (selectedType === 'pillar') {
+      navigate('/new-xeo-blogs/new-pillar-blog', { state });
+    } else {
+      navigate('/new-xeo-blogs/new-individual-blog', { state });
     }
-    // Pillar blog path will be defined later
   }
 
   async function handleDelete() {
@@ -188,12 +189,12 @@ export default function XeoBlogsPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>XEO blogs</h1>
+          <h1 className={styles.title}>New XEO blogs</h1>
           <p className={styles.description}>Write AEO + GEO + SEO blogs for inbound traffic and leads.</p>
         </div>
         <button className={styles.newBtn} onClick={() => setModalOpen(true)}>
           <Plus size={14} strokeWidth={2.5} />
-          XEO blog
+          New XEO blog
         </button>
       </header>
 
@@ -203,12 +204,12 @@ export default function XeoBlogsPage() {
         </div>
       ) : blogs.length === 0 ? (
         <div className={styles.grid}>
-          <EmptyCard label="Create XEO blog" onClick={() => setModalOpen(true)} />
+          <EmptyCard label="Create New XEO blog" onClick={() => setModalOpen(true)} />
         </div>
       ) : (
         <div className={styles.grid}>
           {blogs.map(blog => (
-            <article key={blog.slug} className={styles.card} onClick={() => navigate(`/xeo-blogs/${blog.slug}`)}>
+            <article key={blog.slug} className={styles.card} onClick={() => navigate(`/new-xeo-blogs/${blog.slug}`)}>
               <div className={styles.cardHeader}>
                 <span className={styles.tag} style={STATUS_COLORS.draft}>
                   {blog.brand_profiles?.name || 'Unknown'}
@@ -217,14 +218,23 @@ export default function XeoBlogsPage() {
               </div>
               <div className={styles.cardBody}>
                 <h3 className={styles.cardTitle} title={blog.title}>{blog.title}</h3>
-                <p className={styles.excerpt} title={blog.excerpt}>{blog.excerpt}</p>
+                {blog.blog_type === 'pillar' ? (
+                  <div className={styles.pillarBody} title={`Pillar post: ${blog.theme_name || blog.title}`}>
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className={styles.pillarCircle}>
+                        <Landmark size={13} strokeWidth={2} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.excerpt} title={blog.excerpt}>{blog.excerpt}</p>
+                )}
               </div>
               <div className={styles.cardFooter}>
                 <div className={styles.cardContextual}>
                   <span className={styles.readTime}>{getReadTime(blog.word_count)} read</span>
                 </div>
                 <div className={styles.cardActions}>
-                  <button className={styles.iconBtn} title="Edit" onClick={e => e.stopPropagation()}><Pencil size={13} /></button>
                   <button className={`${styles.iconBtn} ${styles.iconBtnDanger}`} title="Delete" onClick={e => { e.stopPropagation(); setDeletingSlug(blog.slug); }}><Trash2 size={13} /></button>
                 </div>
               </div>
@@ -248,7 +258,7 @@ export default function XeoBlogsPage() {
             </div>
 
             <div className={styles.modalHeading}>
-              <h2 className={styles.modalTitle}>Create XEO blog</h2>
+              <h2 className={styles.modalTitle}>Create New XEO blog</h2>
               <p className={styles.modalDesc}>Select a brand profile, theme, and blog type</p>
             </div>
 
@@ -273,17 +283,20 @@ export default function XeoBlogsPage() {
                 <p className={styles.radioFieldDesc}>Select blog format for this theme</p>
                 <div className={styles.radioGroup}>
                   {BLOG_TYPES.map(t => (
-                    <label key={t} className={styles.radioLabel}>
+                    <label key={t.value} className={styles.radioLabel}>
                       <input
                         type="radio"
                         name="blogType"
                         className={styles.radioInput}
-                        value={t}
-                        checked={selectedType === t}
-                        onChange={() => setSelectedType(t)}
+                        value={t.value}
+                        checked={selectedType === t.value}
+                        onChange={() => setSelectedType(t.value)}
                         disabled={!selectedProfile || !selectedTheme}
                       />
-                      <span className={styles.radioText}>{t}</span>
+                      <span className={styles.radioTextWrap}>
+                        <span className={styles.radioText}>{t.name}</span>
+                        <span className={styles.radioDesc}>{t.desc}</span>
+                      </span>
                     </label>
                   ))}
                 </div>

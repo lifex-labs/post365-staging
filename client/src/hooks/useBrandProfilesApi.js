@@ -31,7 +31,8 @@ export function useBrandProfilesApi() {
     seedProfile:    ()           => apiFetch('/api/brand-profiles/seed',    { method: 'POST' }),
     scanWebsite:    (urls, signal) => apiFetch('/api/brand-profile-agent/scan', { method: 'POST', body: JSON.stringify({ urls }), signal }),
     generateBlog:   (data, signal) => apiFetch('/api/xeo-blog-agent/generate',  { method: 'POST', body: JSON.stringify(data), signal }),
-    generateTopics: (data, signal) => apiFetch('/api/xeo-blog-agent/generate-topics', { method: 'POST', body: JSON.stringify(data), signal }),
+    generateTopics:     (data, signal) => apiFetch('/api/xeo-blog-agent/generate-topics',  { method: 'POST', body: JSON.stringify(data), signal }),
+    generatePillarBlog: (data, signal) => apiFetch('/api/xeo-blog-agent/generate-pillar', { method: 'POST', body: JSON.stringify(data), signal }),
 
     // XEO blog topics CRUD
     listTopics:     (profileId, themeId) => apiFetch(`/api/xeo-blogs/topics?profileId=${profileId}&themeId=${themeId}`),

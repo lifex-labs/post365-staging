@@ -28,7 +28,8 @@ router.get('/topics', async (req, res) => {
       .order('created_at', { ascending: false });
     if (error) throw error;
     res.json({ topics: data });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Fetch topics failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to fetch topics' });
   }
 });
@@ -53,14 +54,10 @@ router.post('/topics', async (req, res) => {
       .from('xeo_blog_topics')
       .insert(rows)
       .select();
-    if (error) {
-      console.error('[xeo-blogs] Insert topics error:', error.message, error.details);
-      throw error;
-    }
-    console.log('[xeo-blogs] Created topics:', data?.length);
+    if (error) throw error;
     res.status(201).json({ topics: data });
   } catch (err) {
-    console.error('[xeo-blogs] Create topics catch:', err?.message || err);
+    console.error('[xeo-blogs] Create topics failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to create topics' });
   }
 });
@@ -75,7 +72,8 @@ router.delete('/topics/:id', async (req, res) => {
       .eq('id', req.params.id);
     if (error) throw error;
     res.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Delete topic failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to delete topic' });
   }
 });
@@ -97,7 +95,8 @@ router.patch('/topics/:id', async (req, res) => {
       .single();
     if (error || !data) return res.status(404).json({ error: 'Topic not found' });
     res.json({ topic: data });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Update topic failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to update topic' });
   }
 });
@@ -109,12 +108,13 @@ router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('xeo_blogs')
-      .select('id, slug, title, excerpt, status, word_count, created_at, updated_at, brand_profiles(name)')
+      .select('id, slug, title, excerpt, status, word_count, blog_type, theme_name, created_at, updated_at, brand_profiles(name)')
       .eq('clerk_user_id', req.clerkUserId)
       .order('created_at', { ascending: false });
     if (error) throw error;
     res.json({ blogs: data });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Fetch blogs failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to fetch blogs' });
   }
 });
@@ -124,13 +124,14 @@ router.get('/:slug', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('xeo_blogs')
-      .select('*')
+      .select('*, brand_profiles(name, website, industry, founded_year, summary, primary_keywords, related_keywords, lsi_keywords, longtail_keywords, llm_questions), xeo_blog_topics(name, description, content_type)')
       .eq('clerk_user_id', req.clerkUserId)
       .eq('slug', req.params.slug)
       .single();
     if (error || !data) return res.status(404).json({ error: 'Blog not found' });
     res.json({ blog: data });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Fetch blog failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to fetch blog' });
   }
 });
@@ -138,7 +139,7 @@ router.get('/:slug', async (req, res) => {
 // POST /api/xeo-blogs — create a new blog
 router.post('/', async (req, res) => {
   try {
-    const { brand_profile_id, topic_id, title, excerpt, blog_data, checklist_selections, word_count } = req.body;
+    const { brand_profile_id, topic_id, title, excerpt, blog_data, checklist_selections, word_count, blog_type, theme_name } = req.body;
     if (!brand_profile_id || !title) {
       return res.status(400).json({ error: 'brand_profile_id and title are required' });
     }
@@ -155,6 +156,8 @@ router.post('/', async (req, res) => {
         blog_data:            blog_data || {},
         checklist_selections: checklist_selections || {},
         word_count:           word_count || 0,
+        blog_type:            blog_type || 'individual',
+        theme_name:           theme_name || null,
         status:               'draft',
       })
       .select()
@@ -171,7 +174,8 @@ router.post('/', async (req, res) => {
     }
 
     res.status(201).json({ blog: data });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Create blog failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to create blog' });
   }
 });
@@ -186,7 +190,8 @@ router.delete('/:slug', async (req, res) => {
       .eq('slug', req.params.slug);
     if (error) throw error;
     res.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error('[xeo-blogs] Delete blog failed:', err.code || err.message);
     res.status(500).json({ error: 'Failed to delete blog' });
   }
 });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutList, Rss, Newspaper, User, Settings, Power, X, PenLine, UserRound, CalendarDays } from 'lucide-react';
+import { LayoutList, Rss, Newspaper, Building2, RefreshCw, Settings, Power, X, PenLine, UserRound, CalendarDays } from 'lucide-react';
 import { useClerk } from '@clerk/react';
 import LogoutModal from './LogoutModal';
 import styles from './MobileMenu.module.css';
@@ -19,10 +19,11 @@ const NAV_SECTIONS = [
     label: 'Company',
     items: [
       { path: '/brand-calendar',  label: 'Brand calendar', icon: CalendarDays },
-      { path: '/xeo-blogs',        label: 'XEO blogs',       icon: Rss          },
+      { path: '/new-xeo-blogs',    label: 'New XEO blogs',   icon: Rss          },
+      { path: '/content-refresh',  label: 'Content refresh', icon: RefreshCw   },
       { path: '/brand-articles',  label: 'Brand articles',  icon: Newspaper    },
       { path: '/brand-posts',     label: 'Brand posts',     icon: LayoutList   },
-      { path: '/brand-profiles',  label: 'Brand profiles', icon: User         },
+      { path: '/brand-profiles',  label: 'Brand profiles', icon: Building2    },
     ],
   },
 ];

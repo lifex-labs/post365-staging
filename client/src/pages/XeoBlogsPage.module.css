@@ -93,6 +93,30 @@
   border-radius: 99px;
 }
 
+.pillarBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex: 1;
+  border: 1.5px dashed var(--separator);
+  border-radius: var(--radius-s);
+  padding: 10px 16px;
+}
+
+.pillarCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue-bg);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .date {
   font-size: 12px;
   color: var(--text-3);
@@ -262,12 +286,12 @@
 .radioGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 
 .radioLabel {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   cursor: pointer;
 }
@@ -276,17 +300,30 @@
   accent-color: var(--blue);
   width: 15px;
   height: 15px;
-  margin: 0;
+  margin: 2px 0 0;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .radioInput:disabled {
   cursor: not-allowed;
 }
 
+.radioTextWrap {
+  display: flex;
+  flex-direction: column;
+}
+
 .radioText {
   font-size: 14px;
   color: var(--text);
+  margin-bottom: 4px;
+}
+
+.radioDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.4;
 }
 
 .fieldDisabled {

@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { FileText, Link2, Image, Code, ExternalLink, HelpCircle, ShieldCheck, Download } from 'lucide-react';
+import { FileText, Link2, Image, Code, ExternalLink, HelpCircle, ShieldCheck, Download, Info } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import DeleteModal from '../components/DeleteModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import styles from './XeoBlogPage.module.css';
+
+function sanitize(html) {
+  return { __html: DOMPurify.sanitize(html || '', { ADD_ATTR: ['target'] }) };
+}
 
 function MetadataSection({ metadata }) {
   if (!metadata) return null;
@@ -47,7 +52,7 @@ function ContentSection({ content }) {
       {content.tldr && (
         <div className={styles.tldr}>
           <span className={styles.tldrLabel}>TL;DR</span>
-          <div className={styles.tldrText} dangerouslySetInnerHTML={{ __html: content.tldr }} />
+          <div className={styles.tldrText} dangerouslySetInnerHTML={sanitize(content.tldr)} />
         </div>
       )}
 
@@ -56,18 +61,18 @@ function ContentSection({ content }) {
       {content.introduction && (
         <div className={styles.contentBlock}>
           <h4 className={styles.contentLabel}>Introduction</h4>
-          <div className={styles.contentText} dangerouslySetInnerHTML={{ __html: content.introduction }} />
+          <div className={styles.contentText} dangerouslySetInnerHTML={sanitize(content.introduction)} />
         </div>
       )}
 
       {(content.sections || []).map((sec, i) => (
         <div key={i} className={styles.contentBlock}>
           <h4 className={styles.contentH2}>{sec.h2}</h4>
-          {sec.body && <div className={styles.contentText} dangerouslySetInnerHTML={{ __html: sec.body }} />}
+          {sec.body && <div className={styles.contentText} dangerouslySetInnerHTML={sanitize(sec.body)} />}
           {(sec.subsections || []).map((sub, j) => (
             <div key={j} className={styles.subBlock}>
               <h5 className={styles.contentH3}>{sub.h3}</h5>
-              {sub.body && <div className={styles.contentText} dangerouslySetInnerHTML={{ __html: sub.body }} />}
+              {sub.body && <div className={styles.contentText} dangerouslySetInnerHTML={sanitize(sub.body)} />}
             </div>
           ))}
         </div>
@@ -76,7 +81,7 @@ function ContentSection({ content }) {
       {content.conclusion && (
         <div className={styles.contentBlock}>
           <h4 className={styles.contentH2}>Conclusion</h4>
-          <div className={styles.contentText} dangerouslySetInnerHTML={{ __html: content.conclusion }} />
+          <div className={styles.contentText} dangerouslySetInnerHTML={sanitize(content.conclusion)} />
         </div>
       )}
     </div>
@@ -131,7 +136,7 @@ function FaqSection({ faq }) {
         {faq.map((item, i) => (
           <div key={i} className={styles.faqItem}>
             <p className={styles.faqQ}>{item.question}</p>
-            <div className={styles.faqA} dangerouslySetInnerHTML={{ __html: item.answer }} />
+            <div className={styles.faqA} dangerouslySetInnerHTML={sanitize(item.answer)} />
           </div>
         ))}
       </div>
@@ -189,11 +194,13 @@ function LinksSection({ internal, external }) {
             <tbody>
               {external.map((l, i) => (
                 <tr key={i}>
-                  <td className={styles.extSource}>
-                    <span>{l.source_name}</span>
-                    <a href={l.url} target="_blank" rel="noopener noreferrer" className={styles.extLink}>
-                      <ExternalLink size={11} />
-                    </a>
+                  <td>
+                    <div className={styles.extSource}>
+                      <span>{l.source_name}</span>
+                      <a href={l.url} target="_blank" rel="noopener noreferrer" className={styles.extLink}>
+                        <ExternalLink size={11} />
+                      </a>
+                    </div>
                   </td>
                   <td>{l.anchor_text}</td>
                   <td>{l.placement_section}</td>
@@ -263,6 +270,89 @@ function SchemaSection({ schema }) {
   );
 }
 
+function AboutSection({ brandProfile, blogTopic, blogType }) {
+  if (!brandProfile && !blogTopic) return null;
+
+  const typeLabel = blogType === 'pillar' ? 'Pillar' : 'Individual';
+
+  const profileRows = brandProfile ? [
+    ['Name',         brandProfile.name],
+    ['Website',      brandProfile.website],
+    ['Industry',     brandProfile.industry],
+    ['Founded year', brandProfile.founded_year],
+    ['Summary',      brandProfile.summary],
+    ['Blog type',    typeLabel],
+  ].filter(([, v]) => v) : [];
+
+  const topicRows = blogTopic ? [
+    ['Topic',        blogTopic.name],
+    ['Description',  blogTopic.description],
+    ['Content type', blogTopic.content_type],
+  ].filter(([, v]) => v) : [];
+
+  const bulletList = arr => Array.isArray(arr) && arr.length > 0 ? arr : null;
+  const keywordSections = brandProfile ? [
+    ['Primary keywords',  bulletList(brandProfile.primary_keywords)],
+    ['Related keywords',  bulletList(brandProfile.related_keywords)],
+    ['LSI keywords',      bulletList(brandProfile.lsi_keywords)],
+    ['Longtail keywords', bulletList(brandProfile.longtail_keywords)],
+    ['Key LLM questions', bulletList(brandProfile.llm_questions)],
+  ].filter(([, v]) => v) : [];
+
+  return (
+    <div className={styles.blogSection}>
+      <h2 className={styles.tabHeading}>About</h2>
+      <p className={styles.tabDescription}>Brand profile and blog topic details for this post</p>
+
+      {profileRows.length > 0 && (
+        <div className={styles.aboutGroup}>
+          <h3 className={styles.aboutGroupLabel}>Brand profile</h3>
+          <p className={styles.aboutGroupDesc}>The brand profile used to generate this blog</p>
+          <table className={styles.aboutTable}>
+            <tbody>
+              {profileRows.map(([label, val]) => (
+                <tr key={label}>
+                  <td className={styles.aboutLabel}>{label}</td>
+                  <td className={styles.aboutValue}>
+                    {label === 'Blog type' ? <span className={styles.blogTypeTag}>{val}</span> : val}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {(topicRows.length > 0 || keywordSections.length > 0) && (
+        <div className={styles.aboutGroup}>
+          <h3 className={styles.aboutGroupLabel}>Blog topic</h3>
+          <p className={styles.aboutGroupDesc}>The topic selected for this blog</p>
+          <table className={styles.aboutTable}>
+            <tbody>
+              {topicRows.map(([label, val]) => (
+                <tr key={label}>
+                  <td className={styles.aboutLabel}>{label}</td>
+                  <td className={styles.aboutValue}>{val}</td>
+                </tr>
+              ))}
+              {keywordSections.map(([label, items]) => (
+                <tr key={label}>
+                  <td className={styles.aboutLabel}>{label}</td>
+                  <td className={styles.aboutValue}>
+                    <ul className={styles.aboutBulletList}>
+                      {items.map((item, i) => <li key={i}>{typeof item === 'object' ? (item.keyword || item.question || item.text || JSON.stringify(item)) : item}</li>)}
+                    </ul>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function XeoBlogPage() {
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -277,6 +367,9 @@ export default function XeoBlogPage() {
   const [blogExcerpt, setBlogExcerpt] = useState(location.state?.blogExcerpt || '');
   const [blogSlug, setBlogSlug] = useState(location.state?.blogSlug || slug);
   const [blogData, setBlogData] = useState(location.state?.blogData || null);
+  const [brandProfile, setBrandProfile] = useState(null);
+  const [blogTopic, setBlogTopic] = useState(null);
+  const [blogType, setBlogType] = useState('individual');
 
   // Load from DB if no router state
   useEffect(() => {
@@ -288,6 +381,9 @@ export default function XeoBlogPage() {
         setBlogExcerpt(b.excerpt);
         setBlogSlug(b.slug);
         setBlogData(b.blog_data);
+        setBrandProfile(b.brand_profiles || null);
+        setBlogTopic(b.xeo_blog_topics || null);
+        setBlogType(b.blog_type || 'individual');
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -298,30 +394,309 @@ export default function XeoBlogPage() {
       await api.deleteBlog(blogSlug);
     } catch {}
     setShowDelete(false);
-    navigate('/xeo-blogs');
+    navigate('/new-xeo-blogs');
   }
 
   function handleFinish() {
-    navigate('/xeo-blogs');
+    navigate('/new-xeo-blogs');
   }
 
   const [exporting, setExporting] = useState(false);
   const tabContentRef = useRef(null);
+
+  // Strip HTML tags to plain text, convert <li> to bullet points, <br>/<p> to newlines
+  function stripHtml(html) {
+    if (!html) return '';
+    return html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<li[^>]*>/gi, '  - ')
+      .replace(/<\/tr>/gi, '\n')
+      .replace(/<th[^>]*>/gi, '')
+      .replace(/<td[^>]*>/gi, '  |  ')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  // Write text to PDF with auto page breaks
+  function pdfWriter(pdf, margin, maxW, pageH) {
+    let y = margin;
+    const lineH = 5;
+    const checkPage = (needed) => {
+      if (y + needed > pageH - margin) { pdf.addPage(); y = margin; }
+    };
+    return {
+      getY: () => y,
+      heading(text, size) {
+        checkPage(size * 0.8 + 8);
+        y += 6;
+        pdf.setFontSize(size);
+        pdf.setFont('helvetica', 'bold');
+        const lines = pdf.splitTextToSize(text, maxW);
+        lines.forEach(line => { checkPage(lineH + 2); pdf.text(line, margin, y); y += size * 0.45; });
+        y += 4;
+      },
+      label(text) {
+        checkPage(12);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(100);
+        pdf.text(text.toUpperCase(), margin, y);
+        y += 5;
+        pdf.setTextColor(0);
+      },
+      desc(text) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(120);
+        const lines = pdf.splitTextToSize(text, maxW);
+        lines.forEach(line => { checkPage(lineH); pdf.text(line, margin, y); y += 4; });
+        y += 4;
+        pdf.setTextColor(0);
+      },
+      para(text) {
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(30);
+        const lines = pdf.splitTextToSize(stripHtml(text), maxW);
+        lines.forEach(line => { checkPage(lineH); pdf.text(line, margin, y); y += lineH; });
+        y += 4;
+        pdf.setTextColor(0);
+      },
+      gap(n) { y += n; },
+      separator() { checkPage(8); y += 3; pdf.setDrawColor(200); pdf.line(margin, y, margin + maxW, y); y += 5; },
+      row(label, value) {
+        checkPage(12);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(100);
+        pdf.text(label, margin, y);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(30);
+        const valLines = pdf.splitTextToSize(value || '', maxW - 50);
+        valLines.forEach((line, i) => { if (i > 0) { y += 4; checkPage(5); } pdf.text(line, margin + 50, y); });
+        y += 6;
+        pdf.setTextColor(0);
+      },
+      mono(text) {
+        pdf.setFontSize(8);
+        pdf.setFont('courier', 'normal');
+        pdf.setTextColor(30);
+        const lines = pdf.splitTextToSize(text, maxW);
+        lines.forEach(line => { checkPage(4); pdf.text(line, margin, y); y += 3.5; });
+        y += 4;
+        pdf.setTextColor(0);
+        pdf.setFont('helvetica', 'normal');
+      },
+    };
+  }
+
+  // Write tab data directly to a jsPDF document
+  function writeTabPdf(pdf, tabId, data) {
+    const margin = 15;
+    const maxW = 210 - margin * 2; // A4 width minus margins
+    const pageH = 297; // A4 height
+    const w = pdfWriter(pdf, margin, maxW, pageH);
+
+    if (tabId === 'content') {
+      const c = data.content;
+      if (!c) return false;
+      if (c.tldr) {
+        w.label('TL;DR');
+        w.para(c.tldr);
+        w.separator();
+      }
+      if (c.h1) w.heading(c.h1, 16);
+      if (c.introduction) w.para(c.introduction);
+      (c.sections || []).forEach(sec => {
+        if (sec.h2) { w.separator(); w.heading(sec.h2, 13); }
+        if (sec.body) w.para(sec.body);
+        (sec.subsections || []).forEach(sub => {
+          if (sub.h3) w.heading(sub.h3, 11);
+          if (sub.body) w.para(sub.body);
+        });
+      });
+      if (c.conclusion) { w.separator(); w.heading('Conclusion', 13); w.para(c.conclusion); }
+      return true;
+    }
+
+    if (tabId === 'metadata') {
+      const m = data.metadata;
+      if (!m) return false;
+      w.heading('Metadata', 14);
+      w.desc('SEO and social sharing tags for this blog post');
+      const rows = [
+        ['Title tag', m.title_tag], ['Meta description', m.meta_description], ['URL slug', m.url_slug],
+        ['Primary keyword', m.primary_keyword], ['Secondary keywords', (m.secondary_keywords || []).join(', ')],
+        ['OG title', m.og_title], ['OG description', m.og_description],
+        ['Twitter title', m.twitter_title], ['Twitter description', m.twitter_description],
+        ['Published', m.published_date], ['Last updated', m.last_updated_date],
+      ].filter(([, v]) => v);
+      rows.forEach(([label, val]) => w.row(label, val));
+      return true;
+    }
+
+    if (tabId === 'faq') {
+      const faq = data.faq;
+      if (!faq || faq.length === 0) return false;
+      w.heading('FAQs', 14);
+      w.desc('Commonly asked questions and answers about this topic');
+      faq.forEach((item, i) => {
+        if (i > 0) w.separator();
+        w.heading(item.question, 11);
+        w.para(item.answer);
+      });
+      return true;
+    }
+
+    if (tabId === 'links') {
+      const il = data.internal_links || [];
+      const el = data.external_links || [];
+      if (il.length === 0 && el.length === 0) return false;
+      w.heading('Links', 14);
+      w.desc('Internal and external link suggestions for this post');
+      if (il.length > 0) {
+        w.heading('Internal links', 11);
+        il.forEach(l => { w.row('Anchor', l.anchor_text); w.row('Target', l.context); w.row('Section', l.placement_section); w.gap(3); });
+      }
+      if (el.length > 0) {
+        w.separator();
+        w.heading('External links', 11);
+        el.forEach(l => { w.row('Source', l.source_name); w.row('Anchor', l.anchor_text); w.row('Section', l.placement_section); w.gap(3); });
+      }
+      return true;
+    }
+
+    if (tabId === 'images') {
+      const imgs = data.images || [];
+      if (imgs.length === 0) return false;
+      w.heading('Image suggestions', 14);
+      w.desc('Recommended images with placement, alt text and file names');
+      w.para('These are AI-generated image suggestions, not actual images. Use the recommendations below as a guide to source or create images manually.');
+      imgs.forEach((img, i) => {
+        if (i > 0) w.separator();
+        w.row('Placement', img.suggested_placement);
+        w.row('Alt text', img.alt_text);
+        w.row('File name', img.file_name);
+      });
+      return true;
+    }
+
+    if (tabId === 'schema') {
+      const s = data.schema_markup;
+      if (!s) return false;
+      w.heading('Schema markup', 14);
+      w.desc('Structured data markup for search engine rich results');
+      const blocks = [
+        ['Blog schema', s.article],
+        ['FAQ schema', s.faq],
+        ['HowTo schema', s.howto],
+      ].filter(([, v]) => v && v !== 'null');
+      blocks.forEach(([label, obj]) => {
+        w.heading(label, 11);
+        w.mono(JSON.stringify(obj, null, 2));
+      });
+      return true;
+    }
+
+    if (tabId === 'eeat') {
+      const e = data.eeat;
+      if (!e) return false;
+      w.heading('E-E-A-T signals', 14);
+      w.desc('Experience, expertise, authoritativeness and trust signals');
+      const groups = [
+        { label: 'Author bio', value: e.author_bio },
+        { label: 'Experience', items: e.experience_signals },
+        { label: 'Expertise', items: e.expertise_indicators },
+        { label: 'Authority', items: e.authority_sources },
+        { label: 'Trust', items: e.trust_elements },
+      ];
+      groups.forEach((g, i) => {
+        if (i > 0) w.separator();
+        w.heading(g.label, 11);
+        if (g.value) w.para(g.value);
+        if (g.items && g.items.length > 0) g.items.forEach(it => w.para('- ' + it));
+      });
+      return true;
+    }
+
+    if (tabId === 'about') {
+      if (!brandProfile && !blogTopic) return false;
+      w.heading('About', 14);
+      w.desc('Brand profile and blog topic details for this post');
+
+      if (brandProfile) {
+        const typeLabel = blogType === 'pillar' ? 'Pillar' : 'Individual';
+        w.heading('Brand profile', 11);
+        w.desc('The brand profile used to generate this blog');
+        const profileRows = [
+          ['Name', brandProfile.name],
+          ['Website', brandProfile.website],
+          ['Industry', brandProfile.industry],
+          ['Founded year', brandProfile.founded_year],
+          ['Summary', brandProfile.summary],
+          ['Blog type', typeLabel],
+        ].filter(([, v]) => v);
+        profileRows.forEach(([label, val]) => w.row(label, val));
+      }
+
+      if (blogTopic || brandProfile) {
+        w.separator();
+        w.heading('Blog topic', 11);
+        w.desc('The topic selected for this blog');
+        if (blogTopic) {
+          const topicRows = [
+            ['Topic', blogTopic.name],
+            ['Description', blogTopic.description],
+            ['Content type', blogTopic.content_type],
+          ].filter(([, v]) => v);
+          topicRows.forEach(([label, val]) => w.row(label, val));
+        }
+        if (brandProfile) {
+          const bulletList = arr => Array.isArray(arr) && arr.length > 0 ? arr : null;
+          const kwSections = [
+            ['Primary keywords', bulletList(brandProfile.primary_keywords)],
+            ['Related keywords', bulletList(brandProfile.related_keywords)],
+            ['LSI keywords', bulletList(brandProfile.lsi_keywords)],
+            ['Longtail keywords', bulletList(brandProfile.longtail_keywords)],
+            ['Key LLM questions', bulletList(brandProfile.llm_questions)],
+          ].filter(([, v]) => v);
+          kwSections.forEach(([label, items]) => {
+            const text = items.map(item => {
+              const val = typeof item === 'object' ? (item.keyword || item.question || item.text || JSON.stringify(item)) : item;
+              return '  - ' + val;
+            }).join('\n');
+            w.row(label, text);
+          });
+        }
+      }
+
+      return true;
+    }
+
+    return false;
+  }
 
   const handleDownload = useCallback(async () => {
     if (!blogData || exporting) return;
     setExporting(true);
 
     try {
-      const [{ default: html2canvas }, { default: jsPDF }, { default: JSZip }, { saveAs }] = await Promise.all([
-        import('html2canvas'),
+      const [{ default: jsPDF }, { default: JSZip }, { saveAs }] = await Promise.all([
         import('jspdf'),
         import('jszip'),
         import('file-saver'),
       ]);
 
       const zip = new JSZip();
-      const savedTab = activeTab;
 
       const tabConfigs = [
         { id: 'content',  label: 'Content' },
@@ -331,67 +706,15 @@ export default function XeoBlogPage() {
         { id: 'images',   label: 'Images' },
         { id: 'schema',   label: 'Schema' },
         { id: 'eeat',     label: 'EEAT' },
+        { id: 'about',    label: 'About' },
       ];
 
       for (const tab of tabConfigs) {
-        setActiveTab(tab.id);
-        await new Promise(r => setTimeout(r, 300));
-
-        const el = tabContentRef.current;
-        if (!el) continue;
-
-        // Clone content into an off-screen container with no height constraints
-        const clone = el.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
-        clone.style.top = '0';
-        clone.style.width = `${el.scrollWidth || 900}px`;
-        clone.style.height = 'auto';
-        clone.style.maxHeight = 'none';
-        clone.style.overflow = 'visible';
-        clone.style.flex = 'none';
-        clone.style.padding = '28px';
-        document.body.appendChild(clone);
-
-        // Copy computed styles for stylesheets to apply
-        const allStyleSheets = [...document.styleSheets];
-        allStyleSheets.forEach(ss => {
-          try { ss.cssRules; } catch { /* cross-origin, skip */ }
-        });
-
-        const canvas = await html2canvas(clone, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          width: 900,
-          windowWidth: 900,
-        });
-
-        document.body.removeChild(clone);
-
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 297; // A4 height in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
         const pdf = new jsPDF('p', 'mm', 'a4');
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft > 0) {
-          position -= pageHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
+        const hasContent = writeTabPdf(pdf, tab.id, blogData);
+        if (!hasContent) continue;
         zip.file(`${tab.label}.pdf`, pdf.output('blob'));
       }
-
-      setActiveTab(savedTab);
 
       const blob = await zip.generateAsync({ type: 'blob' });
       const safeName = (blogName || 'blog').replace(/[^a-zA-Z0-9-_ ]/g, '').trim().replace(/\s+/g, '-');
@@ -401,7 +724,7 @@ export default function XeoBlogPage() {
     } finally {
       setExporting(false);
     }
-  }, [blogData, exporting, activeTab, blogName]);
+  }, [blogData, exporting, blogName, brandProfile, blogTopic, blogType]);
 
   const tabs = [
     { id: 'content',  label: 'Content',  icon: FileText },
@@ -411,6 +734,7 @@ export default function XeoBlogPage() {
     { id: 'images',   label: 'Images',   icon: Image },
     { id: 'schema',   label: 'Schema',   icon: Code },
     { id: 'eeat',     label: 'E-E-A-T',  icon: ShieldCheck },
+    { id: 'about',    label: 'About',    icon: Info },
   ];
 
   return (
@@ -418,7 +742,7 @@ export default function XeoBlogPage() {
       <header className={styles.header}>
         <div className={styles.headerText}>
           <h1 className={styles.title}>{blogName}</h1>
-          <p className={styles.description}>AI-generated XEO blog with AEO, GEO and SEO optimization</p>
+          <p className={styles.description}>AI-generated New XEO blog with AEO, GEO and SEO optimization</p>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.deleteBtn} onClick={() => setShowDelete(true)}>
@@ -474,6 +798,7 @@ export default function XeoBlogPage() {
             {activeTab === 'images'   && <ImagesSection images={blogData.images} />}
             {activeTab === 'schema'   && <SchemaSection schema={blogData.schema_markup} />}
             {activeTab === 'eeat'     && <div className={styles.contentWrap}><EeatSection eeat={blogData.eeat} /></div>}
+            {activeTab === 'about'    && <div className={styles.contentWrap}><AboutSection brandProfile={brandProfile} blogTopic={blogTopic} blogType={blogType} /></div>}
 
             {blogData.word_count_estimate && (
               <div className={styles.wordCount}>

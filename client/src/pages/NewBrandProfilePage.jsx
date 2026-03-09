@@ -363,6 +363,9 @@ export default function NewBrandProfilePage() {
                   We'll follow a simple process to create your brand profile. It should take just a few minutes.
                 </p>
                 <hr className={styles.divider} />
+                <p className={styles.card2Desc} style={{ marginBottom: 16 }}>
+                  Types of pages you can input:
+                </p>
                 <ul className={styles.introExamples}>
                   <li className={styles.introExampleItem}>
                     <span className={styles.introExampleTitle}>Home page</span>
@@ -656,7 +659,7 @@ export default function NewBrandProfilePage() {
               <Loader2 size={20} strokeWidth={2} className={styles.spinnerIcon} />
             </div>
             <p className={styles.buildModalTitle}>Scanning your website</p>
-            <p className={styles.buildModalDesc}>Our AI agent is reading your website and generating your brand profile. This can take up to 5 minutes. Please do not close this window.</p>
+            <p className={styles.buildModalDesc}>Our AI agents are reading your website and generating your brand profile. This can take up to 5 minutes. Please do not close this window.</p>
             <div className={`${styles.buildProgressTrack} ${styles.scanProgressTop}`}>
               <div className={styles.buildProgressFill} style={{ width: `${scanProgress}%` }} />
             </div>
