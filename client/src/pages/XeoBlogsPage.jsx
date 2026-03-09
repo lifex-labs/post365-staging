@@ -1,15 +1,14 @@
-import { useState } from 'react';
-import { Plus, X, Lock, Pencil, Trash2, PenLine, Target, RefreshCw, TrendingUp, Rocket, FileText } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Pencil, Trash2, Rss, ChevronDown, Search } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import formatDate from '../utils/formatDate';
+import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import styles from './XeoBlogsPage.module.css';
 
-const BLOG_OPTIONS = [
-  { icon: PenLine,    label: 'Write a new blog',            desc: 'Write original, keyword-targeted blogs from scratch optimized for search, AI engine visibility, and brand authority.',           iconBg: '#4f46e5', iconColor: '#ffffff' },
-  { icon: Target,     label: 'Competitor gap blog',         desc: 'Identify topics competitors rank for but your brand is missing, then publish superior content to capture that traffic.',         iconBg: '#0891b2', iconColor: '#ffffff', locked: true },
-  { icon: RefreshCw,  label: 'Refresh existing blog',       desc: 'Update outdated posts with new data, keywords, and AEO/GEO signals to recover lost rankings and improve performance.',          iconBg: '#059669', iconColor: '#ffffff', locked: true },
-  { icon: TrendingUp, label: 'Trending topic blog',         desc: 'Rapidly publish blogs around breaking news or trends in your industry to capture short-term traffic spikes.',                   iconBg: '#c026d3', iconColor: '#ffffff', locked: true },
-  { icon: Rocket,     label: 'Product & feature launch',    desc: 'Create SEO-optimized blogs that contextualize new product launches within broader search queries customers are already making.', iconBg: '#7c3aed', iconColor: '#ffffff', locked: true },
-  { icon: FileText,   label: 'Create from whitepaper',      desc: 'Transform whitepapers, case studies, or webinars into structured blogs optimized for organic and AI-driven discovery.',        iconBg: '#e11d48', iconColor: '#ffffff', locked: true },
+const BLOG_TYPES = [
+  'Pillar blog for the theme',
+  'Individual blog for a theme',
 ];
 
 const CATEGORY_COLORS = {
@@ -34,26 +33,153 @@ const SAMPLE_BLOGS = [
   { title: 'Launching a New Feature? Here Is Your Blog Content Plan',   excerpt: 'A product launch is one of the highest-leverage moments to publish SEO content, yet most teams miss it. This post outlines a content plan that maps new feature announcements to the search queries your ideal customers are already making - turning launches into long-term organic traffic drivers.',   category: 'Product',    date: 'Feb 4, 2026',  readTime: '7 min' },
 ];
 
+/* ---- Searchable dropdown ---- */
+function SearchableSelect({ label, placeholder, options, value, onChange, disabled }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  const filtered = options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div className={styles.field}>
+      <label className={styles.fieldLabel}>{label}</label>
+      <div className={styles.selectWrap} ref={ref}>
+        <button
+          type="button"
+          className={`${styles.selectTrigger} ${disabled ? styles.selectDisabled : ''}`}
+          onClick={() => !disabled && setOpen(prev => !prev)}
+          disabled={disabled}
+        >
+          <span className={selected ? styles.selectValue : styles.selectPlaceholder}>
+            {selected ? selected.label : placeholder}
+          </span>
+          <ChevronDown size={14} className={styles.selectChevron} />
+        </button>
+        {open && (
+          <div className={styles.dropdown}>
+            <div className={styles.dropdownSearch}>
+              <Search size={13} className={styles.dropdownSearchIcon} />
+              <input
+                className={styles.dropdownInput}
+                placeholder="Search..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className={styles.dropdownList}>
+              {filtered.length === 0 && (
+                <div className={styles.dropdownEmpty}>No results</div>
+              )}
+              {filtered.map(o => (
+                <button
+                  key={o.value}
+                  type="button"
+                  className={`${styles.dropdownItem} ${o.value === value ? styles.dropdownItemActive : ''}`}
+                  onClick={() => { onChange(o.value); setOpen(false); setSearch(''); }}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function XeoBlogsPage() {
+  const navigate = useNavigate();
+  const api = useBrandProfilesApi();
   const [blogs, setBlogs] = useState(SAMPLE_BLOGS);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selected, setSelected] = useState('Write a new blog');
   const [deletingIndex, setDeletingIndex] = useState(null);
+
+  // Modal form state
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+
+  const [blogThemes, setBlogThemes] = useState([]);
+
+  // Fetch brand profiles when modal opens
+  useEffect(() => {
+    if (!modalOpen) return;
+    api.listProfiles()
+      .then(res => setProfiles(res.profiles || []))
+      .catch(() => setProfiles([]));
+  }, [modalOpen]);
+
+  // Fetch full profile (with blog_themes) when a profile is selected
+  useEffect(() => {
+    if (!selectedProfile) { setBlogThemes([]); return; }
+    api.getProfile(selectedProfile)
+      .then(res => {
+        const themes = (res.profile?.blog_themes || [])
+          .slice()
+          .sort((a, b) => a.theme.localeCompare(b.theme));
+        setBlogThemes(themes);
+      })
+      .catch(() => setBlogThemes([]));
+  }, [selectedProfile]);
+
+  // Reset dependent fields when parent changes
+  function handleProfileChange(val) {
+    setSelectedProfile(val);
+    setSelectedTheme('');
+    setSelectedType('');
+  }
+
+  function handleThemeChange(val) {
+    setSelectedTheme(val);
+    setSelectedType('');
+  }
 
   function handleClose() {
     setModalOpen(false);
-    setSelected('Write a new blog');
+    setSelectedProfile('');
+    setSelectedTheme('');
+    setSelectedType('');
   }
 
-  function handleSelect() {
-    // proceed with selected option
-    handleClose();
+  function handleNext() {
+    if (selectedType === 'Individual blog for a theme') {
+      const state = {
+        profileSlug: selectedProfile,
+        themeId: selectedTheme,
+        type: selectedType,
+      };
+      handleClose();
+      navigate('/xeo-blogs/new-individual-blog', { state });
+    }
+    // Pillar blog path will be defined later
   }
 
   function handleDelete() {
     setBlogs(prev => prev.filter((_, i) => i !== deletingIndex));
     setDeletingIndex(null);
   }
+
+  const canNext = selectedProfile && selectedTheme && selectedType;
+
+  const profileOptions = profiles
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(p => ({ value: p.slug, label: p.name }));
+
+  const themeOptions = blogThemes.map(t => ({ value: String(t.id), label: t.theme }));
 
   return (
     <div className={styles.page}>
@@ -73,7 +199,7 @@ export default function XeoBlogsPage() {
           <article key={i} className={styles.card}>
             <div className={styles.cardHeader}>
               <span className={styles.tag} style={CATEGORY_COLORS[blog.category]}>{blog.category}</span>
-              <span className={styles.date}>{blog.date}</span>
+              <span className={styles.date}>{formatDate(blog.date)}</span>
             </div>
             <div className={styles.cardBody}>
               <h3 className={styles.cardTitle} title={blog.title}>{blog.title}</h3>
@@ -102,31 +228,56 @@ export default function XeoBlogsPage() {
       {modalOpen && (
         <div className={styles.backdrop} onClick={handleClose}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <span className={styles.modalTitle}>Create XEO blog</span>
-              <button className={styles.closeBtn} onClick={handleClose}>
-                <X size={16} />
-              </button>
+            <div className={styles.modalIcon}>
+              <Rss size={15} strokeWidth={2} />
             </div>
-            <div className={styles.optionGrid}>
-              {BLOG_OPTIONS.map(({ icon: Icon, label, desc, iconBg, iconColor, locked }) => (
-                <button
-                  key={label}
-                  className={`${styles.option} ${selected === label ? styles.optionSelected : ''} ${locked ? styles.optionLocked : ''}`}
-                  onClick={() => !locked && setSelected(label)}
-                >
-                  {locked && <Lock size={12} className={styles.lockIcon} />}
-                  <div className={styles.optionIcon} style={{ background: iconBg, color: iconColor }}><Icon size={13} strokeWidth={2} /></div>
-                  <div className={styles.optionText}>
-                    <span className={styles.optionLabel}>{label}</span>
-                    <span className={styles.optionDesc}>{desc}</span>
-                  </div>
-                </button>
-              ))}
+
+            <div className={styles.modalHeading}>
+              <h2 className={styles.modalTitle}>Create XEO blog</h2>
+              <p className={styles.modalDesc}>Select a brand profile, theme, and blog type</p>
             </div>
-            <div className={styles.modalFooter}>
+
+            <div className={styles.modalFields}>
+              <SearchableSelect
+                label="Brand profile"
+                placeholder="Select a brand profile"
+                options={profileOptions}
+                value={selectedProfile}
+                onChange={handleProfileChange}
+              />
+              <SearchableSelect
+                label="Blog theme"
+                placeholder="Select a blog theme"
+                options={themeOptions}
+                value={selectedTheme}
+                onChange={handleThemeChange}
+                disabled={!selectedProfile}
+              />
+              <div className={`${styles.field} ${!selectedProfile || !selectedTheme ? styles.fieldDisabled : ''}`}>
+                <label className={styles.radioFieldLabel}>Blog type</label>
+                <p className={styles.radioFieldDesc}>Select blog format for this theme</p>
+                <div className={styles.radioGroup}>
+                  {BLOG_TYPES.map(t => (
+                    <label key={t} className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="blogType"
+                        className={styles.radioInput}
+                        value={t}
+                        checked={selectedType === t}
+                        onChange={() => setSelectedType(t)}
+                        disabled={!selectedProfile || !selectedTheme}
+                      />
+                      <span className={styles.radioText}>{t}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
               <button className={styles.cancelBtn} onClick={handleClose}>Cancel</button>
-              <button className={styles.selectBtn} onClick={handleSelect} disabled={!selected}>Select</button>
+              <button className={styles.nextBtn} onClick={handleNext} disabled={!canNext}>Next</button>
             </div>
           </div>
         </div>

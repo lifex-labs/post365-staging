@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, X, Lock, Pencil, Trash2, PenLine, Target, RefreshCw, TrendingUp, Rocket, FileText } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import formatDate from '../utils/formatDate';
 import styles from './BrandArticlesPage.module.css';
 
 const ARTICLE_OPTIONS = [
@@ -72,7 +73,7 @@ export default function BrandArticlesPage() {
           <article key={i} className={styles.card}>
             <div className={styles.cardHeader}>
               <span className={styles.tag} style={CATEGORY_COLORS[article.category]}>{article.category}</span>
-              <span className={styles.date}>{article.date}</span>
+              <span className={styles.date}>{formatDate(article.date)}</span>
             </div>
             <div className={styles.cardBody}>
               <h3 className={styles.cardTitle} title={article.title}>{article.title}</h3>

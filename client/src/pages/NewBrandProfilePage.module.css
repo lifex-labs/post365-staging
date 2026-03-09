@@ -65,6 +65,27 @@
   background: var(--surface);
 }
 
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+}
+
+.backBtn:hover {
+  background: var(--surface);
+}
+
 .saveBtn {
   display: inline-flex;
   align-items: center;
@@ -1133,6 +1154,7 @@
   }
 
   .cancelBtn,
+  .backBtn,
   .saveBtn {
     flex: 1;
   }

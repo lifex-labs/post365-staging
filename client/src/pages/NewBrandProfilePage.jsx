@@ -58,7 +58,7 @@ function mapAgentResult(result) {
       primaryKeyword: (t.primary_keywords_included || [])[0] || '',
       theme:   t.blog_theme,
       summary: t.blog_theme_summary,
-      date:    new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+      date:    new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       keywords: {
         primary:      t.primary_keywords_included      || [],
         related:      t.related_keywords_included      || [],
@@ -305,37 +305,42 @@ export default function NewBrandProfilePage() {
         </div>
         {step === 'details' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleGoBack}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToKeywords}>Next</button>
           </div>
         )}
         {step === 'keywords' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToDetails}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToDetails}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToRelated}>Next</button>
           </div>
         )}
         {step === 'related' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToKeywords}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToKeywords}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLsi}>Next</button>
           </div>
         )}
         {step === 'lsi' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToRelated}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToRelated}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLongtail}>Next</button>
           </div>
         )}
         {step === 'longtail' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToLsi}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToLsi}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLlmQuestions}>Next</button>
           </div>
         )}
         {step === 'llmquestions' && (
           <div className={styles.headerBtns}>
-            <button className={styles.cancelBtn} onClick={handleBackToLongtail}>Back</button>
+            <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToLongtail}>Back</button>
             <button className={styles.saveBtn} onClick={handleFinishLlm}>Finish</button>
           </div>
         )}

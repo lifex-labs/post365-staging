@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import DeleteModal from './DeleteModal';
+import formatDate from '../utils/formatDate';
 import styles from './PostCard.module.css';
 
 export default function PostCard({ post, onDelete }) {
@@ -11,7 +12,7 @@ export default function PostCard({ post, onDelete }) {
       <article className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.category}>{post.category}</span>
-          <span className={styles.date}>{post.date}</span>
+          <span className={styles.date}>{formatDate(post.date)}</span>
         </div>
         <div className={styles.cardBody}>
           <h3 className={styles.cardName} title={post.title}>{post.title}</h3>

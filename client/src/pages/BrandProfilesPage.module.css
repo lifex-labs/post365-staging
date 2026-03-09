@@ -61,18 +61,15 @@
   grid-template-columns: 1fr;
 }
 
-/* ===== Skeleton ===== */
-.cardSkeleton {
+/* ===== Loading ===== */
+.cardLoading {
   min-height: 160px;
-  background: var(--hover-overlay);
-  animation: pulse 1.4s ease-in-out infinite;
-  cursor: default;
-}
-.cardSkeleton:hover { box-shadow: var(--card-shadow); }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--card-shadow);
 }
 
 /* ===== Card ===== */

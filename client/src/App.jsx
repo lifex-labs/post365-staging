@@ -21,6 +21,7 @@ const BrandArticlesPage            = lazy(() => import('./pages/BrandArticlesPag
 const NewBrandProfilePage          = lazy(() => import('./pages/NewBrandProfilePage'));
 const EditBrandProfilePage         = lazy(() => import('./pages/EditBrandProfilePage'));
 const BrandProfileBlogThemesPage   = lazy(() => import('./pages/BrandProfileBlogThemesPage'));
+const NewXeoBlogPage               = lazy(() => import('./pages/NewXeoBlogPage'));
 
 function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -66,6 +67,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="/brand-posts" replace />} />
         <Route path="brand-posts"        element={<Suspense fallback={<LoadingSpinner />}><BrandPostsPage /></Suspense>} />
         <Route path="xeo-blogs"          element={<Suspense fallback={<LoadingSpinner />}><XeoBlogsPage /></Suspense>} />
+        <Route path="xeo-blogs/new-individual-blog" element={<Suspense fallback={<LoadingSpinner />}><NewXeoBlogPage /></Suspense>} />
         <Route path="brand-articles"     element={<Suspense fallback={<LoadingSpinner />}><BrandArticlesPage /></Suspense>} />
         <Route path="brand-profiles"    element={<Suspense fallback={<LoadingSpinner />}><BrandProfilesPage /></Suspense>} />
         <Route path="brand-profiles/new"                element={<Suspense fallback={<LoadingSpinner />}><NewBrandProfilePage /></Suspense>} />

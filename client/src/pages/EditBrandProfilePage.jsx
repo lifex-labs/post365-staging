@@ -157,30 +157,35 @@ export default function EditBrandProfilePage() {
         {step === 'keywords' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToDetails}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToRelated}>Next</button>
           </div>
         )}
         {step === 'related' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToKeywords}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLsi}>Next</button>
           </div>
         )}
         {step === 'lsi' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToRelated}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLongtail}>Next</button>
           </div>
         )}
         {step === 'longtail' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToLsi}>Back</button>
             <button className={styles.saveBtn} onClick={handleAdvanceToLlmQuestions}>Next</button>
           </div>
         )}
         {step === 'llmquestions' && (
           <div className={styles.headerBtns}>
             <button className={styles.cancelBtn} onClick={() => navigate('/brand-profiles')}>Cancel</button>
+            <button className={styles.backBtn} onClick={handleBackToLongtail}>Back</button>
             <button className={styles.saveBtn} onClick={handleFinish}>Finish</button>
           </div>
         )}

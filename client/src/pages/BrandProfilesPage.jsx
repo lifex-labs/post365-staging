@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
+import formatDate from '../utils/formatDate';
 import styles from './BrandProfilesPage.module.css';
-
-function formatDate(isoStr) {
-  return new Date(isoStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-}
 
 export default function BrandProfilesPage() {
   const navigate = useNavigate();
@@ -46,7 +44,7 @@ export default function BrandProfilesPage() {
 
       {loading ? (
         <div className={styles.grid}>
-          {[1, 2, 3].map(i => <div key={i} className={`${styles.card} ${styles.cardSkeleton}`} />)}
+          <div className={styles.cardLoading}><LoadingSpinner /></div>
         </div>
       ) : (
         <div className={styles.grid}>

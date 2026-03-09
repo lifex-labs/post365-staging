@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { Pencil, Trash2, X, ExternalLink, BookOpen } from 'lucide-react';
 import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import modalStyles from '../components/LogoutModal.module.css';
+import formatDate from '../utils/formatDate';
 import styles from './BrandProfileBlogThemesPage.module.css';
 
 export default function BrandProfileBlogThemesPage() {
@@ -28,7 +29,7 @@ export default function BrandProfileBlogThemesPage() {
       primaryKeyword: (t.primary_keywords_included || [])[0] || '',
       theme:          t.blog_theme   || '',
       summary:        t.blog_theme_summary || '',
-      date:           new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+      date:           new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       keywords: {
         primary:      t.primary_keywords_included   || [],
         related:      t.related_keywords_included   || [],
@@ -183,7 +184,7 @@ export default function BrandProfileBlogThemesPage() {
           >
             <div className={styles.cardHeader}>
               <span className={styles.keywordTag}>{theme.primaryKeyword}</span>
-              <span className={styles.cardDate}>{theme.date}</span>
+              <span className={styles.cardDate}>{formatDate(theme.date)}</span>
             </div>
             <div className={styles.cardBody}>
               <h3 className={styles.cardName}>{theme.theme}</h3>
@@ -290,7 +291,7 @@ export default function BrandProfileBlogThemesPage() {
                   </div>
                   <div className={styles.panelMetaRow}>
                     <dt className={styles.panelMetaLabel}>Created</dt>
-                    <dd className={styles.panelMetaValue}>{selectedTheme.date}</dd>
+                    <dd className={styles.panelMetaValue}>{formatDate(selectedTheme.date)}</dd>
                   </div>
                 </dl>
               </div>
