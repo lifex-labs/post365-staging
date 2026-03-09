@@ -14,8 +14,8 @@ const BLOG_TYPES = [
 ];
 
 const STATUS_COLORS = {
-  draft:     { backgroundColor: '#eef2ff', color: '#4f46e5' },
-  published: { backgroundColor: '#ecfdf5', color: '#059669' },
+  draft:     { backgroundColor: 'var(--blue-bg)', color: 'var(--blue)' },
+  published: { backgroundColor: 'var(--blue-bg)', color: 'var(--blue)' },
 };
 
 /* ---- Searchable dropdown ---- */

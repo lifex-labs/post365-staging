@@ -234,7 +234,7 @@ markdown code fences. Do not add any text before or after the JSON.
       "llm_questions_addressed": [
         "string, which LLM questions from the input this topic can answer"
       ],
-      "suggested_word_count": "integer, recommended word count (1500 to 3000)"
+      "suggested_word_count": "integer, recommended word count based on topic depth"
     }
   ]
 }

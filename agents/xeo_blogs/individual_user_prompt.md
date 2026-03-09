@@ -205,21 +205,18 @@ object matching the output schema defined in your system prompt.
    Prefer .gov, .edu, peer-reviewed sources, and established industry
    publications. Every link must start with https://.
 
-6. WORD COUNT: Aim for at least 1,800 words of body content (introduction +
-   sections + conclusion combined). More is fine if the topic warrants it.
-
-7. INTERNAL LINKS: Use placeholder format for internal links:
+6. INTERNAL LINKS: Use placeholder format for internal links:
    [INTERNAL: anchor text]({{internal_link_placeholder}})
    Include 3-5 of these and describe what page each should point to in the
    internal_links array.
 
-8. SCHEMA: All JSON-LD blocks in schema_markup must be syntactically valid
+7. SCHEMA: All JSON-LD blocks in schema_markup must be syntactically valid
    JSON. Double-check bracket and quote matching.
 
-9. NO FILLER: Do not pad sections with generic advice just to hit word count.
-   Every paragraph should deliver specific, actionable, or informative value.
+8. NO FILLER: Every paragraph should deliver specific, actionable, or
+   informative value. Do not pad sections with generic advice.
 
-10. SENTENCE CASE: Use sentence case for all text output including headings,
+9. SENTENCE CASE: Use sentence case for all text output including headings,
    titles, meta descriptions, FAQ questions, and all other text fields. Do
    not capitalize the first letter of every word. Only capitalize proper
    nouns, brand names, acronyms, and the first word of a sentence.

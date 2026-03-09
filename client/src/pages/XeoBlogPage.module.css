@@ -146,12 +146,42 @@
 /* ===== Tab bar ===== */
 .tabBar {
   display: flex;
+  align-items: center;
   gap: 0;
   border-bottom: 1px solid var(--separator);
   padding: 8px 28px 0;
   margin-bottom: 12px;
   flex-shrink: 0;
   overflow-x: auto;
+}
+
+.tabBarSpacer {
+  flex: 1;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.downloadBtn:hover {
+  color: var(--text);
+}
+
+.downloadBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .tab {
@@ -286,7 +316,7 @@
 .tldr {
   background: var(--blue-bg);
   border-radius: var(--radius-s);
-  padding: 12px 16px;
+  padding: 16px;
   margin-bottom: 20px;
 }
 
@@ -297,7 +327,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 .tldrText {
@@ -636,9 +666,14 @@
 
   .deleteBtn,
   .editBtn,
-  .finishBtn {
+  .finishBtn,
+  .backBtn {
     flex: 1;
     width: auto;
+  }
+
+  .downloadBtn .tabLabel {
+    display: none;
   }
 
   .tabContent {

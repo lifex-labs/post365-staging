@@ -450,7 +450,7 @@ body elements inside content strings.
     "trust_elements": ["array of strings, transparency and accuracy signals included in the content"]
   },
 
-  "word_count_estimate": "integer, estimated total word count of body content"
+  "word_count_estimate": "integer, actual total word count of body content"
 }
 
 </output_format>

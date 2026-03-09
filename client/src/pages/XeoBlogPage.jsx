@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { FileText, Link2, Image, Code, ExternalLink, HelpCircle, ShieldCheck } from 'lucide-react';
+import { FileText, Link2, Image, Code, ExternalLink, HelpCircle, ShieldCheck, Download } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
@@ -305,6 +305,104 @@ export default function XeoBlogPage() {
     navigate('/xeo-blogs');
   }
 
+  const [exporting, setExporting] = useState(false);
+  const tabContentRef = useRef(null);
+
+  const handleDownload = useCallback(async () => {
+    if (!blogData || exporting) return;
+    setExporting(true);
+
+    try {
+      const [{ default: html2canvas }, { default: jsPDF }, { default: JSZip }, { saveAs }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+        import('jszip'),
+        import('file-saver'),
+      ]);
+
+      const zip = new JSZip();
+      const savedTab = activeTab;
+
+      const tabConfigs = [
+        { id: 'content',  label: 'Content' },
+        { id: 'metadata', label: 'Metadata' },
+        { id: 'faq',      label: 'FAQs' },
+        { id: 'links',    label: 'Links' },
+        { id: 'images',   label: 'Images' },
+        { id: 'schema',   label: 'Schema' },
+        { id: 'eeat',     label: 'EEAT' },
+      ];
+
+      for (const tab of tabConfigs) {
+        setActiveTab(tab.id);
+        await new Promise(r => setTimeout(r, 300));
+
+        const el = tabContentRef.current;
+        if (!el) continue;
+
+        // Clone content into an off-screen container with no height constraints
+        const clone = el.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.width = `${el.scrollWidth || 900}px`;
+        clone.style.height = 'auto';
+        clone.style.maxHeight = 'none';
+        clone.style.overflow = 'visible';
+        clone.style.flex = 'none';
+        clone.style.padding = '28px';
+        document.body.appendChild(clone);
+
+        // Copy computed styles for stylesheets to apply
+        const allStyleSheets = [...document.styleSheets];
+        allStyleSheets.forEach(ss => {
+          try { ss.cssRules; } catch { /* cross-origin, skip */ }
+        });
+
+        const canvas = await html2canvas(clone, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          width: 900,
+          windowWidth: 900,
+        });
+
+        document.body.removeChild(clone);
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 297; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position -= pageHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        zip.file(`${tab.label}.pdf`, pdf.output('blob'));
+      }
+
+      setActiveTab(savedTab);
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const safeName = (blogName || 'blog').replace(/[^a-zA-Z0-9-_ ]/g, '').trim().replace(/\s+/g, '-');
+      saveAs(blob, `${safeName}.zip`);
+    } catch (err) {
+      console.error('Export failed:', err);
+    } finally {
+      setExporting(false);
+    }
+  }, [blogData, exporting, activeTab, blogName]);
+
   const tabs = [
     { id: 'content',  label: 'Content',  icon: FileText },
     { id: 'metadata', label: 'Metadata', icon: Code },
@@ -357,9 +455,18 @@ export default function XeoBlogPage() {
                 <span className={styles.tabLabel}>{tab.label}</span>
               </button>
             ))}
+            <div className={styles.tabBarSpacer} />
+            <button
+              className={styles.downloadBtn}
+              onClick={handleDownload}
+              disabled={exporting}
+            >
+              <Download size={13} strokeWidth={2} />
+              <span className={styles.tabLabel}>{exporting ? 'Exporting...' : 'Download'}</span>
+            </button>
           </div>
 
-          <div className={styles.tabContent}>
+          <div className={styles.tabContent} ref={tabContentRef}>
             {activeTab === 'content'  && <div className={styles.contentWrap}><ContentSection content={blogData.content} /></div>}
             {activeTab === 'metadata' && <MetadataSection metadata={blogData.metadata} />}
             {activeTab === 'faq'      && <div className={styles.contentWrap}><FaqSection faq={blogData.faq} /></div>}

@@ -21,11 +21,14 @@
 }
 
 .category {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
   font-size: 12px;
   font-weight: 500;
   color: var(--blue);
   background: var(--blue-bg);
-  padding: 2px 8px;
+  padding: 0 8px;
   border-radius: 99px;
 }
 
@@ -41,7 +44,7 @@
 }
 
 .cardName {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
   line-height: 1.4;
