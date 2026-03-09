@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import EmptyCard from '../components/EmptyCard';
 import PostCard from '../components/PostCard';
 import { POSTS } from '../data/posts';
 import styles from './BrandPostsPage.module.css';
@@ -24,9 +25,13 @@ export default function BrandPostsPage() {
         </button>
       </header>
       <div className={styles.grid}>
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} onDelete={handleDelete} />
-        ))}
+        {posts.length === 0 ? (
+          <EmptyCard label="Create brand post" onClick={() => {}} />
+        ) : (
+          posts.map((post) => (
+            <PostCard key={post.id} post={post} onDelete={handleDelete} />
+          ))
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ Design must be mobile-first and responsive.
 - Never use em-dash or en-dash anywhere in the app: labels, descriptions, messages, tooltips, placeholders, or any other UI text
 - Use a regular hyphen (-) where a dash is needed
 - Use sentence case everywhere in the app: page headers, card headers, field labels, button labels, nav items, modal titles, descriptions, placeholders, and all other UI text. Proper nouns and acronyms are exempt (e.g. "XEO blogs", "USP", "Arjun V. Shenoy").
+- All LLM-generated content must also use sentence case. Enforce this via system and user prompt instructions in all agent prompt files (agents/ folder). Do not rely solely on frontend formatting.
 
 ## Page Typography Standards
 - Page header (h1): font-size 20px, font-weight 700, color var(--text)

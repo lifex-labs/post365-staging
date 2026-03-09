@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import EmptyCard from '../components/EmptyCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useBrandProfilesApi } from '../hooks/useBrandProfilesApi';
 import formatDate from '../utils/formatDate';
@@ -45,6 +46,10 @@ export default function BrandProfilesPage() {
       {loading ? (
         <div className={styles.grid}>
           <div className={styles.cardLoading}><LoadingSpinner /></div>
+        </div>
+      ) : profiles.length === 0 ? (
+        <div className={styles.grid}>
+          <EmptyCard label="Create brand profile" onClick={() => navigate('/brand-profiles/new')} />
         </div>
       ) : (
         <div className={styles.grid}>

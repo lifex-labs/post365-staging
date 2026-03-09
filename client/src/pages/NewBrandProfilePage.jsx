@@ -656,7 +656,7 @@ export default function NewBrandProfilePage() {
               <Loader2 size={20} strokeWidth={2} className={styles.spinnerIcon} />
             </div>
             <p className={styles.buildModalTitle}>Scanning your website</p>
-            <p className={styles.buildModalDesc}>Our AI agent is reading your website and generating your brand profile. This typically takes 30-60 seconds.</p>
+            <p className={styles.buildModalDesc}>Our AI agent is reading your website and generating your brand profile. This can take up to 5 minutes. Please do not close this window.</p>
             <div className={`${styles.buildProgressTrack} ${styles.scanProgressTop}`}>
               <div className={styles.buildProgressFill} style={{ width: `${scanProgress}%` }} />
             </div>

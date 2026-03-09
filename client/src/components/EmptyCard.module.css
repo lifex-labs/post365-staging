@@ -1,0 +1,48 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  border: 1.5px dashed var(--separator);
+  border-radius: var(--radius-m);
+  background: var(--card-bg);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  padding: 24px;
+  width: 100%;
+  font-family: inherit;
+}
+
+.card:hover {
+  border-color: var(--blue);
+  background: var(--blue-bg);
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-bg);
+  color: var(--blue);
+  transition: background 0.15s, color 0.15s;
+}
+
+.card:hover .icon {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.card:hover .label {
+  color: var(--blue);
+}

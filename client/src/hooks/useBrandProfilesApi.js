@@ -30,5 +30,19 @@ export function useBrandProfilesApi() {
     deleteProfile:  (slug)       => apiFetch(`/api/brand-profiles/${slug}`, { method: 'DELETE' }),
     seedProfile:    ()           => apiFetch('/api/brand-profiles/seed',    { method: 'POST' }),
     scanWebsite:    (urls, signal) => apiFetch('/api/brand-profile-agent/scan', { method: 'POST', body: JSON.stringify({ urls }), signal }),
+    generateBlog:   (data, signal) => apiFetch('/api/xeo-blog-agent/generate',  { method: 'POST', body: JSON.stringify(data), signal }),
+    generateTopics: (data, signal) => apiFetch('/api/xeo-blog-agent/generate-topics', { method: 'POST', body: JSON.stringify(data), signal }),
+
+    // XEO blog topics CRUD
+    listTopics:     (profileId, themeId) => apiFetch(`/api/xeo-blogs/topics?profileId=${profileId}&themeId=${themeId}`),
+    createTopics:   (topics)             => apiFetch('/api/xeo-blogs/topics', { method: 'POST', body: JSON.stringify({ topics }) }),
+    deleteTopic:    (id)                 => apiFetch(`/api/xeo-blogs/topics/${id}`, { method: 'DELETE' }),
+    updateTopic:    (id, data)           => apiFetch(`/api/xeo-blogs/topics/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+    // XEO blogs CRUD
+    listBlogs:      ()                   => apiFetch('/api/xeo-blogs'),
+    getBlog:        (slug)               => apiFetch(`/api/xeo-blogs/${slug}`),
+    createBlog:     (data)               => apiFetch('/api/xeo-blogs', { method: 'POST', body: JSON.stringify(data) }),
+    deleteBlog:     (slug)               => apiFetch(`/api/xeo-blogs/${slug}`, { method: 'DELETE' }),
   };
 }

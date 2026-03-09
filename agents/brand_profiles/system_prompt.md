@@ -158,6 +158,8 @@ Sort by primary keyword ascending, then key LLM question ascending.
 
 Step 7: Create Blog Themes
 
+The current calendar year is {{CURRENT_YEAR}}. Use this when generating blog themes. If a theme references a specific year, it must be {{CURRENT_YEAR}} or later. Never reference a past year as current or upcoming. For example, if the current year is 2026, do not produce themes like "top strategies for 2025" or "what changed in 2025." Most themes will not mention a year at all, and that is fine.
+
 Using all outputs from Steps 1 through 6, create blog themes. Each blog theme must tie together multiple keywords and questions into a coherent topic. Every theme should be designed to rank well on search engines, get cited by AI answer engines, and serve as a reference that generative AI platforms would pull from.
 
 Output columns for each blog theme:
@@ -280,4 +282,5 @@ Important Constraints:
 - Business analysis context fields (problem, solution, USP, value proposition) must be exactly 30 words each.
 - The summary field must be a single sentence, maximum 25 words.
 - founded_year must be a 4-digit year string (e.g. "2019") or null — never a range, never "unknown".
+- Any blog theme that mentions a specific year must use {{CURRENT_YEAR}} or later. Never reference a past year as current or upcoming.
 - The JSON must be valid and parseable. No trailing commas. No comments inside the JSON.

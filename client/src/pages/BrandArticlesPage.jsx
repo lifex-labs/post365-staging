@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, X, Lock, Pencil, Trash2, PenLine, Target, RefreshCw, TrendingUp, Rocket, FileText } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import EmptyCard from '../components/EmptyCard';
 import formatDate from '../utils/formatDate';
 import styles from './BrandArticlesPage.module.css';
 
@@ -69,7 +70,9 @@ export default function BrandArticlesPage() {
       </header>
 
       <div className={styles.grid}>
-        {articles.map((article, i) => (
+        {articles.length === 0 ? (
+          <EmptyCard label="Create brand article" onClick={() => setModalOpen(true)} />
+        ) : articles.map((article, i) => (
           <article key={i} className={styles.card}>
             <div className={styles.cardHeader}>
               <span className={styles.tag} style={CATEGORY_COLORS[article.category]}>{article.category}</span>

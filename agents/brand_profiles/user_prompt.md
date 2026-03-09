@@ -7,12 +7,7 @@
 # =============================================================================
 
 
-Here is the website URL:
-
-{{URL}}
-
-
-Here is the full text content scraped from that website:
+Here is the full text content scraped from the website:
 
 ---
 {{WEBSITE_CONTENT}}
@@ -39,7 +34,7 @@ Using only the website content above, follow your full workflow:
 
 6. Identify all key LLM questions for every primary keyword. Think about what people ask ChatGPT, Gemini, Perplexity, and Claude about these topics. Include volume and difficulty. Sort by primary keyword, then question.
 
-7. Create blog themes that pull together primary keywords, related keywords, LSI keywords, long tail keywords, and LLM questions into coherent blog topics. Each theme summary must be exactly 50 words. Map every keyword and question back to the theme it belongs to.
+7. Create blog themes that pull together primary keywords, related keywords, LSI keywords, long tail keywords, and LLM questions into coherent blog topics. Each theme summary must be exactly 50 words. Map every keyword and question back to the theme it belongs to. The current year is {{CURRENT_YEAR}}. If any theme mentions a year, use {{CURRENT_YEAR}} or later.
 
 
 # -----------------------------------------------------------------------------

@@ -221,8 +221,8 @@
 }
 
 .statusComplete {
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--blue-bg);
+  color: var(--blue);
 }
 
 .statusDraft {

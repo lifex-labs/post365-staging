@@ -114,7 +114,7 @@ async function scrapeAll(urls) {
 async function runAgent(client, systemPrompt, userPrompt) {
   const stream = client.messages.stream({
     model:      'claude-sonnet-4-6',
-    max_tokens: 64000,
+    max_tokens: 100000,
     system:     systemPrompt,
     messages:   [{ role: 'user', content: userPrompt }],
   });
@@ -228,10 +228,12 @@ router.post('/scan', requireAuth, async (req, res) => {
       readFile(path.join(PROMPTS_DIR, 'user_prompt.md'),   'utf-8'),
     ]);
 
-    const systemPrompt = stripComments(rawSystem);
+    const currentYear  = new Date().getFullYear().toString();
+    const systemPrompt = stripComments(rawSystem)
+      .replaceAll('{{CURRENT_YEAR}}', currentYear);
     const userPrompt   = stripComments(rawUser)
-      .replace('{{URL}}', parsedUrls[0])
-      .replace('{{WEBSITE_CONTENT}}', websiteContent);
+      .replace('{{WEBSITE_CONTENT}}', websiteContent)
+      .replaceAll('{{CURRENT_YEAR}}', currentYear);
 
     // Step 3: Run the LLM agent
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
